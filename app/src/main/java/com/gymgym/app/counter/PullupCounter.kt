@@ -1,0 +1,45 @@
+package com.gymgym.app.counter
+
+import com.gymgym.app.pose.Landmark
+import com.gymgym.app.pose.PoseSnapshot
+import com.gymgym.app.pose.angleBetween
+
+/**
+ * Counts pullups from the shoulder-elbow-wrist angle: dead hang (~180) up to a deep pull (<90).
+ *
+ * Elbow bend alone can't distinguish a real pull-up from an arm curl performed in front of the
+ * body, so the contracted phase additionally requires the chin (nose) to have risen above wrist
+ * height (smaller y = higher in the image) - a cheap proxy for "chin over the bar". When that
+ * gate isn't met, the angle is clamped to a fully-extended reading so the rep can't start.
+ */
+class PullupCounter : RepCounter {
+    override val exerciseName = "Pullup"
+
+    private val stateMachine = RepStateMachine(downEnterThreshold = 90f, upEnterThreshold = 160f)
+
+    override fun process(pose: PoseSnapshot): Boolean {
+        val angle = armAngle(pose, Landmark.LEFT_SHOULDER, Landmark.LEFT_ELBOW, Landmark.LEFT_WRIST)
+            ?: armAngle(pose, Landmark.RIGHT_SHOULDER, Landmark.RIGHT_ELBOW, Landmark.RIGHT_WRIST)
+            ?: return false
+
+        val nose = pose[Landmark.NOSE]
+        val wrist = pose[Landmark.LEFT_WRIST] ?: pose[Landmark.RIGHT_WRIST]
+        val chinOverBar = nose != null && wrist != null && nose.y <= wrist.y
+        val gatedAngle = if (chinOverBar) angle else FULLY_EXTENDED_ANGLE
+
+        return stateMachine.process(gatedAngle)
+    }
+
+    override fun reset() = stateMachine.reset()
+
+    private fun armAngle(pose: PoseSnapshot, shoulder: Landmark, elbow: Landmark, wrist: Landmark): Float? {
+        val s = pose[shoulder] ?: return null
+        val e = pose[elbow] ?: return null
+        val w = pose[wrist] ?: return null
+        return angleBetween(s, e, w)
+    }
+
+    private companion object {
+        const val FULLY_EXTENDED_ANGLE = 180f
+    }
+}
