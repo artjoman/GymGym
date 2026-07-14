@@ -88,7 +88,7 @@ fun StatsScreen(
             }
         }
 
-        Button(onClick = onBack, modifier = Modifier.padding(top = 8.dp)) { Text("Back") }
+        GymButton("Back", onBack, Modifier.padding(top = 8.dp), GymButtonStyle.Secondary)
     }
 }
 

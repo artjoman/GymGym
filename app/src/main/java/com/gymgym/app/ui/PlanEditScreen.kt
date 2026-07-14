@@ -95,7 +95,8 @@ fun PlanEditScreen(
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Button(
+            GymButton(
+                text = "Save",
                 onClick = {
                     onSave(
                         existing?.plan?.id ?: 0L,
@@ -104,9 +105,7 @@ fun PlanEditScreen(
                     )
                 },
                 enabled = name.isNotBlank() && rows.isNotEmpty(),
-            ) {
-                Text("Save")
-            }
+            )
             TextButton(onClick = onCancel) { Text("Cancel") }
         }
     }

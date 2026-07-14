@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -214,13 +213,13 @@ fun CameraScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             if (progress != null) {
-                Button(onClick = { viewModel.skipToNextExercise() }) { Text("Skip exercise") }
-                Button(onClick = { viewModel.pause() }) { Text("Pause") }
-                Button(onClick = onExit) { Text("Stop plan") }
+                GymButton("Skip exercise", { viewModel.skipToNextExercise() }, style = GymButtonStyle.Secondary)
+                GymButton("Pause", { viewModel.pause() }, style = GymButtonStyle.Secondary)
+                GymButton("Stop plan", onExit, style = GymButtonStyle.Secondary)
             } else {
-                Button(onClick = { viewModel.resetSession() }) { Text("Reset") }
-                Button(onClick = { viewModel.pause() }) { Text("Pause") }
-                Button(onClick = onExit) { Text("Change exercise") }
+                GymButton("Reset", { viewModel.resetSession() }, style = GymButtonStyle.Secondary)
+                GymButton("Pause", { viewModel.pause() }, style = GymButtonStyle.Secondary)
+                GymButton("Change exercise", onExit, style = GymButtonStyle.Secondary)
             }
         }
 
@@ -255,7 +254,7 @@ fun CameraScreen(
                     if (canListen) {
                         Text(text = "Say \"resume\" or tap", fontSize = 16.sp, color = Color(0xFFCFD8DC))
                     }
-                    Button(onClick = { viewModel.resume() }) { Text("Resume") }
+                    GymButton("Resume", { viewModel.resume() })
                 }
             }
         }

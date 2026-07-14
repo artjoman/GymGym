@@ -3,19 +3,26 @@ package com.gymgym.app.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.gymgym.app.ui.theme.BrandGreen
 
 @Composable
 fun ExerciseSelectScreen(
@@ -27,55 +34,72 @@ fun ExerciseSelectScreen(
     onOpenProfile: () -> Unit,
     onOpenSettings: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Text(
-            if (greeting.isNullOrBlank()) "GymGym" else "Hi, $greeting",
-            style = MaterialTheme.typography.headlineMedium,
-        )
-        Text("Pick an exercise", modifier = Modifier.padding(top = 8.dp))
-        for (exercise in Exercise.entries) {
-            Button(
-                onClick = { onExerciseSelected(exercise) },
+    AppBackground {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .statusBarsPadding()
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+        ) {
+            // Wordmark
+            Text(
+                buildAnnotatedString {
+                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onBackground)) { append("GYM") }
+                    withStyle(SpanStyle(color = BrandGreen)) { append("GYM") }
+                },
+                style = MaterialTheme.typography.displayLarge,
+                fontSize = 44.sp,
+            )
+            Text(
+                text = if (greeting.isNullOrBlank()) "Ready to train?" else "Let's go, $greeting",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            ExerciseDemoBanner(modifier = Modifier.padding(top = 16.dp))
+
+            SectionLabel("Choose your exercise", top = 24.dp)
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                for (exercise in Exercise.entries) {
+                    GymButton(
+                        text = exercise.displayName,
+                        onClick = { onExerciseSelected(exercise) },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            }
+
+            SectionLabel("Train smarter", top = 26.dp)
+            GymButton(
+                text = "Workout plans",
+                onClick = onOpenPlans,
+                style = GymButtonStyle.Secondary,
                 modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(exercise.displayName)
+            )
+            Spacer(Modifier.height(12.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                GymButton("History", onOpenHistory, Modifier.weight(1f), GymButtonStyle.Secondary)
+                GymButton("Stats", onOpenStats, Modifier.weight(1f), GymButtonStyle.Secondary)
             }
-        }
-
-        OutlinedButton(
-            onClick = onOpenPlans,
-            modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-        ) {
-            Text("Workout plans")
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            OutlinedButton(onClick = onOpenHistory, modifier = Modifier.weight(1f)) {
-                Text("History")
+            Spacer(Modifier.height(12.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                GymButton("Profile", onOpenProfile, Modifier.weight(1f), GymButtonStyle.Secondary)
+                GymButton("Settings", onOpenSettings, Modifier.weight(1f), GymButtonStyle.Secondary)
             }
-            OutlinedButton(onClick = onOpenStats, modifier = Modifier.weight(1f)) {
-                Text("Stats")
-            }
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            OutlinedButton(onClick = onOpenProfile, modifier = Modifier.weight(1f)) {
-                Text("Profile")
-            }
-            OutlinedButton(onClick = onOpenSettings, modifier = Modifier.weight(1f)) {
-                Text("Settings")
-            }
+            Spacer(Modifier.height(24.dp))
         }
     }
+}
+
+@Composable
+private fun SectionLabel(text: String, top: androidx.compose.ui.unit.Dp) {
+    Text(
+        text = text.uppercase(),
+        style = MaterialTheme.typography.labelMedium,
+        color = BrandGreen.copy(alpha = 0.9f),
+        letterSpacing = 2.sp,
+        fontWeight = FontWeight.SemiBold,
+        modifier = Modifier.padding(top = top, bottom = 12.dp),
+    )
 }

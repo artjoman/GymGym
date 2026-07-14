@@ -13,6 +13,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -32,9 +36,13 @@ fun ProfileScreen(
     ) {
         Text("Profile", style = MaterialTheme.typography.headlineSmall)
 
+        // Local edit state so keystrokes are immediate; persistence to DataStore
+        // happens in the background. Binding the field straight to the async
+        // DataStore value bounced the cursor to the start after every keystroke.
+        var name by rememberSaveable { mutableStateOf(profile.displayName) }
         OutlinedTextField(
-            value = profile.displayName,
-            onValueChange = onDisplayName,
+            value = name,
+            onValueChange = { name = it; onDisplayName(it) },
             label = { Text("Display name") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
@@ -59,6 +67,6 @@ fun ProfileScreen(
             }
         }
 
-        Button(onClick = onBack, modifier = Modifier.padding(top = 16.dp)) { Text("Done") }
+        GymButton("Done", onBack, Modifier.padding(top = 16.dp))
     }
 }

@@ -41,7 +41,7 @@ fun HistoryScreen(
             }
         }
 
-        Button(onClick = onBack, modifier = Modifier.padding(top = 16.dp)) { Text("Back") }
+        GymButton("Back", onBack, Modifier.padding(top = 16.dp), GymButtonStyle.Secondary)
     }
 }
 

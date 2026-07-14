@@ -112,7 +112,7 @@ fun SettingsScreen(
             style = MaterialTheme.typography.bodySmall,
         )
 
-        Button(onClick = onBack, modifier = Modifier.padding(top = 16.dp)) { Text("Done") }
+        GymButton("Done", onBack, Modifier.padding(top = 16.dp))
     }
 }
 

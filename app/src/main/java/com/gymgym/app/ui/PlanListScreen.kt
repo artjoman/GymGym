@@ -32,9 +32,11 @@ fun PlanListScreen(
     Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
         Text("Workout plans", style = MaterialTheme.typography.headlineSmall)
 
-        Button(onClick = onNew, modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
-            Text("New plan")
-        }
+        GymButton(
+            text = "New plan",
+            onClick = onNew,
+            modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+        )
 
         if (plans.isEmpty()) {
             Text(
