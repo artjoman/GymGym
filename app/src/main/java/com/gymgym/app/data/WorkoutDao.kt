@@ -19,9 +19,14 @@ interface WorkoutDao {
         SELECT exerciseType AS exerciseType,
                COUNT(*) AS sessionCount,
                SUM(repCount) AS totalReps,
-               MAX(repCount) AS bestReps
+               MAX(repCount) AS bestReps,
+               AVG(repCount) AS avgReps,
+               SUM(durationMs) AS totalDurationMs,
+               MAX(startedAt) AS lastPerformedAt,
+               MIN(startedAt) AS firstPerformedAt
         FROM workout_session
         GROUP BY exerciseType
+        ORDER BY lastPerformedAt DESC
         """,
     )
     fun stats(): Flow<List<ExerciseStat>>

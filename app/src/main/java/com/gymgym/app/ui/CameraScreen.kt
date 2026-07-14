@@ -10,9 +10,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -36,10 +39,11 @@ import com.gymgym.app.audio.SoundEffects
 import com.gymgym.app.audio.VoiceCommandListener
 import com.gymgym.app.camera.CameraController
 import com.gymgym.app.camera.PoseAnalyzer
+import com.gymgym.app.ui.theme.BrandGreen
 
 @Composable
 fun CameraScreen(
-    exercise: Exercise,
+    exercise: Exercise?,
     viewModel: MainViewModel,
     onExit: () -> Unit,
     onFinished: () -> Unit,
@@ -57,6 +61,8 @@ fun CameraScreen(
     val celebration by viewModel.celebration.collectAsState()
     val paused by viewModel.paused.collectAsState()
     val isSpeaking by viewModel.isSpeaking.collectAsState()
+    val autoDetecting by viewModel.autoDetecting.collectAsState()
+    val autoLocked by viewModel.autoLocked.collectAsState()
 
     val previewView = remember { PreviewView(context) }
     val cameraController = remember { CameraController(context) }
@@ -168,27 +174,65 @@ fun CameraScreen(
         PoseOverlay(pose = latestPose, isTracking = isTracking, modifier = Modifier.fillMaxSize())
 
         val progress = planProgress
-        Text(
-            text = if (progress != null) "${repCount} / ${progress.targetReps}" else repCount.toString(),
-            fontSize = 72.sp,
-            color = Color.White,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 48.dp),
-        )
+        if (!autoDetecting) {
+            Text(
+                text = if (progress != null) "${repCount} / ${progress.targetReps}" else repCount.toString(),
+                fontSize = 72.sp,
+                color = Color.White,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 48.dp),
+            )
+        }
 
         Column(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(16.dp),
         ) {
-            Text(text = exercise.displayName, fontSize = 20.sp, color = Color.White)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = exercise?.displayName ?: "Auto-detect",
+                    fontSize = 20.sp,
+                    color = Color.White,
+                )
+                if (autoLocked) {
+                    Text(
+                        text = "AUTO",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color(0xFF06210F),
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .background(BrandGreen, RoundedCornerShape(6.dp))
+                            .padding(horizontal = 6.dp, vertical = 2.dp),
+                    )
+                }
+            }
             if (progress != null) {
                 Text(
                     text = "${progress.planName} · exercise ${progress.exerciseIndex + 1}/" +
                         "${progress.exerciseCount} · set ${progress.setIndex + 1}/${progress.setCount}",
                     fontSize = 14.sp,
                     color = Color(0xFFCFF5DD),
+                )
+            }
+        }
+
+        if (autoDetecting) {
+            Column(
+                modifier = Modifier.align(Alignment.Center).padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = "Detecting exercise…",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color.White,
+                )
+                Text(
+                    text = "Get in frame and start your reps",
+                    fontSize = 15.sp,
+                    color = Color(0xFFCFD8DC),
+                    modifier = Modifier.padding(top = 6.dp),
                 )
             }
         }
@@ -208,9 +252,11 @@ fun CameraScreen(
 
         Column(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+                .align(Alignment.BottomEnd)
+                .navigationBarsPadding()
+                .padding(20.dp),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             if (progress != null) {
                 GymButton("Skip exercise", { viewModel.skipToNextExercise() }, style = GymButtonStyle.Secondary)

@@ -19,4 +19,8 @@ data class ExerciseStat(
     val sessionCount: Int,
     val totalReps: Int,
     val bestReps: Int,
+    val avgReps: Double,
+    val totalDurationMs: Long,
+    val lastPerformedAt: Long,
+    val firstPerformedAt: Long,
 )

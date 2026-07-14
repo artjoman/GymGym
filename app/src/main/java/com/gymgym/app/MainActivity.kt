@@ -33,6 +33,7 @@ import com.gymgym.app.ui.MainViewModel
 import com.gymgym.app.ui.PlanEditScreen
 import com.gymgym.app.ui.PlanListScreen
 import com.gymgym.app.ui.ProfileScreen
+import com.gymgym.app.ui.SessionDetailScreen
 import com.gymgym.app.ui.SettingsScreen
 import com.gymgym.app.ui.StatsScreen
 import com.gymgym.app.ui.theme.GymGymTheme
@@ -43,6 +44,7 @@ private object Routes {
     const val PLANS = "plans"
     const val PLAN_EDIT = "plan_edit"
     const val HISTORY = "history"
+    const val SESSION = "session"
     const val STATS = "stats"
     const val PROFILE = "profile"
     const val SETTINGS = "settings"
@@ -104,12 +106,18 @@ private fun AppRoot(viewModel: MainViewModel) {
         navController.navigate(Routes.CAMERA)
     }
 
+    fun startAuto() = requireCameraThen {
+        viewModel.startAuto()
+        navController.navigate(Routes.CAMERA)
+    }
+
     NavHost(navController = navController, startDestination = Routes.HOME) {
         composable(Routes.HOME) {
             val profile by viewModel.profile.collectAsState()
             ExerciseSelectScreen(
                 greeting = profile.displayName,
                 onExerciseSelected = ::startExercise,
+                onAutoDetect = ::startAuto,
                 onOpenPlans = { navController.navigate(Routes.PLANS) },
                 onOpenHistory = { navController.navigate(Routes.HISTORY) },
                 onOpenStats = { navController.navigate(Routes.STATS) },
@@ -119,9 +127,10 @@ private fun AppRoot(viewModel: MainViewModel) {
         }
         composable(Routes.CAMERA) {
             val exercise by viewModel.selectedExercise.collectAsState()
-            exercise?.let { ex ->
+            val autoDetecting by viewModel.autoDetecting.collectAsState()
+            if (exercise != null || autoDetecting) {
                 CameraScreen(
-                    exercise = ex,
+                    exercise = exercise,
                     viewModel = viewModel,
                     onExit = {
                         viewModel.stopSession()
@@ -163,14 +172,27 @@ private fun AppRoot(viewModel: MainViewModel) {
         }
         composable(Routes.HISTORY) {
             val sessions by viewModel.history.collectAsState()
-            HistoryScreen(sessions = sessions, onBack = { navController.popBackStack() })
+            HistoryScreen(
+                sessions = sessions,
+                onOpenSession = { id -> navController.navigate("${Routes.SESSION}/$id") },
+                onBack = { navController.popBackStack() },
+            )
+        }
+        composable(
+            "${Routes.SESSION}/{sessionId}",
+            arguments = listOf(navArgument("sessionId") { type = NavType.LongType }),
+        ) { entry ->
+            val sessionId = entry.arguments?.getLong("sessionId") ?: -1L
+            val sessions by viewModel.history.collectAsState()
+            SessionDetailScreen(
+                session = sessions.find { it.id == sessionId },
+                onBack = { navController.popBackStack() },
+            )
         }
         composable(Routes.STATS) {
-            val stats by viewModel.stats.collectAsState()
             val sessions by viewModel.history.collectAsState()
             StatsScreen(
-                stats = stats,
-                recentSessions = sessions,
+                sessions = sessions,
                 onBack = { navController.popBackStack() },
             )
         }

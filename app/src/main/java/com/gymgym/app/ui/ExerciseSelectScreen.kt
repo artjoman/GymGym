@@ -28,6 +28,7 @@ import com.gymgym.app.ui.theme.BrandGreen
 fun ExerciseSelectScreen(
     greeting: String?,
     onExerciseSelected: (Exercise) -> Unit,
+    onAutoDetect: () -> Unit,
     onOpenPlans: () -> Unit,
     onOpenHistory: () -> Unit,
     onOpenStats: () -> Unit,
@@ -68,6 +69,12 @@ fun ExerciseSelectScreen(
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
+                GymButton(
+                    text = "✨ Auto-detect",
+                    onClick = onAutoDetect,
+                    style = GymButtonStyle.Secondary,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
 
             SectionLabel("Train smarter", top = 26.dp)

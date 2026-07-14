@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.gymgym.app.GymGymApp
 import com.gymgym.app.audio.VoiceFeedback
+import com.gymgym.app.counter.DumbbellPressCounter
 import com.gymgym.app.counter.PullupCounter
 import com.gymgym.app.counter.PushupCounter
 import com.gymgym.app.counter.RepCounter
@@ -35,6 +36,7 @@ enum class Exercise(val displayName: String, val framingTip: String) {
     SQUAT("Squat", "Prop the phone to the side, full body in frame"),
     PUSHUP("Pushup", "Prop the phone to the side, full body in frame"),
     PULLUP("Pullup", "Prop the phone facing you, bar and full body in frame"),
+    DUMBBELL_PRESS("Dumbbell Press", "Prop the phone facing you, arms and torso in frame"),
 }
 
 /** Live progress while running a multi-exercise plan; null during an ad-hoc single exercise. */
@@ -116,6 +118,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _requestExit = MutableStateFlow(false)
     val requestExit: StateFlow<Boolean> = _requestExit.asStateFlow()
 
+    /** True while auto-mode is still figuring out which exercise is being done. */
+    private val _autoDetecting = MutableStateFlow(false)
+    val autoDetecting: StateFlow<Boolean> = _autoDetecting.asStateFlow()
+
+    /** True once auto-mode has locked an exercise in (shows an AUTO badge). */
+    private val _autoLocked = MutableStateFlow(false)
+    val autoLocked: StateFlow<Boolean> = _autoLocked.asStateFlow()
+
+    private val classifier = ExerciseClassifier()
+
     private var counter: RepCounter? = null
     private var countdownJob: Job? = null
     private var transitionJob: Job? = null
@@ -139,7 +151,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             while (true) {
                 delay(TRACKING_CHECK_INTERVAL_MS)
-                if (_selectedExercise.value == null) continue
+                if (_selectedExercise.value == null && !_autoDetecting.value) continue
                 val stale = SystemClock.elapsedRealtime() - lastTrackedAtMs > TRACKING_TIMEOUT_MS
                 if (stale && _isTracking.value) {
                     _isTracking.value = false
@@ -162,7 +174,41 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _repCount.value = 0
         sessionStartedAt = System.currentTimeMillis()
         counter = counterFor(exercise)
+        _autoDetecting.value = false
+        _autoLocked.value = false
         startCountdown()
+    }
+
+    // --- Auto-detect mode ---
+
+    /** Start a session with no chosen exercise; the classifier picks and locks one. */
+    fun startAuto() {
+        planSteps = emptyList()
+        _planProgress.value = null
+        _planComplete.value = false
+        _requestExit.value = false
+        _selectedExercise.value = null
+        _repCount.value = 0
+        counter = null
+        classifier.reset()
+        _autoLocked.value = false
+        _autoDetecting.value = true
+        _countdownValue.value = null
+        _isTracking.value = false
+        lastTrackedAtMs = 0L
+        consecutivePlausibleFrames = 0
+    }
+
+    /** Commit to a detected exercise and start counting immediately (no countdown). */
+    private fun lockAutoExercise(exercise: Exercise) {
+        _autoDetecting.value = false
+        _autoLocked.value = true
+        _selectedExercise.value = exercise
+        _repCount.value = 0
+        counter = counterFor(exercise)
+        sessionStartedAt = System.currentTimeMillis()
+        _countdownValue.value = null
+        if (soundSettings.value.soundsEnabled) speak("${exercise.displayName} detected")
     }
 
     // --- Plan run ---
@@ -321,6 +367,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             consecutivePlausibleFrames = 0
             return
         }
+        if (_autoDetecting.value) {
+            if (_isTracking.value) {
+                classifier.observe(pose)
+                classifier.guess()?.let { lockAutoExercise(it) }
+            }
+            return
+        }
         if (_countdownValue.value != null) return
         if (!_isTracking.value) return
         if (counter?.process(pose) == true) onRepCompleted()
@@ -369,6 +422,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         exerciseRepsAccum = 0
         planName = ""
         _planProgress.value = null
+        _autoDetecting.value = false
+        _autoLocked.value = false
+        classifier.reset()
     }
 
     /** Persist a finished exercise, but only if reps were actually counted. */
@@ -390,6 +446,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         Exercise.SQUAT -> SquatCounter()
         Exercise.PUSHUP -> PushupCounter()
         Exercise.PULLUP -> PullupCounter()
+        Exercise.DUMBBELL_PRESS -> DumbbellPressCounter()
     }
 
     // --- Plan CRUD ---
