@@ -15,7 +15,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Cameraswitch
+import androidx.compose.material.icons.rounded.FiberManualRecord
+import androidx.compose.material.icons.rounded.Mic
+import androidx.compose.material.icons.rounded.MicOff
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -294,42 +302,51 @@ fun CameraScreen(
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             if (recordingAvailable) {
-                val active = recordingState.active
-                Text(
-                    text = if (active) "● ${formatClock2(recordingState.elapsedMs)}" else "● REC",
-                    fontSize = 16.sp,
-                    color = if (active) Color.White else Color(0xFFFF5A5A),
-                    modifier = Modifier
-                        .background(
-                            if (active) Color(0xE0C0202A) else Color(0x66000000),
-                            RoundedCornerShape(10.dp),
+                if (recordingState.active) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(23.dp))
+                            .background(Color(0xE0C0202A))
+                            .clickable { videoRecorder.stop() }
+                            .padding(horizontal = 14.dp, vertical = 10.dp),
+                    ) {
+                        Icon(
+                            Icons.Rounded.FiberManualRecord,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(14.dp),
                         )
-                        .clickable {
-                            if (active) videoRecorder.stop()
-                            else videoRecorder.start(RecordingStore.newFile(context))
-                        }
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                )
-            }
-            Text(
-                text = "🔄",
-                fontSize = 22.sp,
-                modifier = Modifier
-                    .background(Color(0x66000000), RoundedCornerShape(10.dp))
-                    .clickable {
-                        viewModel.setCameraFacing(
-                            if (useFrontCamera) CameraFacing.BACK else CameraFacing.FRONT,
+                        Text(
+                            text = formatClock2(recordingState.elapsedMs),
+                            fontSize = 15.sp,
+                            color = Color.White,
+                            modifier = Modifier.padding(start = 6.dp),
                         )
                     }
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                } else {
+                    CircleIconButton(
+                        icon = Icons.Rounded.FiberManualRecord,
+                        contentDescription = "Start recording",
+                        tint = Color(0xFFFF5A5A),
+                        onClick = { videoRecorder.start(RecordingStore.newFile(context)) },
+                    )
+                }
+            }
+            CircleIconButton(
+                icon = Icons.Rounded.Cameraswitch,
+                contentDescription = "Switch camera",
+                onClick = {
+                    viewModel.setCameraFacing(
+                        if (useFrontCamera) CameraFacing.BACK else CameraFacing.FRONT,
+                    )
+                },
             )
             if (canListen) {
-                Text(
-                    text = if (isSpeaking) "🔊" else "🎤",
-                    fontSize = 20.sp,
-                    modifier = Modifier
-                        .background(Color(0x66000000), RoundedCornerShape(8.dp))
-                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                CircleIconButton(
+                    icon = if (isSpeaking) Icons.Rounded.MicOff else Icons.Rounded.Mic,
+                    contentDescription = if (isSpeaking) "Voice paused" else "Listening",
+                    tint = if (isSpeaking) Color(0xFF9AA5AD) else Color.White,
                 )
             }
         }

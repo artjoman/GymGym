@@ -11,6 +11,15 @@ interface WorkoutDao {
     @Insert
     suspend fun insert(session: WorkoutSession)
 
+    @Insert
+    suspend fun insertAll(sessions: List<WorkoutSession>)
+
+    @Query("SELECT * FROM workout_session ORDER BY startedAt DESC")
+    suspend fun getAllOnce(): List<WorkoutSession>
+
+    @Query("DELETE FROM workout_session")
+    suspend fun deleteAll()
+
     @Query("SELECT * FROM workout_session ORDER BY startedAt DESC")
     fun allSessions(): Flow<List<WorkoutSession>>
 

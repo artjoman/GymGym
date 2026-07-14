@@ -36,4 +36,8 @@ class PlanRepository(private val dao: PlanDao) {
     }
 
     suspend fun deletePlan(id: Long) = dao.deletePlan(id)
+
+    suspend fun allOnce(): List<PlanWithExercises> = dao.getAllOnce()
+
+    suspend fun deleteAll() = dao.deleteAllPlans()
 }

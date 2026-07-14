@@ -10,4 +10,12 @@ class WorkoutRepository(private val dao: WorkoutDao) {
     val stats: Flow<List<ExerciseStat>> = dao.stats()
 
     suspend fun log(session: WorkoutSession) = dao.insert(session)
+
+    suspend fun allOnce(): List<WorkoutSession> = dao.getAllOnce()
+
+    /** Replace all sessions (used by backup import). */
+    suspend fun replaceAll(sessions: List<WorkoutSession>) {
+        dao.deleteAll()
+        if (sessions.isNotEmpty()) dao.insertAll(sessions)
+    }
 }

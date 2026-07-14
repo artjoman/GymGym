@@ -3,6 +3,7 @@ package com.gymgym.app
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -201,10 +202,29 @@ private fun AppRoot(viewModel: MainViewModel) {
         }
         composable(Routes.PROFILE) {
             val profile by viewModel.profile.collectAsState()
+            val ctx = LocalContext.current
             ProfileScreen(
                 profile = profile,
                 onDisplayName = viewModel::setDisplayName,
                 onWeightUnit = viewModel::setWeightUnit,
+                onExport = { uri ->
+                    viewModel.exportBackup(uri) { ok ->
+                        Toast.makeText(
+                            ctx,
+                            if (ok) "Backup saved" else "Export failed",
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                    }
+                },
+                onImport = { uri ->
+                    viewModel.importBackup(uri) { ok ->
+                        Toast.makeText(
+                            ctx,
+                            if (ok) "Data imported" else "Import failed — is this a GymGym backup?",
+                            Toast.LENGTH_LONG,
+                        ).show()
+                    }
+                },
                 onBack = { navController.popBackStack() },
             )
         }

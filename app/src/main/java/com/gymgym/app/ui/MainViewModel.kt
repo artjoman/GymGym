@@ -1,10 +1,17 @@
 package com.gymgym.app.ui
 
 import android.app.Application
+import android.net.Uri
 import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.gymgym.app.GymGymApp
+import com.gymgym.app.backup.BackupData
+import com.gymgym.app.backup.BackupPlan
+import com.gymgym.app.backup.BackupPlanExercise
+import com.gymgym.app.backup.BackupProfile
+import com.gymgym.app.backup.BackupSession
+import com.gymgym.app.backup.BackupSettings
 import com.gymgym.app.audio.VoiceFeedback
 import com.gymgym.app.counter.DumbbellPressCounter
 import com.gymgym.app.counter.PullupCounter
@@ -24,14 +31,19 @@ import com.gymgym.app.settings.CameraFacing
 import com.gymgym.app.settings.RepAnnouncementMode
 import com.gymgym.app.settings.SettingsRepository
 import com.gymgym.app.settings.SoundSettings
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 enum class Exercise(val displayName: String, val framingTip: String) {
     SQUAT("Squat", "Prop the phone to the side, full body in frame"),
@@ -489,6 +501,95 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setWeightUnit(unit: WeightUnit) =
         viewModelScope.launch { profileRepository.setWeightUnit(unit) }
+
+    // --- Backup: export / import (history, plans, settings, profile; no videos) ---
+
+    private val backupJson = Json { prettyPrint = true; ignoreUnknownKeys = true }
+
+    fun exportBackup(uri: Uri, onResult: (Boolean) -> Unit) = viewModelScope.launch {
+        val ok = runCatching {
+            val data = BackupData(
+                exportedAt = System.currentTimeMillis(),
+                sessions = workoutRepository.allOnce().map {
+                    BackupSession(it.exerciseType, it.repCount, it.startedAt, it.durationMs)
+                },
+                plans = planRepository.allOnce().map { pw ->
+                    BackupPlan(
+                        name = pw.plan.name,
+                        exercises = pw.orderedExercises.map {
+                            BackupPlanExercise(it.exerciseType, it.targetReps, it.targetSets, it.position)
+                        },
+                    )
+                },
+                settings = soundSettings.value.let { s ->
+                    BackupSettings(
+                        s.soundsEnabled, s.countdownVoice, s.repAnnouncement.name,
+                        s.trackingLostBell, s.trackingRegainedChime, s.setCelebration,
+                        s.voiceControl, s.cameraFacing.name,
+                    )
+                },
+                profile = profile.value.let { p -> BackupProfile(p.displayName, p.weightUnit.name) },
+            )
+            val text = backupJson.encodeToString(data)
+            withContext(Dispatchers.IO) {
+                getApplication<Application>().contentResolver.openOutputStream(uri)?.use {
+                    it.write(text.toByteArray())
+                } ?: error("no output stream")
+            }
+        }.isSuccess
+        onResult(ok)
+    }
+
+    fun importBackup(uri: Uri, onResult: (Boolean) -> Unit) = viewModelScope.launch {
+        val ok = runCatching {
+            val text = withContext(Dispatchers.IO) {
+                getApplication<Application>().contentResolver.openInputStream(uri)
+                    ?.bufferedReader()?.use { it.readText() } ?: error("no input stream")
+            }
+            val data = backupJson.decodeFromString<BackupData>(text)
+
+            workoutRepository.replaceAll(
+                data.sessions.map {
+                    WorkoutSession(
+                        exerciseType = it.exerciseType,
+                        repCount = it.repCount,
+                        startedAt = it.startedAt,
+                        durationMs = it.durationMs,
+                    )
+                },
+            )
+            planRepository.deleteAll()
+            data.plans.forEach { p ->
+                planRepository.savePlan(
+                    id = 0L,
+                    name = p.name,
+                    exercises = p.exercises.sortedBy { it.position }.map {
+                        DraftExercise(it.exerciseType, it.targetReps, it.targetSets)
+                    },
+                )
+            }
+            with(data.settings) {
+                settingsRepository.setSoundsEnabled(soundsEnabled)
+                settingsRepository.setCountdownVoice(countdownVoice)
+                settingsRepository.setRepAnnouncement(
+                    RepAnnouncementMode.entries.find { it.name == repAnnouncement }
+                        ?: RepAnnouncementMode.EVERY_REP,
+                )
+                settingsRepository.setTrackingLostBell(trackingLostBell)
+                settingsRepository.setTrackingRegainedChime(trackingRegainedChime)
+                settingsRepository.setSetCelebration(setCelebration)
+                settingsRepository.setVoiceControl(voiceControl)
+                settingsRepository.setCameraFacing(
+                    CameraFacing.entries.find { it.name == cameraFacing } ?: CameraFacing.BACK,
+                )
+            }
+            profileRepository.setDisplayName(data.profile.displayName)
+            profileRepository.setWeightUnit(
+                WeightUnit.entries.find { it.name == data.profile.weightUnit } ?: WeightUnit.KG,
+            )
+        }.isSuccess
+        onResult(ok)
+    }
 
     /** Speak via the pre-warmed TTS engine. No-op until the engine is ready. */
     fun speak(text: String) = voiceFeedback.speak(text)

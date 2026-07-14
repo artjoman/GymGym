@@ -14,6 +14,13 @@ interface PlanDao {
     @Query("SELECT * FROM plan ORDER BY name COLLATE NOCASE")
     fun plansWithExercises(): Flow<List<PlanWithExercises>>
 
+    @Transaction
+    @Query("SELECT * FROM plan ORDER BY name COLLATE NOCASE")
+    suspend fun getAllOnce(): List<PlanWithExercises>
+
+    @Query("DELETE FROM plan")
+    suspend fun deleteAllPlans()
+
     @Insert
     suspend fun insertPlan(plan: PlanEntity): Long
 
