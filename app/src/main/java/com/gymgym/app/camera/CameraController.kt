@@ -4,7 +4,10 @@ import android.content.Context
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
+import androidx.camera.core.UseCaseGroup
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.video.Recorder
+import androidx.camera.video.VideoCapture
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
@@ -19,6 +22,8 @@ class CameraController(private val context: Context) {
         previewView: PreviewView,
         analyzer: ImageAnalysis.Analyzer,
         useFrontCamera: Boolean = false,
+        videoCapture: VideoCapture<Recorder>? = null,
+        onRecordingAvailable: (Boolean) -> Unit = {},
     ) {
         val providerFuture = ProcessCameraProvider.getInstance(context)
         providerFuture.addListener({
@@ -40,7 +45,27 @@ class CameraController(private val context: Context) {
                 CameraSelector.DEFAULT_BACK_CAMERA
             }
             provider.unbindAll()
-            provider.bindToLifecycle(lifecycleOwner, selector, preview, imageAnalysis)
+
+            // Try to bind preview + analysis + video together. Not every device
+            // supports three concurrent use cases, so fall back to no recording.
+            var recordingAvailable = false
+            if (videoCapture != null) {
+                val group = UseCaseGroup.Builder()
+                    .addUseCase(preview)
+                    .addUseCase(imageAnalysis)
+                    .addUseCase(videoCapture)
+                    .build()
+                recordingAvailable = try {
+                    provider.bindToLifecycle(lifecycleOwner, selector, group)
+                    true
+                } catch (_: Exception) {
+                    false
+                }
+            }
+            if (!recordingAvailable) {
+                provider.bindToLifecycle(lifecycleOwner, selector, preview, imageAnalysis)
+            }
+            onRecordingAvailable(recordingAvailable)
         }, ContextCompat.getMainExecutor(context))
     }
 

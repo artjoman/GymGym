@@ -30,6 +30,7 @@ fun ExerciseSelectScreen(
     onExerciseSelected: (Exercise) -> Unit,
     onAutoDetect: () -> Unit,
     onOpenPlans: () -> Unit,
+    onOpenRecordings: () -> Unit,
     onOpenHistory: () -> Unit,
     onOpenStats: () -> Unit,
     onOpenProfile: () -> Unit,
@@ -81,6 +82,13 @@ fun ExerciseSelectScreen(
             GymButton(
                 text = "Workout plans",
                 onClick = onOpenPlans,
+                style = GymButtonStyle.Secondary,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(12.dp))
+            GymButton(
+                text = "📹 Recordings",
+                onClick = onOpenRecordings,
                 style = GymButtonStyle.Secondary,
                 modifier = Modifier.fillMaxWidth(),
             )

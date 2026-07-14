@@ -33,6 +33,7 @@ import com.gymgym.app.ui.MainViewModel
 import com.gymgym.app.ui.PlanEditScreen
 import com.gymgym.app.ui.PlanListScreen
 import com.gymgym.app.ui.ProfileScreen
+import com.gymgym.app.ui.RecordingsScreen
 import com.gymgym.app.ui.SessionDetailScreen
 import com.gymgym.app.ui.SettingsScreen
 import com.gymgym.app.ui.StatsScreen
@@ -48,6 +49,7 @@ private object Routes {
     const val STATS = "stats"
     const val PROFILE = "profile"
     const val SETTINGS = "settings"
+    const val RECORDINGS = "recordings"
 }
 
 class MainActivity : ComponentActivity() {
@@ -119,6 +121,7 @@ private fun AppRoot(viewModel: MainViewModel) {
                 onExerciseSelected = ::startExercise,
                 onAutoDetect = ::startAuto,
                 onOpenPlans = { navController.navigate(Routes.PLANS) },
+                onOpenRecordings = { navController.navigate(Routes.RECORDINGS) },
                 onOpenHistory = { navController.navigate(Routes.HISTORY) },
                 onOpenStats = { navController.navigate(Routes.STATS) },
                 onOpenProfile = { navController.navigate(Routes.PROFILE) },
@@ -204,6 +207,9 @@ private fun AppRoot(viewModel: MainViewModel) {
                 onWeightUnit = viewModel::setWeightUnit,
                 onBack = { navController.popBackStack() },
             )
+        }
+        composable(Routes.RECORDINGS) {
+            RecordingsScreen(onBack = { navController.popBackStack() })
         }
         composable(Routes.SETTINGS) {
             val soundSettings by viewModel.soundSettings.collectAsState()

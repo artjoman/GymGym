@@ -40,6 +40,8 @@ import com.gymgym.app.audio.SoundEffects
 import com.gymgym.app.audio.VoiceCommandListener
 import com.gymgym.app.camera.CameraController
 import com.gymgym.app.camera.PoseAnalyzer
+import com.gymgym.app.camera.VideoRecorder
+import com.gymgym.app.recording.RecordingStore
 import com.gymgym.app.settings.CameraFacing
 import com.gymgym.app.ui.theme.BrandGreen
 
@@ -69,6 +71,9 @@ fun CameraScreen(
     val previewView = remember { PreviewView(context) }
     val cameraController = remember { CameraController(context) }
     val sounds = remember { SoundEffects(context) }
+    val videoRecorder = remember { VideoRecorder(context) }
+    var recordingAvailable by remember { mutableStateOf(false) }
+    val recordingState by videoRecorder.state.collectAsState()
 
     // --- Hands-free voice control (opt-in) ---
     var hasMicPermission by remember {
@@ -128,8 +133,13 @@ fun CameraScreen(
     // Re-bind when the chosen lens changes.
     DisposableEffect(lifecycleOwner, useFrontCamera) {
         val analyzer = PoseAnalyzer(onPose = viewModel::onPose)
-        cameraController.start(lifecycleOwner, previewView, analyzer, useFrontCamera)
+        cameraController.start(
+            lifecycleOwner, previewView, analyzer, useFrontCamera,
+            videoCapture = videoRecorder.videoCapture,
+            onRecordingAvailable = { recordingAvailable = it },
+        )
         onDispose {
+            videoRecorder.stop()
             cameraController.stop()
             analyzer.close()
         }
@@ -283,6 +293,24 @@ fun CameraScreen(
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
+            if (recordingAvailable) {
+                val active = recordingState.active
+                Text(
+                    text = if (active) "● ${formatClock2(recordingState.elapsedMs)}" else "● REC",
+                    fontSize = 16.sp,
+                    color = if (active) Color.White else Color(0xFFFF5A5A),
+                    modifier = Modifier
+                        .background(
+                            if (active) Color(0xE0C0202A) else Color(0x66000000),
+                            RoundedCornerShape(10.dp),
+                        )
+                        .clickable {
+                            if (active) videoRecorder.stop()
+                            else videoRecorder.start(RecordingStore.newFile(context))
+                        }
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                )
+            }
             Text(
                 text = "🔄",
                 fontSize = 22.sp,
@@ -346,4 +374,12 @@ fun CameraScreen(
             }
         }
     }
+}
+
+/** Elapsed recording time as M:SS. */
+private fun formatClock2(ms: Long): String {
+    val totalSeconds = ms / 1000
+    val minutes = totalSeconds / 60
+    val seconds = totalSeconds % 60
+    return "%d:%02d".format(minutes, seconds)
 }
