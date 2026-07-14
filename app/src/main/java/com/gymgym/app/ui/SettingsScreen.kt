@@ -30,6 +30,7 @@ fun SettingsScreen(
     onRepAnnouncement: (RepAnnouncementMode) -> Unit,
     onTrackingLostBell: (Boolean) -> Unit,
     onTrackingRegainedChime: (Boolean) -> Unit,
+    onSetCelebration: (Boolean) -> Unit,
     onBack: () -> Unit,
 ) {
     Column(
@@ -66,6 +67,12 @@ fun SettingsScreen(
             checked = settings.trackingRegainedChime,
             enabled = settings.soundsEnabled,
             onChange = onTrackingRegainedChime,
+        )
+        SwitchRow(
+            label = "Set-complete combo callout",
+            checked = settings.setCelebration,
+            enabled = true,
+            onChange = onSetCelebration,
         )
         HorizontalDivider()
 

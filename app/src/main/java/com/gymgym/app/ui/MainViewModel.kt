@@ -102,12 +102,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _planComplete = MutableStateFlow(false)
     val planComplete: StateFlow<Boolean> = _planComplete.asStateFlow()
 
+    /** Arcade callout word shown briefly when a set completes; null otherwise. */
+    private val _celebration = MutableStateFlow<String?>(null)
+    val celebration: StateFlow<String?> = _celebration.asStateFlow()
+
     /** One-shot signal for the run screen to pop back once a plan finishes. */
     private val _requestExit = MutableStateFlow(false)
     val requestExit: StateFlow<Boolean> = _requestExit.asStateFlow()
 
     private var counter: RepCounter? = null
     private var countdownJob: Job? = null
+    private var transitionJob: Job? = null
     private var lastTrackedAtMs = 0L
     private var consecutivePlausibleFrames = 0
     private var sessionStartedAt = 0L
@@ -173,7 +178,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     /** Manual "skip" — bank the current exercise's reps and jump to the next exercise. */
     fun skipToNextExercise() {
-        if (!isPlanRun || _planComplete.value) return
+        if (!isPlanRun || _planComplete.value || _celebration.value != null) return
         exerciseRepsAccum += _repCount.value
         finishCurrentExercise()
     }
@@ -194,11 +199,44 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun onSetComplete() {
         val step = currentStep() ?: return
         exerciseRepsAccum += _repCount.value
-        if (setIndex < step.targetSets - 1) {
+        val moreSets = setIndex < step.targetSets - 1
+        val moreExercises = stepIndex < planSteps.size - 1
+
+        // Final set of the final exercise → straight to the completion screen.
+        if (!moreSets && !moreExercises) {
+            logSession(step.exercise, exerciseRepsAccum, sessionStartedAt)
+            onPlanComplete()
+            return
+        }
+
+        if (!soundSettings.value.setCelebration) {
+            advanceAfterSet(moreSets, step)
+            return
+        }
+
+        // Arcade combo callout, then advance to the next set/exercise.
+        countdownJob?.cancel()
+        _countdownValue.value = null
+        val word = CELEBRATION_WORDS.random()
+        _celebration.value = word
+        if (soundSettings.value.soundsEnabled) speak(word)
+        transitionJob?.cancel()
+        transitionJob = viewModelScope.launch {
+            delay(CELEBRATION_DISPLAY_MS)
+            _celebration.value = null
+            advanceAfterSet(moreSets, step)
+        }
+    }
+
+    private fun advanceAfterSet(moreSets: Boolean, step: PlanStep) {
+        if (moreSets) {
             setIndex++
             beginCurrentStep(isNewExercise = false)
         } else {
-            finishCurrentExercise()
+            logSession(step.exercise, exerciseRepsAccum, sessionStartedAt)
+            stepIndex++
+            setIndex = 0
+            beginCurrentStep(isNewExercise = true)
         }
     }
 
@@ -251,7 +289,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onPose(pose: PoseSnapshot) {
         _latestPose.value = pose
-        if (_planComplete.value) return
+        if (_planComplete.value || _celebration.value != null) return
         if (pose.isPlausiblePerson()) {
             consecutivePlausibleFrames++
             lastTrackedAtMs = SystemClock.elapsedRealtime()
@@ -294,6 +332,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun clearSession() {
         countdownJob?.cancel()
+        transitionJob?.cancel()
+        _celebration.value = null
         _countdownValue.value = null
         _selectedExercise.value = null
         _latestPose.value = null
@@ -355,6 +395,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setTrackingRegainedChime(value: Boolean) =
         viewModelScope.launch { settingsRepository.setTrackingRegainedChime(value) }
 
+    fun setSetCelebration(value: Boolean) =
+        viewModelScope.launch { settingsRepository.setSetCelebration(value) }
+
     fun setDisplayName(value: String) =
         viewModelScope.launch { profileRepository.setDisplayName(value) }
 
@@ -388,8 +431,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         const val COUNTDOWN_SECONDS = 3
         const val GO_DISPLAY_MS = 700L
         const val PLAN_COMPLETE_DISPLAY_MS = 1_800L
+        const val CELEBRATION_DISPLAY_MS = 1_300L
         const val TRACKING_CHECK_INTERVAL_MS = 250L
         const val TRACKING_TIMEOUT_MS = 800L
         const val STABLE_FRAMES_TO_TRACK = 5
+
+        val CELEBRATION_WORDS = listOf(
+            "SUPER!", "GREAT!", "AWESOME!", "COMBO!", "NICE!", "PERFECT!", "BOOM!",
+        )
     }
 }

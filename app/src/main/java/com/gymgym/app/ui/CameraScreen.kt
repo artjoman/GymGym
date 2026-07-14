@@ -49,6 +49,7 @@ fun CameraScreen(
     val planProgress by viewModel.planProgress.collectAsState()
     val planComplete by viewModel.planComplete.collectAsState()
     val requestExit by viewModel.requestExit.collectAsState()
+    val celebration by viewModel.celebration.collectAsState()
 
     val previewView = remember { PreviewView(context) }
     val cameraController = remember { CameraController(context) }
@@ -95,6 +96,10 @@ fun CameraScreen(
         }
     }
 
+    LaunchedEffect(celebration) {
+        if (celebration != null && settings.soundsEnabled) sounds.playCelebration()
+    }
+
     // Bell on losing tracking, chime on regaining it — but only after the
     // person has been seen once, so the screen doesn't ring while setting up.
     var hasTracked by remember { mutableStateOf(false) }
@@ -139,7 +144,7 @@ fun CameraScreen(
             }
         }
 
-        if (countdownValue == null && !isTracking && !planComplete) {
+        if (countdownValue == null && !isTracking && !planComplete && celebration == null) {
             Text(
                 text = "Move into frame",
                 fontSize = 18.sp,
@@ -168,6 +173,8 @@ fun CameraScreen(
         }
 
         countdownValue?.let { CountdownOverlay(value = it) }
+
+        celebration?.let { ComboOverlay(word = it) }
 
         if (planComplete) {
             Box(

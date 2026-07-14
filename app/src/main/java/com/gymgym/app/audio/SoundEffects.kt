@@ -12,7 +12,7 @@ import com.gymgym.app.R
 class SoundEffects(context: Context) {
 
     private val soundPool = SoundPool.Builder()
-        .setMaxStreams(2)
+        .setMaxStreams(3)
         .setAudioAttributes(
             AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
@@ -22,6 +22,7 @@ class SoundEffects(context: Context) {
         .build()
 
     private val bellId = soundPool.load(context, R.raw.bell_soft, 1)
+    private val comboId = soundPool.load(context, R.raw.combo, 1)
 
     fun playTrackingLost() {
         soundPool.play(bellId, 0.8f, 0.8f, 1, 0, 1f)
@@ -29,6 +30,10 @@ class SoundEffects(context: Context) {
 
     fun playTrackingRegained() {
         soundPool.play(bellId, 0.6f, 0.6f, 1, 0, 1.5f)
+    }
+
+    fun playCelebration() {
+        soundPool.play(comboId, 1f, 1f, 1, 0, 1f)
     }
 
     fun release() = soundPool.release()

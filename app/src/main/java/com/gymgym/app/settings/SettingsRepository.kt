@@ -24,6 +24,7 @@ data class SoundSettings(
     val repAnnouncement: RepAnnouncementMode = RepAnnouncementMode.EVERY_REP,
     val trackingLostBell: Boolean = true,
     val trackingRegainedChime: Boolean = true,
+    val setCelebration: Boolean = true,
 )
 
 class SettingsRepository(context: Context) {
@@ -39,6 +40,7 @@ class SettingsRepository(context: Context) {
                 ?: RepAnnouncementMode.EVERY_REP,
             trackingLostBell = prefs[TRACKING_LOST_BELL] ?: true,
             trackingRegainedChime = prefs[TRACKING_REGAINED_CHIME] ?: true,
+            setCelebration = prefs[SET_CELEBRATION] ?: true,
         )
     }
 
@@ -55,11 +57,15 @@ class SettingsRepository(context: Context) {
     suspend fun setTrackingRegainedChime(value: Boolean) =
         dataStore.edit { it[TRACKING_REGAINED_CHIME] = value }
 
+    suspend fun setSetCelebration(value: Boolean) =
+        dataStore.edit { it[SET_CELEBRATION] = value }
+
     private companion object {
         val SOUNDS_ENABLED = booleanPreferencesKey("sounds_enabled")
         val COUNTDOWN_VOICE = booleanPreferencesKey("countdown_voice")
         val REP_ANNOUNCEMENT = stringPreferencesKey("rep_announcement")
         val TRACKING_LOST_BELL = booleanPreferencesKey("tracking_lost_bell")
         val TRACKING_REGAINED_CHIME = booleanPreferencesKey("tracking_regained_chime")
+        val SET_CELEBRATION = booleanPreferencesKey("set_celebration")
     }
 }
