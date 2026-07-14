@@ -1,6 +1,7 @@
 package com.gymgym.app
 
 import android.Manifest
+import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -66,6 +67,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        // Consent + ad preload, deferred until the window/content exist so the
+        // consent flow can't touch a not-yet-attached view (no-op on paid).
+        window.decorView.post {
+            (application as GymGymApp).container.adManager.warmUp(this)
+        }
     }
 }
 
@@ -99,19 +105,29 @@ private fun AppRoot(viewModel: MainViewModel) {
         }
     }
 
+    // Ads are gated here — at "open a workout", never once counting has started.
+    val activity = context as Activity
+    val adManager = remember { (activity.application as GymGymApp).container.adManager }
+
     fun startExercise(exercise: Exercise) = requireCameraThen {
-        viewModel.selectExercise(exercise)
-        navController.navigate(Routes.CAMERA)
+        adManager.onWorkoutOpen(activity) {
+            viewModel.selectExercise(exercise)
+            navController.navigate(Routes.CAMERA)
+        }
     }
 
     fun startPlan(plan: PlanWithExercises) = requireCameraThen {
-        viewModel.startPlan(plan)
-        navController.navigate(Routes.CAMERA)
+        adManager.onWorkoutOpen(activity) {
+            viewModel.startPlan(plan)
+            navController.navigate(Routes.CAMERA)
+        }
     }
 
     fun startAuto() = requireCameraThen {
-        viewModel.startAuto()
-        navController.navigate(Routes.CAMERA)
+        adManager.onWorkoutOpen(activity) {
+            viewModel.startAuto()
+            navController.navigate(Routes.CAMERA)
+        }
     }
 
     NavHost(navController = navController, startDestination = Routes.HOME) {

@@ -16,6 +16,30 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        // --- Ad tuning knobs (see AGENTS.md) ---
+        // Minimum time between interstitials, gated at "open a workout". 5 min.
+        buildConfigField("long", "AD_INTERVAL_MS", "300000L")
+        // Google TEST interstitial unit. Replace with your real AdMob unit id.
+        buildConfigField(
+            "String",
+            "AD_INTERSTITIAL_UNIT_ID",
+            "\"ca-app-pub-3940256099942544/1033173712\"",
+        )
+    }
+
+    flavorDimensions += "tier"
+    productFlavors {
+        create("free") {
+            dimension = "tier"
+            buildConfigField("boolean", "ADS_ENABLED", "true")
+        }
+        create("paid") {
+            dimension = "tier"
+            applicationIdSuffix = ".paid"
+            versionNameSuffix = "-paid"
+            buildConfigField("boolean", "ADS_ENABLED", "false")
+        }
     }
 
     buildTypes {
@@ -36,6 +60,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -52,6 +77,13 @@ dependencies {
     implementation("androidx.camera:camera-view:$cameraxVersion")
 
     implementation("com.google.mlkit:pose-detection:18.0.0-beta5")
+
+    // Ads — free flavor only, so the paid build never links the SDK or network.
+    "freeImplementation"("com.google.android.gms:play-services-ads:23.6.0")
+    "freeImplementation"("com.google.android.ump:user-messaging-platform:3.1.0")
+    // play-services-ads swaps in an empty ListenableFuture stub that shadows the
+    // one CameraX needs; full Guava restores the real class on the free classpath.
+    "freeImplementation"("com.google.guava:guava:33.3.1-android")
 
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")

@@ -12,7 +12,7 @@ internet. Everything runs and stays on your device.
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-7F52FF?logo=kotlin&logoColor=white)
 ![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack%20Compose-4285F4)
 ![minSdk](https://img.shields.io/badge/minSdk-26%20(Android%208.0)-blue)
-![Offline](https://img.shields.io/badge/privacy-100%25%20on--device-success)
+![Editions](https://img.shields.io/badge/editions-free%20%2B%20paid%20(offline)-success)
 ![Status](https://img.shields.io/badge/status-MVP-orange)
 
 <img src="docs/screenshots/home.png" width="260" alt="GymGym home screen"/>
@@ -234,16 +234,27 @@ All preferences persist locally and take effect immediately.
   commands. Opt-in; requests microphone permission when enabled.
 - **Profile** — display name and preferred weight unit (kg / lb).
 
-## Privacy & permissions
+## Editions
 
-GymGym is designed to be private and offline-first:
+GymGym builds in two flavors:
+
+- **Free** — supported by occasional full-screen ads (Google AdMob), shown only
+  when you open a workout and no more than once every few minutes; never during
+  a set. Requires internet for ads.
+- **Paid** — no ads and fully offline: the network permission is stripped, so it
+  cannot send data anywhere.
+
+## Privacy & permissions
 
 - **Camera** is used solely for live on-device pose detection. Frames are
   analyzed in memory and never stored, recorded, or transmitted.
 - **Microphone** is requested only if you enable **Voice control**, and only
   then. Recognition runs in on-device (offline-preferred) mode.
-- The app itself has **no internet permission** — it cannot send data anywhere.
-- No accounts, no sign-in, no analytics, no third-party trackers.
+- **Network** — only the **free** build has internet access, used exclusively by
+  the AdMob SDK to serve ads (subject to Google's ad consent flow). The **paid**
+  build has no network permission at all. GymGym's own code makes no network
+  calls in either edition.
+- No accounts, no sign-in, no first-party analytics.
 - History, stats, plans, settings, and profile are stored **locally** on the
   device (Room + DataStore) and are removed when you uninstall the app.
 

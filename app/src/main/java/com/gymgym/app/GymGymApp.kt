@@ -1,6 +1,8 @@
 package com.gymgym.app
 
 import android.app.Application
+import com.gymgym.app.ads.AdManager
+import com.gymgym.app.ads.provideAdManager
 import com.gymgym.app.data.GymGymDatabase
 import com.gymgym.app.data.PlanRepository
 import com.gymgym.app.data.WorkoutRepository
@@ -19,6 +21,9 @@ class AppContainer(app: Application) {
     val planRepository: PlanRepository by lazy {
         PlanRepository(database.planDao())
     }
+
+    // Real ads on the free flavor; a no-op on paid (see provideAdManager).
+    val adManager: AdManager by lazy { provideAdManager(app) }
 }
 
 class GymGymApp : Application() {

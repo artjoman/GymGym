@@ -5,11 +5,38 @@ Guidance for AI agents working in the GymGym repository.
 ## Project
 
 GymGym is a native Android app (Kotlin + Jetpack Compose) that counts gym reps
-from the phone camera using CameraX + ML Kit Pose Detection. It is local-only:
-no backend, no accounts, no network permission. Workout history/stats/profile
-are persisted on-device with Room and DataStore.
+from the phone camera using CameraX + ML Kit Pose Detection. No backend, no
+accounts. Workout history/stats/profile are persisted on-device with Room and
+DataStore.
 
-Build: `./gradlew assembleDebug`
+Two product flavors: **free** (shows AdMob ads; has INTERNET) and **paid**
+(no ads, offline — the transitive INTERNET permission is stripped in
+`app/src/paid/AndroidManifest.xml`). Variants: `freeDebug`, `paidDebug`,
+`freeRelease`, `paidRelease` (default is `freeDebug`).
+
+Build: `./gradlew assembleFreeDebug` (or `assemblePaidDebug`; `assembleDebug`
+builds both).
+
+## Ads / build variables
+
+All ad tuning lives in `app/build.gradle.kts`:
+
+- **`AD_INTERVAL_MS`** (`defaultConfig`, currently `300000L` = 5 min) — minimum
+  time between interstitials. **Change the ad frequency here.**
+- **`ADS_ENABLED`** — per-flavor `buildConfigField` (`free` = true, `paid` =
+  false). The paid flavor also omits the `play-services-ads` dependency, so it
+  never links the SDK.
+- **`AD_INTERSTITIAL_UNIT_ID`** (`defaultConfig`) — currently Google's TEST
+  interstitial id. **Replace with your real AdMob ad-unit id before release.**
+- **AdMob App ID** — `com.google.android.gms.ads.APPLICATION_ID` meta-data in
+  `app/src/free/AndroidManifest.xml` (currently Google's TEST app id). **Replace
+  with your real AdMob app id.**
+
+Ads are shown only at "open a workout" boundaries (the `startExercise` /
+`startPlan` / `startAuto` functions in `MainActivity`, via `AdManager`), never
+mid-set. Real ad code lives in `app/src/free/.../ads/`; `app/src/paid/.../ads/`
+is a no-op. Keep TEST ids until a real AdMob account is configured (with a
+privacy policy + consent), or real ads on non-test devices risk a policy strike.
 
 ## Workflow: commit & push on milestones
 
