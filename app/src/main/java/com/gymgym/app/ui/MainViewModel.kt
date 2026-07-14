@@ -106,6 +106,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _celebration = MutableStateFlow<String?>(null)
     val celebration: StateFlow<String?> = _celebration.asStateFlow()
 
+    private val _paused = MutableStateFlow(false)
+    val paused: StateFlow<Boolean> = _paused.asStateFlow()
+
+    /** True while TTS is speaking; the run screen mutes voice recognition then. */
+    val isSpeaking: StateFlow<Boolean> = voiceFeedback.speaking
+
     /** One-shot signal for the run screen to pop back once a plan finishes. */
     private val _requestExit = MutableStateFlow(false)
     val requestExit: StateFlow<Boolean> = _requestExit.asStateFlow()
@@ -287,9 +293,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // --- Shared session lifecycle ---
 
+    /** Pause the active session — stops counting and the countdown until [resume]. */
+    fun pause() {
+        if (_paused.value || _selectedExercise.value == null || _planComplete.value) return
+        _paused.value = true
+        countdownJob?.cancel()
+        _countdownValue.value = null
+        counter?.reset()
+    }
+
+    fun resume() {
+        if (!_paused.value) return
+        _paused.value = false
+        startCountdown()
+    }
+
     fun onPose(pose: PoseSnapshot) {
         _latestPose.value = pose
-        if (_planComplete.value || _celebration.value != null) return
+        if (_planComplete.value || _celebration.value != null || _paused.value) return
         if (pose.isPlausiblePerson()) {
             consecutivePlausibleFrames++
             lastTrackedAtMs = SystemClock.elapsedRealtime()
@@ -334,6 +355,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         countdownJob?.cancel()
         transitionJob?.cancel()
         _celebration.value = null
+        _paused.value = false
         _countdownValue.value = null
         _selectedExercise.value = null
         _latestPose.value = null
@@ -397,6 +419,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setSetCelebration(value: Boolean) =
         viewModelScope.launch { settingsRepository.setSetCelebration(value) }
+
+    fun setVoiceControl(value: Boolean) =
+        viewModelScope.launch { settingsRepository.setVoiceControl(value) }
 
     fun setDisplayName(value: String) =
         viewModelScope.launch { profileRepository.setDisplayName(value) }

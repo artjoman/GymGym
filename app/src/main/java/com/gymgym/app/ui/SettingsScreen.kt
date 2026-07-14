@@ -31,6 +31,7 @@ fun SettingsScreen(
     onTrackingLostBell: (Boolean) -> Unit,
     onTrackingRegainedChime: (Boolean) -> Unit,
     onSetCelebration: (Boolean) -> Unit,
+    onVoiceControl: (Boolean) -> Unit,
     onBack: () -> Unit,
 ) {
     Column(
@@ -96,6 +97,20 @@ fun SettingsScreen(
                 Text(mode.label)
             }
         }
+        HorizontalDivider()
+
+        Text("Hands-free control", style = MaterialTheme.typography.titleMedium)
+        SwitchRow(
+            label = "Voice control (beta)",
+            checked = settings.voiceControl,
+            enabled = true,
+            onChange = onVoiceControl,
+        )
+        Text(
+            "Say \"next\", \"pause\", \"resume\", or \"reset\" during a workout. " +
+                "Uses on-device recognition and the microphone; needs mic permission.",
+            style = MaterialTheme.typography.bodySmall,
+        )
 
         Button(onClick = onBack, modifier = Modifier.padding(top = 16.dp)) { Text("Done") }
     }

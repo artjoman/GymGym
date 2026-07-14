@@ -2,8 +2,12 @@ package com.gymgym.app.audio
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.speech.tts.Voice
 import java.util.Locale
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Thin wrapper around the platform [TextToSpeech] service.
@@ -18,6 +22,10 @@ class VoiceFeedback(context: Context) {
     private var ready = false
     private var tts: TextToSpeech? = null
 
+    /** True while an utterance is being spoken; used to mute voice recognition. */
+    private val _speaking = MutableStateFlow(false)
+    val speaking: StateFlow<Boolean> = _speaking.asStateFlow()
+
     init {
         tts = TextToSpeech(context.applicationContext) { status ->
             if (status == TextToSpeech.SUCCESS) {
@@ -27,6 +35,12 @@ class VoiceFeedback(context: Context) {
                     // A touch slower than default reads as calmer, less clipped.
                     engine.setSpeechRate(0.95f)
                     engine.setPitch(1.0f)
+                    engine.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                        override fun onStart(utteranceId: String?) { _speaking.value = true }
+                        override fun onDone(utteranceId: String?) { _speaking.value = false }
+                        @Deprecated("deprecated in API 21")
+                        override fun onError(utteranceId: String?) { _speaking.value = false }
+                    })
                 }
                 ready = true
             }

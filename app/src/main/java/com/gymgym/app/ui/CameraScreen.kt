@@ -1,6 +1,10 @@
 package com.gymgym.app.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,8 +31,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.gymgym.app.audio.SoundEffects
+import com.gymgym.app.audio.VoiceCommandListener
 import com.gymgym.app.camera.CameraController
 import com.gymgym.app.camera.PoseAnalyzer
 
@@ -50,10 +56,54 @@ fun CameraScreen(
     val planComplete by viewModel.planComplete.collectAsState()
     val requestExit by viewModel.requestExit.collectAsState()
     val celebration by viewModel.celebration.collectAsState()
+    val paused by viewModel.paused.collectAsState()
+    val isSpeaking by viewModel.isSpeaking.collectAsState()
 
     val previewView = remember { PreviewView(context) }
     val cameraController = remember { CameraController(context) }
     val sounds = remember { SoundEffects(context) }
+
+    // --- Hands-free voice control (opt-in) ---
+    var hasMicPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
+                PackageManager.PERMISSION_GRANTED,
+        )
+    }
+    val micPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { granted -> hasMicPermission = granted }
+
+    LaunchedEffect(settings.voiceControl) {
+        if (settings.voiceControl && !hasMicPermission) {
+            micPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+        }
+    }
+
+    val canListen = settings.voiceControl && hasMicPermission
+    val voiceListener = remember(canListen) {
+        if (canListen) {
+            VoiceCommandListener(context) { command ->
+                when (command) {
+                    VoiceCommandListener.VoiceCommand.PAUSE -> viewModel.pause()
+                    VoiceCommandListener.VoiceCommand.RESUME -> viewModel.resume()
+                    VoiceCommandListener.VoiceCommand.NEXT -> viewModel.skipToNextExercise()
+                    VoiceCommandListener.VoiceCommand.RESET -> viewModel.resetSession()
+                }
+            }
+        } else {
+            null
+        }
+    }
+    DisposableEffect(voiceListener) {
+        voiceListener?.takeIf { it.available }?.start()
+        onDispose { voiceListener?.stop() }
+    }
+    // Mute recognition while our own TTS is speaking so it doesn't self-trigger.
+    LaunchedEffect(voiceListener, isSpeaking) {
+        val listener = voiceListener ?: return@LaunchedEffect
+        if (isSpeaking) listener.mute() else listener.unmute()
+    }
 
     // System back should log + tear down the session, same as the exit button.
     BackHandler(onBack = onExit)
@@ -144,7 +194,7 @@ fun CameraScreen(
             }
         }
 
-        if (countdownValue == null && !isTracking && !planComplete && celebration == null) {
+        if (countdownValue == null && !isTracking && !planComplete && celebration == null && !paused) {
             Text(
                 text = "Move into frame",
                 fontSize = 18.sp,
@@ -165,16 +215,50 @@ fun CameraScreen(
         ) {
             if (progress != null) {
                 Button(onClick = { viewModel.skipToNextExercise() }) { Text("Skip exercise") }
+                Button(onClick = { viewModel.pause() }) { Text("Pause") }
                 Button(onClick = onExit) { Text("Stop plan") }
             } else {
                 Button(onClick = { viewModel.resetSession() }) { Text("Reset") }
+                Button(onClick = { viewModel.pause() }) { Text("Pause") }
                 Button(onClick = onExit) { Text("Change exercise") }
             }
+        }
+
+        if (canListen) {
+            Text(
+                text = if (isSpeaking) "🔊" else "🎤",
+                fontSize = 20.sp,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+                    .background(Color(0x66000000), RoundedCornerShape(8.dp))
+                    .padding(horizontal = 10.dp, vertical = 6.dp),
+            )
         }
 
         countdownValue?.let { CountdownOverlay(value = it) }
 
         celebration?.let { ComboOverlay(word = it) }
+
+        if (paused && !planComplete) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xCC000000)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    Text(text = "Paused", fontSize = 40.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    if (canListen) {
+                        Text(text = "Say \"resume\" or tap", fontSize = 16.sp, color = Color(0xFFCFD8DC))
+                    }
+                    Button(onClick = { viewModel.resume() }) { Text("Resume") }
+                }
+            }
+        }
 
         if (planComplete) {
             Box(

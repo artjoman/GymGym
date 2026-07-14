@@ -72,6 +72,9 @@ self-contained addition.
   exercise and logs each one.
 - 🕹️ **Arcade combo callouts** — completing a set fires a retro
   "SUPER! / GREAT! / COMBO!" pop with a power-up chime before the next set.
+- 🎙️ **Hands-free voice control** *(beta)* — say "next", "pause", "resume", or
+  "reset" mid-workout. Uses on-device speech recognition and mutes itself while
+  the app is speaking.
 - 📈 **History & stats** — every finished set is saved locally; browse your
   history and see per-exercise totals, personal bests, and a recent-reps trend.
 - 👤 **Local profile** — a display name and weight-unit preference, stored on
@@ -227,16 +230,19 @@ All preferences persist locally and take effect immediately.
 - **Set-complete combo callout** — the arcade celebration between sets (visual +
   audio); turn off for an immediate countdown to the next set.
 - **Spoken rep count** — Off / Every rep / Every 5 reps / Every 10 reps.
+- **Voice control (beta)** — hands-free "next / pause / resume / reset"
+  commands. Opt-in; requests microphone permission when enabled.
 - **Profile** — display name and preferred weight unit (kg / lb).
 
 ## Privacy & permissions
 
-GymGym is designed to be fully private and offline:
+GymGym is designed to be private and offline-first:
 
-- **Camera** is the **only** permission requested, and it's used solely for live
-  on-device pose detection. Frames are analyzed in memory and never stored,
-  recorded, or transmitted.
-- There is **no internet permission** — the app cannot send data anywhere.
+- **Camera** is used solely for live on-device pose detection. Frames are
+  analyzed in memory and never stored, recorded, or transmitted.
+- **Microphone** is requested only if you enable **Voice control**, and only
+  then. Recognition runs in on-device (offline-preferred) mode.
+- The app itself has **no internet permission** — it cannot send data anywhere.
 - No accounts, no sign-in, no analytics, no third-party trackers.
 - History, stats, plans, settings, and profile are stored **locally** on the
   device (Room + DataStore) and are removed when you uninstall the app.
@@ -253,10 +259,10 @@ GymGym is designed to be fully private and offline:
 - [x] Local profile (name, units)
 - [x] Workout plans with hands-free auto-advance
 - [x] Arcade combo callouts on set completion
+- [x] Hands-free voice control — "next / pause / resume / reset" *(beta)*
 
 **Planned**
 
-- [ ] Hands-free voice control ("next", "pause", "reset") during a workout
 - [ ] Exercise demo animations and live form-guidance cues
 - [ ] Additional exercises and a rest timer between sets
 

@@ -193,6 +193,7 @@ private fun AppRoot(viewModel: MainViewModel) {
                 onTrackingLostBell = viewModel::setTrackingLostBell,
                 onTrackingRegainedChime = viewModel::setTrackingRegainedChime,
                 onSetCelebration = viewModel::setSetCelebration,
+                onVoiceControl = viewModel::setVoiceControl,
                 onBack = { navController.popBackStack() },
             )
         }
