@@ -20,11 +20,11 @@ android {
         // --- Ad tuning knobs (see AGENTS.md) ---
         // Minimum time between interstitials, gated at "open a workout". 5 min.
         buildConfigField("long", "AD_INTERVAL_MS", "300000L")
-        // Google TEST interstitial unit. Replace with your real AdMob unit id.
+        // Real AdMob interstitial ad-unit id.
         buildConfigField(
             "String",
             "AD_INTERSTITIAL_UNIT_ID",
-            "\"ca-app-pub-3940256099942544/1033173712\"",
+            "\"ca-app-pub-3275806583625659/5269185261\"",
         )
     }
 

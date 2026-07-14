@@ -8,6 +8,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.ump.ConsentInformation
@@ -47,6 +48,14 @@ class AdMobManager : AdManager {
         consentObtained = consent.canRequestAds()
         if (!consentObtained) return
         if (!initialized) {
+            // Serve TEST creatives on registered dev devices even with real ad
+            // units, so tapping ads during development can't cause invalid
+            // traffic. Add more device hashes (from logcat) as needed.
+            MobileAds.setRequestConfiguration(
+                RequestConfiguration.Builder()
+                    .setTestDeviceIds(TEST_DEVICE_IDS)
+                    .build(),
+            )
             MobileAds.initialize(context.applicationContext) {}
             initialized = true
         }
@@ -104,5 +113,9 @@ class AdMobManager : AdManager {
 
     private companion object {
         const val TAG = "AdMobManager"
+
+        // Dev devices that should always receive AdMob TEST creatives. Grab a
+        // device's hash from logcat ("Use ... addTestDeviceHashedId(...)").
+        val TEST_DEVICE_IDS = listOf("1BEBF7614B332F211047F9122193B92F")
     }
 }
