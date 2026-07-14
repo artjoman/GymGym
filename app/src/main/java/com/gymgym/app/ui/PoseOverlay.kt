@@ -30,7 +30,12 @@ private val SKELETON_EDGES = listOf(
  * the canvas, plus a red border while tracking is lost.
  */
 @Composable
-fun PoseOverlay(pose: PoseSnapshot?, isTracking: Boolean, modifier: Modifier = Modifier) {
+fun PoseOverlay(
+    pose: PoseSnapshot?,
+    isTracking: Boolean,
+    mirror: Boolean = false,
+    modifier: Modifier = Modifier,
+) {
     Canvas(modifier = modifier.fillMaxSize()) {
         if (!isTracking) {
             drawRect(color = Color(0xFFE53935), style = Stroke(width = 12f))
@@ -40,9 +45,11 @@ fun PoseOverlay(pose: PoseSnapshot?, isTracking: Boolean, modifier: Modifier = M
         val scaleX = size.width / pose.imageWidth
         val scaleY = size.height / pose.imageHeight
 
+        // Front camera preview is mirrored, so mirror the overlay to match.
         fun offsetOf(landmark: Landmark): Offset? {
             val point = pose[landmark] ?: return null
-            return Offset(point.x * scaleX, point.y * scaleY)
+            val x = point.x * scaleX
+            return Offset(if (mirror) size.width - x else x, point.y * scaleY)
         }
 
         for ((from, to) in SKELETON_EDGES) {

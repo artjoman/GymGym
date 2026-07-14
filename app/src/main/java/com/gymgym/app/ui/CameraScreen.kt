@@ -7,6 +7,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import com.gymgym.app.audio.SoundEffects
 import com.gymgym.app.audio.VoiceCommandListener
 import com.gymgym.app.camera.CameraController
 import com.gymgym.app.camera.PoseAnalyzer
+import com.gymgym.app.settings.CameraFacing
 import com.gymgym.app.ui.theme.BrandGreen
 
 @Composable
@@ -122,9 +124,11 @@ fun CameraScreen(
         }
     }
 
-    DisposableEffect(lifecycleOwner) {
+    val useFrontCamera = settings.cameraFacing == CameraFacing.FRONT
+    // Re-bind when the chosen lens changes.
+    DisposableEffect(lifecycleOwner, useFrontCamera) {
         val analyzer = PoseAnalyzer(onPose = viewModel::onPose)
-        cameraController.start(lifecycleOwner, previewView, analyzer)
+        cameraController.start(lifecycleOwner, previewView, analyzer, useFrontCamera)
         onDispose {
             cameraController.stop()
             analyzer.close()
@@ -171,7 +175,12 @@ fun CameraScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
-        PoseOverlay(pose = latestPose, isTracking = isTracking, modifier = Modifier.fillMaxSize())
+        PoseOverlay(
+            pose = latestPose,
+            isTracking = isTracking,
+            mirror = useFrontCamera,
+            modifier = Modifier.fillMaxSize(),
+        )
 
         val progress = planProgress
         if (!autoDetecting) {
@@ -269,16 +278,32 @@ fun CameraScreen(
             }
         }
 
-        if (canListen) {
+        Column(
+            modifier = Modifier.align(Alignment.TopEnd).padding(16.dp),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
             Text(
-                text = if (isSpeaking) "🔊" else "🎤",
-                fontSize = 20.sp,
+                text = "🔄",
+                fontSize = 22.sp,
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(16.dp)
-                    .background(Color(0x66000000), RoundedCornerShape(8.dp))
-                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                    .background(Color(0x66000000), RoundedCornerShape(10.dp))
+                    .clickable {
+                        viewModel.setCameraFacing(
+                            if (useFrontCamera) CameraFacing.BACK else CameraFacing.FRONT,
+                        )
+                    }
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
             )
+            if (canListen) {
+                Text(
+                    text = if (isSpeaking) "🔊" else "🎤",
+                    fontSize = 20.sp,
+                    modifier = Modifier
+                        .background(Color(0x66000000), RoundedCornerShape(8.dp))
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                )
+            }
         }
 
         countdownValue?.let { CountdownOverlay(value = it) }

@@ -20,6 +20,7 @@ import com.gymgym.app.pose.isPlausiblePerson
 import com.gymgym.app.profile.Profile
 import com.gymgym.app.profile.ProfileRepository
 import com.gymgym.app.profile.WeightUnit
+import com.gymgym.app.settings.CameraFacing
 import com.gymgym.app.settings.RepAnnouncementMode
 import com.gymgym.app.settings.SettingsRepository
 import com.gymgym.app.settings.SoundSettings
@@ -479,6 +480,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setVoiceControl(value: Boolean) =
         viewModelScope.launch { settingsRepository.setVoiceControl(value) }
+
+    fun setCameraFacing(facing: CameraFacing) =
+        viewModelScope.launch { settingsRepository.setCameraFacing(facing) }
 
     fun setDisplayName(value: String) =
         viewModelScope.launch { profileRepository.setDisplayName(value) }

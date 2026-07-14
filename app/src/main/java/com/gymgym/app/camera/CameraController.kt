@@ -18,6 +18,7 @@ class CameraController(private val context: Context) {
         lifecycleOwner: LifecycleOwner,
         previewView: PreviewView,
         analyzer: ImageAnalysis.Analyzer,
+        useFrontCamera: Boolean = false,
     ) {
         val providerFuture = ProcessCameraProvider.getInstance(context)
         providerFuture.addListener({
@@ -33,13 +34,13 @@ class CameraController(private val context: Context) {
                 .build()
                 .also { it.setAnalyzer(ContextCompat.getMainExecutor(context), analyzer) }
 
+            val selector = if (useFrontCamera) {
+                CameraSelector.DEFAULT_FRONT_CAMERA
+            } else {
+                CameraSelector.DEFAULT_BACK_CAMERA
+            }
             provider.unbindAll()
-            provider.bindToLifecycle(
-                lifecycleOwner,
-                CameraSelector.DEFAULT_BACK_CAMERA,
-                preview,
-                imageAnalysis,
-            )
+            provider.bindToLifecycle(lifecycleOwner, selector, preview, imageAnalysis)
         }, ContextCompat.getMainExecutor(context))
     }
 

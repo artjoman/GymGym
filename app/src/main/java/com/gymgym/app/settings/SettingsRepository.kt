@@ -18,6 +18,8 @@ enum class RepAnnouncementMode(val label: String, val step: Int) {
     EVERY_10("Every 10 reps", 10),
 }
 
+enum class CameraFacing { BACK, FRONT }
+
 data class SoundSettings(
     val soundsEnabled: Boolean = true,
     val countdownVoice: Boolean = true,
@@ -26,6 +28,7 @@ data class SoundSettings(
     val trackingRegainedChime: Boolean = true,
     val setCelebration: Boolean = true,
     val voiceControl: Boolean = false,
+    val cameraFacing: CameraFacing = CameraFacing.BACK,
 )
 
 class SettingsRepository(context: Context) {
@@ -43,6 +46,9 @@ class SettingsRepository(context: Context) {
             trackingRegainedChime = prefs[TRACKING_REGAINED_CHIME] ?: true,
             setCelebration = prefs[SET_CELEBRATION] ?: true,
             voiceControl = prefs[VOICE_CONTROL] ?: false,
+            cameraFacing = prefs[CAMERA_FACING]
+                ?.let { stored -> CameraFacing.entries.find { it.name == stored } }
+                ?: CameraFacing.BACK,
         )
     }
 
@@ -65,6 +71,9 @@ class SettingsRepository(context: Context) {
     suspend fun setVoiceControl(value: Boolean) =
         dataStore.edit { it[VOICE_CONTROL] = value }
 
+    suspend fun setCameraFacing(facing: CameraFacing) =
+        dataStore.edit { it[CAMERA_FACING] = facing.name }
+
     private companion object {
         val SOUNDS_ENABLED = booleanPreferencesKey("sounds_enabled")
         val COUNTDOWN_VOICE = booleanPreferencesKey("countdown_voice")
@@ -73,5 +82,6 @@ class SettingsRepository(context: Context) {
         val TRACKING_REGAINED_CHIME = booleanPreferencesKey("tracking_regained_chime")
         val SET_CELEBRATION = booleanPreferencesKey("set_celebration")
         val VOICE_CONTROL = booleanPreferencesKey("voice_control")
+        val CAMERA_FACING = stringPreferencesKey("camera_facing")
     }
 }
