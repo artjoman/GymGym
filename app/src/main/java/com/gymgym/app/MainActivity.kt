@@ -26,10 +26,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.gymgym.app.ui.CameraScreen
+import com.gymgym.app.ui.Exercise
 import com.gymgym.app.ui.ExerciseSelectScreen
+import com.gymgym.app.ui.HistoryScreen
 import com.gymgym.app.ui.MainViewModel
+import com.gymgym.app.ui.ProfileScreen
+import com.gymgym.app.ui.SettingsScreen
+import com.gymgym.app.ui.StatsScreen
 import com.gymgym.app.ui.theme.GymGymTheme
+
+private object Routes {
+    const val HOME = "home"
+    const val CAMERA = "camera"
+    const val HISTORY = "history"
+    const val STATS = "stats"
+    const val PROFILE = "profile"
+    const val SETTINGS = "settings"
+}
 
 class MainActivity : ComponentActivity() {
 
@@ -50,37 +67,96 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun AppRoot(viewModel: MainViewModel) {
     val context = LocalContext.current
+    val navController = rememberNavController()
+
     var hasCameraPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
                 PackageManager.PERMISSION_GRANTED,
         )
     }
+    var pendingExercise by remember { mutableStateOf<Exercise?>(null) }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
-    ) { granted -> hasCameraPermission = granted }
-
-    if (!hasCameraPermission) {
-        PermissionRequestScreen(onRequestPermission = { permissionLauncher.launch(Manifest.permission.CAMERA) })
-        return
+    ) { granted ->
+        hasCameraPermission = granted
+        val pending = pendingExercise
+        if (granted && pending != null) {
+            viewModel.selectExercise(pending)
+            navController.navigate(Routes.CAMERA)
+        }
+        pendingExercise = null
     }
 
-    val selectedExercise by viewModel.selectedExercise.collectAsState()
-    val exercise = selectedExercise
-    if (exercise == null) {
-        ExerciseSelectScreen(onExerciseSelected = viewModel::selectExercise)
-    } else {
-        CameraScreen(exercise = exercise, viewModel = viewModel, onExit = viewModel::exitToSelection)
+    fun startExercise(exercise: Exercise) {
+        if (hasCameraPermission) {
+            viewModel.selectExercise(exercise)
+            navController.navigate(Routes.CAMERA)
+        } else {
+            pendingExercise = exercise
+            permissionLauncher.launch(Manifest.permission.CAMERA)
+        }
     }
-}
 
-@Composable
-private fun PermissionRequestScreen(onRequestPermission: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
-    ) {
-        Text("GymGym needs camera access to count your reps.")
-        Button(onClick = onRequestPermission) { Text("Grant camera permission") }
+    NavHost(navController = navController, startDestination = Routes.HOME) {
+        composable(Routes.HOME) {
+            val profile by viewModel.profile.collectAsState()
+            ExerciseSelectScreen(
+                greeting = profile.displayName,
+                onExerciseSelected = ::startExercise,
+                onOpenHistory = { navController.navigate(Routes.HISTORY) },
+                onOpenStats = { navController.navigate(Routes.STATS) },
+                onOpenProfile = { navController.navigate(Routes.PROFILE) },
+                onOpenSettings = { navController.navigate(Routes.SETTINGS) },
+            )
+        }
+        composable(Routes.CAMERA) {
+            val exercise by viewModel.selectedExercise.collectAsState()
+            exercise?.let { ex ->
+                CameraScreen(
+                    exercise = ex,
+                    viewModel = viewModel,
+                    onExit = {
+                        viewModel.exitToSelection()
+                        navController.popBackStack()
+                    },
+                )
+            }
+        }
+        composable(Routes.HISTORY) {
+            val sessions by viewModel.history.collectAsState()
+            HistoryScreen(sessions = sessions, onBack = { navController.popBackStack() })
+        }
+        composable(Routes.STATS) {
+            val stats by viewModel.stats.collectAsState()
+            val sessions by viewModel.history.collectAsState()
+            StatsScreen(
+                stats = stats,
+                recentSessions = sessions,
+                onBack = { navController.popBackStack() },
+            )
+        }
+        composable(Routes.PROFILE) {
+            val profile by viewModel.profile.collectAsState()
+            ProfileScreen(
+                profile = profile,
+                onDisplayName = viewModel::setDisplayName,
+                onWeightUnit = viewModel::setWeightUnit,
+                onBack = { navController.popBackStack() },
+            )
+        }
+        composable(Routes.SETTINGS) {
+            val soundSettings by viewModel.soundSettings.collectAsState()
+            SettingsScreen(
+                settings = soundSettings,
+                onSoundsEnabled = viewModel::setSoundsEnabled,
+                onCountdownVoice = viewModel::setCountdownVoice,
+                onRepAnnouncement = viewModel::setRepAnnouncement,
+                onTrackingLostBell = viewModel::setTrackingLostBell,
+                onTrackingRegainedChime = viewModel::setTrackingRegainedChime,
+                onBack = { navController.popBackStack() },
+            )
+        }
     }
 }

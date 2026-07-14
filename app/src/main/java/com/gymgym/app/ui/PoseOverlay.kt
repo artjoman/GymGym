@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import com.gymgym.app.pose.Landmark
 import com.gymgym.app.pose.PoseSnapshot
 
@@ -24,10 +25,16 @@ private val SKELETON_EDGES = listOf(
     Landmark.RIGHT_KNEE to Landmark.RIGHT_ANKLE,
 )
 
-/** Draws a simple skeleton over the camera preview, scaled from image space to the canvas. */
+/**
+ * Draws a simple skeleton over the camera preview, scaled from image space to
+ * the canvas, plus a red border while tracking is lost.
+ */
 @Composable
-fun PoseOverlay(pose: PoseSnapshot?, modifier: Modifier = Modifier) {
+fun PoseOverlay(pose: PoseSnapshot?, isTracking: Boolean, modifier: Modifier = Modifier) {
     Canvas(modifier = modifier.fillMaxSize()) {
+        if (!isTracking) {
+            drawRect(color = Color(0xFFE53935), style = Stroke(width = 12f))
+        }
         if (pose == null || pose.imageWidth == 0 || pose.imageHeight == 0) return@Canvas
 
         val scaleX = size.width / pose.imageWidth
