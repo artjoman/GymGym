@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 fun ExerciseSelectScreen(
     greeting: String?,
     onExerciseSelected: (Exercise) -> Unit,
+    onOpenPlans: () -> Unit,
     onOpenHistory: () -> Unit,
     onOpenStats: () -> Unit,
     onOpenProfile: () -> Unit,
@@ -47,8 +48,15 @@ fun ExerciseSelectScreen(
             }
         }
 
-        Row(
+        OutlinedButton(
+            onClick = onOpenPlans,
             modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+        ) {
+            Text("Workout plans")
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             OutlinedButton(onClick = onOpenHistory, modifier = Modifier.weight(1f)) {

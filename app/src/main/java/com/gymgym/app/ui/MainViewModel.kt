@@ -5,11 +5,14 @@ import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.gymgym.app.GymGymApp
+import com.gymgym.app.audio.VoiceFeedback
 import com.gymgym.app.counter.PullupCounter
 import com.gymgym.app.counter.PushupCounter
 import com.gymgym.app.counter.RepCounter
 import com.gymgym.app.counter.SquatCounter
+import com.gymgym.app.data.DraftExercise
 import com.gymgym.app.data.ExerciseStat
+import com.gymgym.app.data.PlanWithExercises
 import com.gymgym.app.data.WorkoutSession
 import com.gymgym.app.pose.PoseSnapshot
 import com.gymgym.app.pose.isPlausiblePerson
@@ -34,11 +37,28 @@ enum class Exercise(val displayName: String, val framingTip: String) {
     PULLUP("Pullup", "Prop the phone facing you, bar and full body in frame"),
 }
 
+/** Live progress while running a multi-exercise plan; null during an ad-hoc single exercise. */
+data class PlanProgress(
+    val planName: String,
+    val exerciseLabel: String,
+    val exerciseIndex: Int,
+    val exerciseCount: Int,
+    val setIndex: Int,
+    val setCount: Int,
+    val targetReps: Int,
+)
+
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val settingsRepository = SettingsRepository(application)
     private val profileRepository = ProfileRepository(application)
     private val workoutRepository =
         (application as GymGymApp).container.workoutRepository
+    private val planRepository =
+        (application as GymGymApp).container.planRepository
+
+    // Created at ViewModel construction (app launch) so the TTS engine is warm
+    // and ready by the time the user reaches a countdown.
+    private val voiceFeedback = VoiceFeedback(application)
 
     val soundSettings: StateFlow<SoundSettings> = settingsRepository.settings
         .stateIn(viewModelScope, SharingStarted.Eagerly, SoundSettings())
@@ -51,6 +71,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val profile: StateFlow<Profile> = profileRepository.profile
         .stateIn(viewModelScope, SharingStarted.Eagerly, Profile())
+
+    val plans: StateFlow<List<PlanWithExercises>> = planRepository.plans
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val _selectedExercise = MutableStateFlow<Exercise?>(null)
     val selectedExercise: StateFlow<Exercise?> = _selectedExercise.asStateFlow()
@@ -73,11 +96,33 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _isTracking = MutableStateFlow(false)
     val isTracking: StateFlow<Boolean> = _isTracking.asStateFlow()
 
+    private val _planProgress = MutableStateFlow<PlanProgress?>(null)
+    val planProgress: StateFlow<PlanProgress?> = _planProgress.asStateFlow()
+
+    private val _planComplete = MutableStateFlow(false)
+    val planComplete: StateFlow<Boolean> = _planComplete.asStateFlow()
+
+    /** One-shot signal for the run screen to pop back once a plan finishes. */
+    private val _requestExit = MutableStateFlow(false)
+    val requestExit: StateFlow<Boolean> = _requestExit.asStateFlow()
+
     private var counter: RepCounter? = null
     private var countdownJob: Job? = null
     private var lastTrackedAtMs = 0L
     private var consecutivePlausibleFrames = 0
     private var sessionStartedAt = 0L
+
+    // Plan-run engine state.
+    private data class PlanStep(val exercise: Exercise, val targetReps: Int, val targetSets: Int)
+
+    private var planName = ""
+    private var planSteps: List<PlanStep> = emptyList()
+    private var stepIndex = 0
+    private var setIndex = 0
+    private var exerciseRepsAccum = 0
+
+    private val isPlanRun get() = planSteps.isNotEmpty()
+    private fun currentStep(): PlanStep? = planSteps.getOrNull(stepIndex)
 
     init {
         viewModelScope.launch {
@@ -95,20 +140,118 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    // --- Single ad-hoc exercise ---
+
     fun selectExercise(exercise: Exercise) {
+        planSteps = emptyList()
+        _planProgress.value = null
+        _planComplete.value = false
+        _requestExit.value = false
         _selectedExercise.value = exercise
         _repCount.value = 0
         sessionStartedAt = System.currentTimeMillis()
-        counter = when (exercise) {
-            Exercise.SQUAT -> SquatCounter()
-            Exercise.PUSHUP -> PushupCounter()
-            Exercise.PULLUP -> PullupCounter()
-        }
+        counter = counterFor(exercise)
         startCountdown()
     }
 
+    // --- Plan run ---
+
+    fun startPlan(plan: PlanWithExercises) {
+        val steps = plan.orderedExercises.mapNotNull { pe ->
+            val ex = Exercise.entries.find { it.name == pe.exerciseType } ?: return@mapNotNull null
+            PlanStep(ex, pe.targetReps.coerceAtLeast(1), pe.targetSets.coerceAtLeast(1))
+        }
+        if (steps.isEmpty()) return
+        planName = plan.plan.name
+        planSteps = steps
+        stepIndex = 0
+        setIndex = 0
+        _planComplete.value = false
+        _requestExit.value = false
+        beginCurrentStep(isNewExercise = true)
+    }
+
+    /** Manual "skip" — bank the current exercise's reps and jump to the next exercise. */
+    fun skipToNextExercise() {
+        if (!isPlanRun || _planComplete.value) return
+        exerciseRepsAccum += _repCount.value
+        finishCurrentExercise()
+    }
+
+    private fun beginCurrentStep(isNewExercise: Boolean) {
+        val step = currentStep() ?: return
+        if (isNewExercise) {
+            exerciseRepsAccum = 0
+            sessionStartedAt = System.currentTimeMillis()
+        }
+        _selectedExercise.value = step.exercise
+        _repCount.value = 0
+        counter = counterFor(step.exercise)
+        updatePlanProgress()
+        startCountdown()
+    }
+
+    private fun onSetComplete() {
+        val step = currentStep() ?: return
+        exerciseRepsAccum += _repCount.value
+        if (setIndex < step.targetSets - 1) {
+            setIndex++
+            beginCurrentStep(isNewExercise = false)
+        } else {
+            finishCurrentExercise()
+        }
+    }
+
+    private fun finishCurrentExercise() {
+        val step = currentStep() ?: return
+        logSession(step.exercise, exerciseRepsAccum, sessionStartedAt)
+        if (stepIndex < planSteps.size - 1) {
+            stepIndex++
+            setIndex = 0
+            beginCurrentStep(isNewExercise = true)
+        } else {
+            onPlanComplete()
+        }
+    }
+
+    private fun onPlanComplete() {
+        _planComplete.value = true
+        countdownJob?.cancel()
+        _countdownValue.value = null
+        if (soundSettings.value.soundsEnabled) speak("Workout complete!")
+        viewModelScope.launch {
+            delay(PLAN_COMPLETE_DISPLAY_MS)
+            _requestExit.value = true
+        }
+    }
+
+    private fun updatePlanProgress() {
+        val step = currentStep()
+        _planProgress.value = step?.let {
+            PlanProgress(
+                planName = planName,
+                exerciseLabel = it.exercise.displayName,
+                exerciseIndex = stepIndex,
+                exerciseCount = planSteps.size,
+                setIndex = setIndex,
+                setCount = it.targetSets,
+                targetReps = it.targetReps,
+            )
+        }
+    }
+
+    /** Called by the run screen once it has observed [requestExit] and navigated away. */
+    fun finishPlanRun() {
+        clearSession()
+        _requestExit.value = false
+        _planComplete.value = false
+    }
+
+    // --- Shared session lifecycle ---
+
     fun onPose(pose: PoseSnapshot) {
         _latestPose.value = pose
+        if (_planComplete.value) return
         if (pose.isPlausiblePerson()) {
             consecutivePlausibleFrames++
             lastTrackedAtMs = SystemClock.elapsedRealtime()
@@ -121,9 +264,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
         if (_countdownValue.value != null) return
         if (!_isTracking.value) return
-        if (counter?.process(pose) == true) {
-            _repCount.value = _repCount.value + 1
-        }
+        if (counter?.process(pose) == true) onRepCompleted()
+    }
+
+    private fun onRepCompleted() {
+        _repCount.value = _repCount.value + 1
+        val step = currentStep() ?: return // single ad-hoc exercise
+        if (_repCount.value >= step.targetReps) onSetComplete()
     }
 
     fun resetSession() {
@@ -132,8 +279,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         startCountdown()
     }
 
-    fun exitToSelection() {
-        logSessionIfCounted()
+    /** Manual exit from the run screen (button or system back), for both modes. */
+    fun stopSession() {
+        if (isPlanRun) {
+            if (!_planComplete.value) {
+                val step = currentStep()
+                if (step != null) logSession(step.exercise, exerciseRepsAccum + _repCount.value, sessionStartedAt)
+            }
+        } else {
+            logSession(_selectedExercise.value, _repCount.value, sessionStartedAt)
+        }
+        clearSession()
+    }
+
+    private fun clearSession() {
         countdownJob?.cancel()
         _countdownValue.value = null
         _selectedExercise.value = null
@@ -142,14 +301,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         lastTrackedAtMs = 0L
         consecutivePlausibleFrames = 0
         counter = null
+        planSteps = emptyList()
+        stepIndex = 0
+        setIndex = 0
+        exerciseRepsAccum = 0
+        planName = ""
+        _planProgress.value = null
     }
 
-    /** Persist the finished session, but only if the user actually did reps. */
-    private fun logSessionIfCounted() {
-        val exercise = _selectedExercise.value ?: return
-        val reps = _repCount.value
-        if (reps < 1) return
-        val startedAt = sessionStartedAt
+    /** Persist a finished exercise, but only if reps were actually counted. */
+    private fun logSession(exercise: Exercise?, reps: Int, startedAt: Long) {
+        if (exercise == null || reps < 1) return
         viewModelScope.launch {
             workoutRepository.log(
                 WorkoutSession(
@@ -161,6 +323,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             )
         }
     }
+
+    private fun counterFor(exercise: Exercise): RepCounter = when (exercise) {
+        Exercise.SQUAT -> SquatCounter()
+        Exercise.PUSHUP -> PushupCounter()
+        Exercise.PULLUP -> PullupCounter()
+    }
+
+    // --- Plan CRUD ---
+
+    fun savePlan(id: Long, name: String, exercises: List<DraftExercise>) =
+        viewModelScope.launch { planRepository.savePlan(id, name, exercises) }
+
+    fun deletePlan(id: Long) =
+        viewModelScope.launch { planRepository.deletePlan(id) }
+
+    // --- Settings & profile ---
 
     fun setSoundsEnabled(value: Boolean) =
         viewModelScope.launch { settingsRepository.setSoundsEnabled(value) }
@@ -183,8 +361,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setWeightUnit(unit: WeightUnit) =
         viewModelScope.launch { profileRepository.setWeightUnit(unit) }
 
+    /** Speak via the pre-warmed TTS engine. No-op until the engine is ready. */
+    fun speak(text: String) = voiceFeedback.speak(text)
+
+    override fun onCleared() {
+        voiceFeedback.shutdown()
+        super.onCleared()
+    }
+
     private fun startCountdown() {
         countdownJob?.cancel()
+        _countdownValue.value = COUNTDOWN_SECONDS // set synchronously to gate stray reps
         countdownJob = viewModelScope.launch {
             for (second in COUNTDOWN_SECONDS downTo 1) {
                 _countdownValue.value = second
@@ -200,6 +387,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private companion object {
         const val COUNTDOWN_SECONDS = 3
         const val GO_DISPLAY_MS = 700L
+        const val PLAN_COMPLETE_DISPLAY_MS = 1_800L
         const val TRACKING_CHECK_INTERVAL_MS = 250L
         const val TRACKING_TIMEOUT_MS = 800L
         const val STABLE_FRAMES_TO_TRACK = 5

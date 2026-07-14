@@ -1,13 +1,20 @@
 package com.gymgym.app.data
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [WorkoutSession::class], version = 1, exportSchema = true)
+@Database(
+    entities = [WorkoutSession::class, PlanEntity::class, PlanExerciseEntity::class],
+    version = 2,
+    exportSchema = true,
+    autoMigrations = [AutoMigration(from = 1, to = 2)],
+)
 abstract class GymGymDatabase : RoomDatabase() {
     abstract fun workoutDao(): WorkoutDao
+    abstract fun planDao(): PlanDao
 
     companion object {
         @Volatile private var instance: GymGymDatabase? = null
