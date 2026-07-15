@@ -10,3 +10,8 @@
 .cxx/
 *.apk
 *.aab
+
+# Release signing — never commit the keystore or its passwords.
+keystore.properties
+*.jks
+*.keystore
