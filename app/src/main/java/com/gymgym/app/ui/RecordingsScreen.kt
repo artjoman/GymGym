@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -34,7 +35,7 @@ fun RecordingsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     var files by remember { mutableStateOf(RecordingStore.list(context)) }
 
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
+    Column(modifier = Modifier.fillMaxSize().systemBarsPadding().padding(24.dp)) {
         Text("Recordings", style = MaterialTheme.typography.headlineSmall)
         Text(
             "Share a workout with your trainer for feedback.",

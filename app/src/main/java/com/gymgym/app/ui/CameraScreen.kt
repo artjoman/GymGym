@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cameraswitch
@@ -208,13 +209,15 @@ fun CameraScreen(
                 color = Color.White,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(top = 48.dp),
+                    .statusBarsPadding()
+                    .padding(top = 24.dp),
             )
         }
 
         Column(
             modifier = Modifier
                 .align(Alignment.TopStart)
+                .statusBarsPadding()
                 .padding(16.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -297,7 +300,7 @@ fun CameraScreen(
         }
 
         Column(
-            modifier = Modifier.align(Alignment.TopEnd).padding(16.dp),
+            modifier = Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(16.dp),
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {

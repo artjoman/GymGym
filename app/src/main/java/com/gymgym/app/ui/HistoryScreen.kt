@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -33,7 +34,7 @@ fun HistoryScreen(
     var filter by remember { mutableStateOf(WorkoutFilter()) }
     val filtered = sessions.applyFilter(filter)
 
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
+    Column(modifier = Modifier.fillMaxSize().systemBarsPadding().padding(24.dp)) {
         Text("History", style = MaterialTheme.typography.headlineSmall)
 
         Column(modifier = Modifier.padding(top = 12.dp)) {

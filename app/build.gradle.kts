@@ -18,13 +18,13 @@ val keystoreProperties = Properties().apply {
 
 android {
     namespace = "com.gymgym.app"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         // Store/package name (Play). Code namespace stays com.gymgym.app.
         applicationId = "com.projectorum.gymgym"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
