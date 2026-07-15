@@ -3,9 +3,9 @@ package com.gymgym.app.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,9 +38,8 @@ private val SQUAT_DOWN = listOf(
 private val SQUAT_FRAMES = SQUAT_DOWN + SQUAT_DOWN.subList(1, SQUAT_DOWN.size - 1).reversed()
 
 /**
- * Arcade-panel banner that loops Reppo's squat demo as a frame-by-frame
- * animation. Black background blends the frames' baked-in dark ground and
- * reads as an arcade cabinet screen.
+ * Compact arcade-panel card that loops Reppo's feet-anchored squat demo. The
+ * frames share one canvas with the feet planted, so the loop no longer bobs.
  */
 @Composable
 fun ExerciseDemoBanner(modifier: Modifier = Modifier) {
@@ -53,8 +52,8 @@ fun ExerciseDemoBanner(modifier: Modifier = Modifier) {
     }
     Box(
         modifier = modifier
-            .fillMaxWidth()
-            .height(220.dp)
+            .width(150.dp)
+            .height(185.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(Color.Black),
         contentAlignment = Alignment.Center,
@@ -63,10 +62,10 @@ fun ExerciseDemoBanner(modifier: Modifier = Modifier) {
             painter = painterResource(SQUAT_FRAMES[frame]),
             contentDescription = "Squat demo animation",
             contentScale = ContentScale.Fit,
-            modifier = Modifier.fillMaxHeight(),
+            modifier = Modifier.fillMaxSize(),
         )
     }
 }
 
-// 10 frames × 400ms ≈ 4s for a full squat down-and-up, slow enough to follow.
-private const val FRAME_MS = 400L
+// 10 frames × 380ms ≈ 3.8s for a full squat down-and-up, slow enough to follow.
+private const val FRAME_MS = 380L

@@ -59,9 +59,7 @@ fun ExerciseSelectScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            ExerciseDemoBanner(modifier = Modifier.padding(top = 16.dp))
-
-            SectionLabel("Choose your exercise", top = 24.dp)
+            SectionLabel("Choose your exercise", top = 20.dp)
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 for (exercise in Exercise.entries) {
                     GymButton(
@@ -102,7 +100,9 @@ fun ExerciseSelectScreen(
                 GymButton("Profile", onOpenProfile, Modifier.weight(1f), GymButtonStyle.Secondary)
                 GymButton("Settings", onOpenSettings, Modifier.weight(1f), GymButtonStyle.Secondary)
             }
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(22.dp))
+            ExerciseDemoBanner(modifier = Modifier.align(Alignment.CenterHorizontally))
+            Spacer(Modifier.height(18.dp))
             CreatorFooter()
             Spacer(Modifier.height(16.dp))
         }
