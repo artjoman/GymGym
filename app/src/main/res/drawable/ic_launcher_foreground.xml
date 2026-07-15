@@ -3,19 +3,31 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M24,48 L24,60 L34,60 L34,48 Z" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M74,48 L74,60 L84,60 L84,48 Z" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M34,52 L74,52 L74,56 L34,56 Z" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M18,44 L18,64 L24,64 L24,44 Z" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M84,44 L84,64 L90,64 L90,44 Z" />
+    <!-- Bold rounded dumbbell in brand green, tilted for a dynamic feel. -->
+    <group
+        android:name="dumbbell"
+        android:pivotX="54"
+        android:pivotY="54"
+        android:rotation="-18">
+        <!-- left plate -->
+        <path
+            android:fillColor="#7FE0A0"
+            android:pathData="M34,37 A6,6 0 0 1 40,43 V65 A6,6 0 0 1 34,71 A6,6 0 0 1 28,65 V43 A6,6 0 0 1 34,37 Z" />
+        <!-- right plate -->
+        <path
+            android:fillColor="#7FE0A0"
+            android:pathData="M74,37 A6,6 0 0 1 80,43 V65 A6,6 0 0 1 74,71 A6,6 0 0 1 68,65 V43 A6,6 0 0 1 74,37 Z" />
+        <!-- left collar -->
+        <path
+            android:fillColor="#7FE0A0"
+            android:pathData="M41,45 H43 A3,3 0 0 1 46,48 V60 A3,3 0 0 1 43,63 H41 A3,3 0 0 1 38,60 V48 A3,3 0 0 1 41,45 Z" />
+        <!-- right collar -->
+        <path
+            android:fillColor="#7FE0A0"
+            android:pathData="M65,45 H67 A3,3 0 0 1 70,48 V60 A3,3 0 0 1 67,63 H65 A3,3 0 0 1 62,60 V48 A3,3 0 0 1 65,45 Z" />
+        <!-- handle bar -->
+        <path
+            android:fillColor="#7FE0A0"
+            android:pathData="M46.5,49.5 H61.5 A4.5,4.5 0 0 1 66,54 A4.5,4.5 0 0 1 61.5,58.5 H46.5 A4.5,4.5 0 0 1 42,54 A4.5,4.5 0 0 1 46.5,49.5 Z" />
+    </group>
 </vector>
