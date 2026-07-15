@@ -1,7 +1,10 @@
 package com.gymgym.app.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,15 +12,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.gymgym.app.settings.RepAnnouncementMode
 import com.gymgym.app.settings.SoundSettings
@@ -111,10 +115,28 @@ fun SettingsScreen(
                 "Uses on-device recognition and the microphone; needs mic permission.",
             style = MaterialTheme.typography.bodySmall,
         )
+        HorizontalDivider()
+
+        Text("About", style = MaterialTheme.typography.titleMedium)
+        val context = LocalContext.current
+        TextButton(
+            onClick = {
+                runCatching {
+                    context.startActivity(
+                        Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_POLICY_URL)),
+                    )
+                }
+            },
+            contentPadding = PaddingValues(0.dp),
+        ) {
+            Text("Privacy policy")
+        }
 
         GymButton("Done", onBack, Modifier.padding(top = 16.dp))
     }
 }
+
+private const val PRIVACY_POLICY_URL = "https://projectorum.com/gymgym-privacy-policy"
 
 @Composable
 private fun SwitchRow(

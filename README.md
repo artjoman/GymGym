@@ -258,6 +258,9 @@ GymGym builds in two flavors:
 - History, stats, plans, settings, and profile are stored **locally** on the
   device (Room + DataStore) and are removed when you uninstall the app.
 
+Full policy: https://projectorum.com/gymgym-privacy-policy (also linked in-app
+under Settings → About).
+
 ## Roadmap
 
 **Shipped**
