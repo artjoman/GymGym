@@ -102,7 +102,9 @@ fun ExerciseSelectScreen(
                 GymButton("Profile", onOpenProfile, Modifier.weight(1f), GymButtonStyle.Secondary)
                 GymButton("Settings", onOpenSettings, Modifier.weight(1f), GymButtonStyle.Secondary)
             }
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(20.dp))
+            CreatorFooter()
+            Spacer(Modifier.height(16.dp))
         }
     }
 }

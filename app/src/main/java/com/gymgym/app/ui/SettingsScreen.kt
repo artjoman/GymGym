@@ -135,34 +135,11 @@ fun SettingsScreen(
 
         GymButton("Done", onBack, Modifier.padding(top = 16.dp))
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 8.dp)
-                .clickable {
-                    runCatching {
-                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CREATOR_URL)))
-                    }
-                },
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                "Created with ",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text("♥", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.tertiary)
-            Text(
-                " by projectorum.com",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary,
-            )
-        }
+        CreatorFooter(Modifier.padding(top = 16.dp))
     }
 }
 
 private const val PRIVACY_POLICY_URL = "https://projectorum.com/gymgym-privacy-policy"
-private const val CREATOR_URL = "https://projectorum.com/"
 
 @Composable
 private fun SwitchRow(
