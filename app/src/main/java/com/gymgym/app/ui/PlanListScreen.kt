@@ -97,7 +97,8 @@ private fun PlanCard(
 
 private fun planSummary(plan: PlanWithExercises): String {
     val parts = plan.orderedExercises.map { e ->
-        "${exerciseLabel(e.exerciseType)} ${e.targetReps}×${e.targetSets}"
+        val amount = if (isTimedExercise(e.exerciseType)) "${e.targetReps}s" else "${e.targetReps}"
+        "${exerciseLabel(e.exerciseType)} $amount×${e.targetSets}"
     }
     return if (parts.isEmpty()) "No exercises" else parts.joinToString(" · ")
 }

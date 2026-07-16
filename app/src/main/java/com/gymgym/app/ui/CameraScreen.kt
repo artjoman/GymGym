@@ -174,7 +174,8 @@ fun CameraScreen(
     }
     LaunchedEffect(repCount) {
         val step = settings.repAnnouncement.step
-        if (settings.soundsEnabled && step > 0 && repCount > 0 && repCount % step == 0) {
+        // Timed exercises drive repCount as elapsed seconds — don't announce those.
+        if (!timed && settings.soundsEnabled && step > 0 && repCount > 0 && repCount % step == 0) {
             viewModel.speak(repCount.toString())
         }
     }
@@ -216,11 +217,16 @@ fun CameraScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = formatClock2(elapsedMs),
-                    fontSize = 72.sp,
+                    text = if (progress != null) {
+                        "${formatClock2(elapsedMs)} / ${formatClock2(progress.targetReps * 1000L)}"
+                    } else {
+                        formatClock2(elapsedMs)
+                    },
+                    fontSize = if (progress != null) 52.sp else 72.sp,
                     color = if (timerRunning) BrandGreen else Color.White,
                 )
-                if (canListen) {
+                // Standalone plank is voice/button controlled; a plan hold auto-runs.
+                if (progress == null && canListen) {
                     Text(
                         text = if (timerRunning) "Say \"stop\"" else "Say \"start\"",
                         fontSize = 14.sp,
@@ -314,7 +320,11 @@ fun CameraScreen(
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            if (timed) {
+            if (timed && progress != null) {
+                // Plan hold runs automatically to its target; just skip or stop.
+                GymButton("Skip exercise", { viewModel.skipToNextExercise() }, style = GymButtonStyle.Secondary)
+                GymButton("Stop plan", onExit, style = GymButtonStyle.Secondary)
+            } else if (timed) {
                 GymButton(
                     if (timerRunning) "Stop timer" else "Start timer",
                     { if (timerRunning) viewModel.stopTimer() else viewModel.startTimer() },

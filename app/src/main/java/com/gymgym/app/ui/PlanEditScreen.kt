@@ -75,12 +75,20 @@ fun PlanEditScreen(
                 canMoveUp = index > 0,
                 canMoveDown = index < rows.size - 1,
                 onCycleExercise = {
-                    // Plans are rep-based; timed (hold) exercises aren't cyclable here.
-                    val plannable = Exercise.entries.filter { !it.timed }
-                    val pos = plannable.indexOf(row.exercise).coerceAtLeast(0)
-                    rows[index] = row.copy(exercise = plannable[(pos + 1) % plannable.size])
+                    val next = Exercise.entries[(row.exercise.ordinal + 1) % Exercise.entries.size]
+                    // "reps" doubles as hold-seconds for timed exercises; snap to a
+                    // sensible default when switching between the two kinds.
+                    val amount = when {
+                        next.timed && !row.exercise.timed -> 30
+                        !next.timed && row.exercise.timed -> 10
+                        else -> row.reps
+                    }
+                    rows[index] = row.copy(exercise = next, reps = amount)
                 },
-                onReps = { rows[index] = row.copy(reps = it.coerceIn(1, 100)) },
+                onReps = {
+                    val clamped = if (row.exercise.timed) it.coerceIn(5, 600) else it.coerceIn(1, 100)
+                    rows[index] = row.copy(reps = clamped)
+                },
                 onSets = { rows[index] = row.copy(sets = it.coerceIn(1, 20)) },
                 onMoveUp = { if (index > 0) rows.swap(index, index - 1) },
                 onMoveDown = { if (index < rows.size - 1) rows.swap(index, index + 1) },
@@ -141,14 +149,18 @@ private fun ExerciseRowCard(
                     TextButton(onClick = onRemove) { Text("✕") }
                 }
             }
-            Stepper(label = "Reps", value = row.reps, onChange = onReps)
+            if (row.exercise.timed) {
+                Stepper(label = "Seconds", value = row.reps, step = 5, onChange = onReps)
+            } else {
+                Stepper(label = "Reps", value = row.reps, onChange = onReps)
+            }
             Stepper(label = "Sets", value = row.sets, onChange = onSets)
         }
     }
 }
 
 @Composable
-private fun Stepper(label: String, value: Int, onChange: (Int) -> Unit) {
+private fun Stepper(label: String, value: Int, onChange: (Int) -> Unit, step: Int = 1) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -156,13 +168,13 @@ private fun Stepper(label: String, value: Int, onChange: (Int) -> Unit) {
     ) {
         Text(label)
         Row(verticalAlignment = Alignment.CenterVertically) {
-            OutlinedButton(onClick = { onChange(value - 1) }) { Text("−") }
+            OutlinedButton(onClick = { onChange(value - step) }) { Text("−") }
             Text(
                 value.toString(),
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
-            OutlinedButton(onClick = { onChange(value + 1) }) { Text("+") }
+            OutlinedButton(onClick = { onChange(value + step) }) { Text("+") }
         }
     }
 }

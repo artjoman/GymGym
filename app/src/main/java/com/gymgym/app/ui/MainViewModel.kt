@@ -159,6 +159,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var timerJob: Job? = null
     private var timerBaseMs = 0L
     private var timedLogged = false
+    // >0 for a plan's timed set (auto-completes at this hold); 0 for a manual hold.
+    private var timedTargetMs = 0L
     private var lastTrackedAtMs = 0L
     private var consecutivePlausibleFrames = 0
     private var sessionStartedAt = 0L
@@ -215,10 +217,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _timerRunning.value = false
         _elapsedMs.value = 0L
         timedLogged = false
+        timedTargetMs = 0L // standalone hold: manual, no auto-complete
         _countdownValue.value = null
     }
 
-    /** Start (or restart) the hold stopwatch. */
+    /** Start (or restart) a manual hold stopwatch (standalone plank). */
     fun startTimer() {
         val exercise = _selectedExercise.value ?: return
         if (!exercise.timed || _timerRunning.value) return
@@ -228,13 +231,41 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             timedLogged = false
             sessionStartedAt = System.currentTimeMillis()
         }
+        timedTargetMs = 0L
         _timerRunning.value = true
         timerBaseMs = SystemClock.elapsedRealtime() - _elapsedMs.value
         if (soundSettings.value.soundsEnabled) speak("Timer started")
+        launchTimerJob()
+    }
+
+    /** Auto-start a plan's timed set after its countdown (target already set). */
+    private fun beginTimedHold() {
+        if (timedTargetMs <= 0) return
+        _elapsedMs.value = 0L
+        _repCount.value = 0
+        timedLogged = false
+        _timerRunning.value = true
+        timerBaseMs = SystemClock.elapsedRealtime()
+        launchTimerJob()
+    }
+
+    private fun launchTimerJob() {
         timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while (_timerRunning.value) {
-                _elapsedMs.value = SystemClock.elapsedRealtime() - timerBaseMs
+                val e = SystemClock.elapsedRealtime() - timerBaseMs
+                // A plan's timed set auto-completes once the target hold is reached.
+                if (timedTargetMs > 0 && e >= timedTargetMs) {
+                    _elapsedMs.value = timedTargetMs
+                    _repCount.value = (timedTargetMs / 1_000).toInt()
+                    _timerRunning.value = false
+                    onSetComplete()
+                    break
+                }
+                _elapsedMs.value = e
+                // Held seconds double as the "rep" count so plan accounting (accumulate,
+                // skip, log) works unchanged for timed sets.
+                if (timedTargetMs > 0) _repCount.value = (e / 1_000).toInt()
                 delay(TIMER_TICK_MS)
             }
         }
@@ -346,6 +377,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _selectedExercise.value = step.exercise
         _repCount.value = 0
         counter = counterFor(step.exercise)
+        // For a timed step the target is a hold duration (seconds stored in targetReps).
+        timedTargetMs = if (step.exercise.timed) step.targetReps.toLong() * 1_000 else 0L
+        _elapsedMs.value = 0L
+        _timerRunning.value = false
         updatePlanProgress()
         startCountdown()
     }
@@ -498,10 +533,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /** Manual exit from the run screen (button or system back), for both modes. */
     fun stopSession() {
         val exercise = _selectedExercise.value
+        // Freeze any running hold first so the reads below are stable.
         if (exercise?.timed == true) {
-            // Bank an in-progress or unlogged hold before leaving.
             _timerRunning.value = false
             timerJob?.cancel()
+        }
+        if (exercise?.timed == true && !isPlanRun) {
+            // Standalone hold: bank the exact held time.
             if (!timedLogged) logTimedSession(exercise, _elapsedMs.value, sessionStartedAt)
             clearSession()
             return
@@ -524,6 +562,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _timerRunning.value = false
         _elapsedMs.value = 0L
         timedLogged = false
+        timedTargetMs = 0L
         _celebration.value = null
         _paused.value = false
         _countdownValue.value = null
@@ -716,6 +755,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             delay(GO_DISPLAY_MS)
             _countdownValue.value = null
             counter?.reset()
+            // A plan's timed set starts holding as soon as the countdown clears.
+            if (_selectedExercise.value?.timed == true) beginTimedHold()
         }
     }
 
