@@ -45,11 +45,14 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-enum class Exercise(val displayName: String, val framingTip: String) {
+enum class Exercise(val displayName: String, val framingTip: String, val timed: Boolean = false) {
     SQUAT("Squat", "Prop the phone to the side, full body in frame"),
     PUSHUP("Pushup", "Prop the phone to the side, full body in frame"),
     PULLUP("Pullup", "Prop the phone facing you, bar and full body in frame"),
     DUMBBELL_PRESS("Dumbbell Press", "Prop the phone facing you, arms and torso in frame"),
+    // Hold-for-time exercise: a stopwatch the user starts/stops (voice or button)
+    // rather than a rep counter.
+    PLANK("Plank", "Prop the phone to the side, full body in frame", timed = true),
 }
 
 /** Live progress while running a multi-exercise plan; null during an ad-hoc single exercise. */
@@ -124,6 +127,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _paused = MutableStateFlow(false)
     val paused: StateFlow<Boolean> = _paused.asStateFlow()
 
+    // --- Timed (hold) exercises, e.g. plank ---
+    /** Elapsed hold time in ms for the current timed exercise. */
+    private val _elapsedMs = MutableStateFlow(0L)
+    val elapsedMs: StateFlow<Long> = _elapsedMs.asStateFlow()
+
+    /** Whether the hold stopwatch is currently running. */
+    private val _timerRunning = MutableStateFlow(false)
+    val timerRunning: StateFlow<Boolean> = _timerRunning.asStateFlow()
+
     /** True while TTS is speaking; the run screen mutes voice recognition then. */
     val isSpeaking: StateFlow<Boolean> = voiceFeedback.speaking
 
@@ -144,6 +156,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var counter: RepCounter? = null
     private var countdownJob: Job? = null
     private var transitionJob: Job? = null
+    private var timerJob: Job? = null
+    private var timerBaseMs = 0L
+    private var timedLogged = false
     private var lastTrackedAtMs = 0L
     private var consecutivePlausibleFrames = 0
     private var sessionStartedAt = 0L
@@ -186,10 +201,84 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _selectedExercise.value = exercise
         _repCount.value = 0
         sessionStartedAt = System.currentTimeMillis()
-        counter = counterFor(exercise)
+        counter = counterFor(exercise) // null for timed exercises
         _autoDetecting.value = false
         _autoLocked.value = false
-        startCountdown()
+        if (exercise.timed) prepareTimedExercise() else startCountdown()
+    }
+
+    // --- Timed (hold) exercises: plank etc. Controlled by start/stop, not reps. ---
+
+    /** Reset the stopwatch; it waits for a start command rather than a countdown. */
+    private fun prepareTimedExercise() {
+        timerJob?.cancel()
+        _timerRunning.value = false
+        _elapsedMs.value = 0L
+        timedLogged = false
+        _countdownValue.value = null
+    }
+
+    /** Start (or restart) the hold stopwatch. */
+    fun startTimer() {
+        val exercise = _selectedExercise.value ?: return
+        if (!exercise.timed || _timerRunning.value) return
+        // A start after a completed hold begins a fresh attempt.
+        if (timedLogged || _elapsedMs.value == 0L) {
+            _elapsedMs.value = 0L
+            timedLogged = false
+            sessionStartedAt = System.currentTimeMillis()
+        }
+        _timerRunning.value = true
+        timerBaseMs = SystemClock.elapsedRealtime() - _elapsedMs.value
+        if (soundSettings.value.soundsEnabled) speak("Timer started")
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch {
+            while (_timerRunning.value) {
+                _elapsedMs.value = SystemClock.elapsedRealtime() - timerBaseMs
+                delay(TIMER_TICK_MS)
+            }
+        }
+    }
+
+    /** Stop the hold stopwatch and log the held time. */
+    fun stopTimer() {
+        val exercise = _selectedExercise.value ?: return
+        if (!exercise.timed || !_timerRunning.value) return
+        _timerRunning.value = false
+        timerJob?.cancel()
+        val held = SystemClock.elapsedRealtime() - timerBaseMs
+        _elapsedMs.value = held
+        logTimedSession(exercise, held, sessionStartedAt)
+        timedLogged = true
+        if (soundSettings.value.soundsEnabled) speak("Time, ${spokenDuration(held)}")
+    }
+
+    /** Persist a hold: seconds go in repCount so existing best/total/avg aggregates
+     *  work, the true hold time in durationMs. */
+    private fun logTimedSession(exercise: Exercise, heldMs: Long, startedAt: Long) {
+        if (heldMs < 1_000) return // ignore sub-second taps
+        viewModelScope.launch {
+            workoutRepository.log(
+                WorkoutSession(
+                    exerciseType = exercise.name,
+                    repCount = (heldMs / 1_000).toInt(),
+                    startedAt = startedAt,
+                    durationMs = heldMs,
+                ),
+            )
+        }
+    }
+
+    private fun spokenDuration(ms: Long): String {
+        val total = (ms / 1_000).toInt()
+        val m = total / 60
+        val s = total % 60
+        fun plural(n: Int) = if (n == 1) "" else "s"
+        return when {
+            m > 0 && s > 0 -> "$m minute${plural(m)} $s second${plural(s)}"
+            m > 0 -> "$m minute${plural(m)}"
+            else -> "$s second${plural(s)}"
+        }
     }
 
     // --- Auto-detect mode ---
@@ -354,6 +443,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     /** Pause the active session — stops counting and the countdown until [resume]. */
     fun pause() {
+        // Timed exercises are governed by start/stop, not the pause overlay.
+        if (_selectedExercise.value?.timed == true) return
         if (_paused.value || _selectedExercise.value == null || _planComplete.value) return
         _paused.value = true
         countdownJob?.cancel()
@@ -406,6 +497,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     /** Manual exit from the run screen (button or system back), for both modes. */
     fun stopSession() {
+        val exercise = _selectedExercise.value
+        if (exercise?.timed == true) {
+            // Bank an in-progress or unlogged hold before leaving.
+            _timerRunning.value = false
+            timerJob?.cancel()
+            if (!timedLogged) logTimedSession(exercise, _elapsedMs.value, sessionStartedAt)
+            clearSession()
+            return
+        }
         if (isPlanRun) {
             if (!_planComplete.value) {
                 val step = currentStep()
@@ -420,6 +520,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun clearSession() {
         countdownJob?.cancel()
         transitionJob?.cancel()
+        timerJob?.cancel()
+        _timerRunning.value = false
+        _elapsedMs.value = 0L
+        timedLogged = false
         _celebration.value = null
         _paused.value = false
         _countdownValue.value = null
@@ -455,11 +559,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun counterFor(exercise: Exercise): RepCounter = when (exercise) {
+    private fun counterFor(exercise: Exercise): RepCounter? = when (exercise) {
         Exercise.SQUAT -> SquatCounter()
         Exercise.PUSHUP -> PushupCounter()
         Exercise.PULLUP -> PullupCounter()
         Exercise.DUMBBELL_PRESS -> DumbbellPressCounter()
+        Exercise.PLANK -> null // timed exercise: no rep counter
     }
 
     // --- Plan CRUD ---
@@ -617,6 +722,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private companion object {
         const val COUNTDOWN_SECONDS = 3
         const val GO_DISPLAY_MS = 700L
+        const val TIMER_TICK_MS = 100L
         const val PLAN_COMPLETE_DISPLAY_MS = 1_800L
         const val CELEBRATION_DISPLAY_MS = 1_300L
         const val TRACKING_CHECK_INTERVAL_MS = 250L

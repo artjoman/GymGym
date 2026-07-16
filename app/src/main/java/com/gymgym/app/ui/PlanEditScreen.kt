@@ -75,8 +75,10 @@ fun PlanEditScreen(
                 canMoveUp = index > 0,
                 canMoveDown = index < rows.size - 1,
                 onCycleExercise = {
-                    val next = Exercise.entries[(row.exercise.ordinal + 1) % Exercise.entries.size]
-                    rows[index] = row.copy(exercise = next)
+                    // Plans are rep-based; timed (hold) exercises aren't cyclable here.
+                    val plannable = Exercise.entries.filter { !it.timed }
+                    val pos = plannable.indexOf(row.exercise).coerceAtLeast(0)
+                    rows[index] = row.copy(exercise = plannable[(pos + 1) % plannable.size])
                 },
                 onReps = { rows[index] = row.copy(reps = it.coerceIn(1, 100)) },
                 onSets = { rows[index] = row.copy(sets = it.coerceIn(1, 20)) },

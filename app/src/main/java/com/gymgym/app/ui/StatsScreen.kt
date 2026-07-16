@@ -66,20 +66,31 @@ fun StatsScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
+                        val timed = isTimedExercise(stat.exerciseType)
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
                             StatCell("Sessions", stat.sessionCount.toString(), Modifier.weight(1f))
-                            StatCell("Total reps", stat.totalReps.toString(), Modifier.weight(1f))
-                            StatCell("Best set", stat.bestReps.toString(), Modifier.weight(1f))
+                            if (timed) {
+                                StatCell("Best hold", formatDurationLong(stat.bestReps * 1_000L), Modifier.weight(1f))
+                                StatCell("Avg hold", formatDurationLong((stat.avgReps * 1_000).toLong()), Modifier.weight(1f))
+                            } else {
+                                StatCell("Total reps", stat.totalReps.toString(), Modifier.weight(1f))
+                                StatCell("Best set", stat.bestReps.toString(), Modifier.weight(1f))
+                            }
                         }
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(top = 14.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            StatCell("Avg reps", String.format("%.1f", stat.avgReps), Modifier.weight(1f), big = false)
-                            StatCell("Total time", formatDurationLong(stat.totalDurationMs), Modifier.weight(1f), big = false)
+                            if (timed) {
+                                StatCell("Total time", formatDurationLong(stat.totalDurationMs), Modifier.weight(1f), big = false)
+                                StatCell("Last", formatDate(stat.lastPerformedAt), Modifier.weight(1f), big = false)
+                            } else {
+                                StatCell("Avg reps", String.format("%.1f", stat.avgReps), Modifier.weight(1f), big = false)
+                                StatCell("Total time", formatDurationLong(stat.totalDurationMs), Modifier.weight(1f), big = false)
+                            }
                             StatCell("Since", formatDate(stat.firstPerformedAt), Modifier.weight(1f), big = false)
                         }
                     }

@@ -22,7 +22,7 @@ class VoiceCommandListener(
     private val context: Context,
     private val onCommand: (VoiceCommand) -> Unit,
 ) {
-    enum class VoiceCommand { PAUSE, RESUME, NEXT, RESET }
+    enum class VoiceCommand { PAUSE, RESUME, NEXT, RESET, START, STOP }
 
     private val handler = Handler(Looper.getMainLooper())
     private var recognizer: SpeechRecognizer? = null
@@ -103,8 +103,11 @@ class VoiceCommandListener(
         val text = candidates.joinToString(" ").lowercase()
         val command = when {
             containsAny(text, "next", "skip") -> VoiceCommand.NEXT
+            // "restart"/"again" must be checked before "start" so they don't match START.
             containsAny(text, "reset", "restart", "again") -> VoiceCommand.RESET
             containsAny(text, "resume", "continue", "unpause") -> VoiceCommand.RESUME
+            containsAny(text, "start", "begin") -> VoiceCommand.START
+            containsAny(text, "stop", "finish", "done", "end") -> VoiceCommand.STOP
             containsAny(text, "pause", "wait", "hold") -> VoiceCommand.PAUSE
             else -> null
         }

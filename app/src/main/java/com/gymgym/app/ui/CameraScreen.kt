@@ -76,6 +76,9 @@ fun CameraScreen(
     val isSpeaking by viewModel.isSpeaking.collectAsState()
     val autoDetecting by viewModel.autoDetecting.collectAsState()
     val autoLocked by viewModel.autoLocked.collectAsState()
+    val elapsedMs by viewModel.elapsedMs.collectAsState()
+    val timerRunning by viewModel.timerRunning.collectAsState()
+    val timed = exercise?.timed == true
 
     val previewView = remember { PreviewView(context) }
     val cameraController = remember { CameraController(context) }
@@ -110,6 +113,8 @@ fun CameraScreen(
                     VoiceCommandListener.VoiceCommand.RESUME -> viewModel.resume()
                     VoiceCommandListener.VoiceCommand.NEXT -> viewModel.skipToNextExercise()
                     VoiceCommandListener.VoiceCommand.RESET -> viewModel.resetSession()
+                    VoiceCommandListener.VoiceCommand.START -> viewModel.startTimer()
+                    VoiceCommandListener.VoiceCommand.STOP -> viewModel.stopTimer()
                 }
             }
         } else {
@@ -202,7 +207,28 @@ fun CameraScreen(
         )
 
         val progress = planProgress
-        if (!autoDetecting) {
+        if (timed) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .statusBarsPadding()
+                    .padding(top = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = formatClock2(elapsedMs),
+                    fontSize = 72.sp,
+                    color = if (timerRunning) BrandGreen else Color.White,
+                )
+                if (canListen) {
+                    Text(
+                        text = if (timerRunning) "Say \"stop\"" else "Say \"start\"",
+                        fontSize = 14.sp,
+                        color = Color(0xFFCFD8DC),
+                    )
+                }
+            }
+        } else if (!autoDetecting) {
             Text(
                 text = if (progress != null) "${repCount} / ${progress.targetReps}" else repCount.toString(),
                 fontSize = 72.sp,
@@ -267,7 +293,7 @@ fun CameraScreen(
             }
         }
 
-        if (countdownValue == null && !isTracking && !planComplete && celebration == null && !paused) {
+        if (countdownValue == null && !isTracking && !planComplete && celebration == null && !paused && !timed) {
             Text(
                 text = "Move into frame",
                 fontSize = 18.sp,
@@ -288,7 +314,13 @@ fun CameraScreen(
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            if (progress != null) {
+            if (timed) {
+                GymButton(
+                    if (timerRunning) "Stop timer" else "Start timer",
+                    { if (timerRunning) viewModel.stopTimer() else viewModel.startTimer() },
+                )
+                GymButton("Change exercise", onExit, style = GymButtonStyle.Secondary)
+            } else if (progress != null) {
                 GymButton("Skip exercise", { viewModel.skipToNextExercise() }, style = GymButtonStyle.Secondary)
                 GymButton("Pause", { viewModel.pause() }, style = GymButtonStyle.Secondary)
                 GymButton("Stop plan", onExit, style = GymButtonStyle.Secondary)

@@ -12,6 +12,11 @@ private val clockFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
 fun exerciseLabel(exerciseType: String): String =
     Exercise.entries.find { it.name == exerciseType }?.displayName ?: exerciseType
 
+/** Whether the stored exercise type is a hold-for-time exercise (plank, etc.),
+ *  so screens format it as a duration instead of reps. */
+fun isTimedExercise(exerciseType: String): Boolean =
+    Exercise.entries.find { it.name == exerciseType }?.timed == true
+
 fun formatDate(epochMillis: Long): String = dateFormat.format(Date(epochMillis))
 
 fun formatDateTime(epochMillis: Long): String = dateTimeFormat.format(Date(epochMillis))

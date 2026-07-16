@@ -82,7 +82,11 @@ private fun SessionRow(session: WorkoutSession, onClick: () -> Unit) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Text("${session.repCount} reps", style = MaterialTheme.typography.titleMedium)
+            Text(
+                if (isTimedExercise(session.exerciseType)) formatDurationLong(session.durationMs)
+                else "${session.repCount} reps",
+                style = MaterialTheme.typography.titleMedium,
+            )
             Text(
                 "  ›",
                 fontSize = 22.sp,

@@ -41,17 +41,20 @@ fun SessionDetailScreen(session: WorkoutSession?, onBack: () -> Unit) {
                     style = MaterialTheme.typography.titleMedium,
                     color = BrandGreen,
                 )
+                val timed = isTimedExercise(session.exerciseType)
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
-                        session.repCount.toString(),
+                        if (timed) formatDurationLong(session.durationMs) else session.repCount.toString(),
                         style = MaterialTheme.typography.displayLarge,
                     )
-                    Text(
-                        " reps",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(bottom = 10.dp),
-                    )
+                    if (!timed) {
+                        Text(
+                            " reps",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 10.dp),
+                        )
+                    }
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
@@ -59,7 +62,7 @@ fun SessionDetailScreen(session: WorkoutSession?, onBack: () -> Unit) {
                 DetailRow("Started", formatDateTime(session.startedAt))
                 DetailRow("Ended", formatDateTime(session.startedAt + session.durationMs))
                 DetailRow("Duration", formatDurationLong(session.durationMs))
-                DetailRow("Pace", formatPace(session.repCount, session.durationMs))
+                if (!timed) DetailRow("Pace", formatPace(session.repCount, session.durationMs))
             }
         }
 
