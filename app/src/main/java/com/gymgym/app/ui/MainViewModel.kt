@@ -574,6 +574,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun cueFor(quality: RepQuality): String = when {
         RepFault.SHALLOW in quality.faults -> "Go deeper"
+        RepFault.WOBBLY in quality.faults -> "Steady"
         RepFault.TOO_FAST in quality.faults -> "Slow down"
         else -> ""
     }

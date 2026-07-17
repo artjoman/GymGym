@@ -12,7 +12,7 @@ import com.gymgym.app.pose.angleBetween
  * height (smaller y = higher in the image) - a cheap proxy for "chin over the bar". When that
  * gate isn't met, the angle is clamped to a fully-extended reading so the rep can't start.
  */
-class PullupCounter : RepCounter {
+class PullupCounter(private val tuning: FormTuning = FormTuning()) : RepCounter {
     override val exerciseName = "Pullup"
 
     private val stateMachine = RepStateMachine(downEnterThreshold = 90f, upEnterThreshold = 160f)
@@ -27,9 +27,14 @@ class PullupCounter : RepCounter {
         val chinOverBar = nose != null && wrist != null && nose.y <= wrist.y
         val gatedAngle = if (chinOverBar) angle else FULLY_EXTENDED_ANGLE
 
-        val stats = stateMachine.process(gatedAngle, nowMs) ?: return null
+        val stats = stateMachine.process(gatedAngle, nowMs, normalizedLateral(pose)) ?: return null
         // A good pull-up drives the elbow well past the count threshold (chin high).
-        return closingQuality(stats, GOOD_DEPTH_MAX, MIN_DURATION_MS)
+        return closingQuality(
+            stats,
+            GOOD_DEPTH_MAX + tuning.depthTolerance,
+            MIN_DURATION_MS,
+            WOBBLE_MAX * tuning.wobbleScale,
+        )
     }
 
     override fun reset() = stateMachine.reset()
@@ -45,5 +50,6 @@ class PullupCounter : RepCounter {
         const val FULLY_EXTENDED_ANGLE = 180f
         const val GOOD_DEPTH_MAX = 75f   // counted at ≤90°; a strong pull reaches ≤75°
         const val MIN_DURATION_MS = 900L
+        const val WOBBLE_MAX = 0.13f     // front view: swinging / kipping shows as sway
     }
 }

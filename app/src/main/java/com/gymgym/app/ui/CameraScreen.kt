@@ -262,6 +262,7 @@ fun CameraScreen(
             val cue = when {
                 badFault == null -> null
                 RepFault.SHALLOW in badFault.faults -> "GO DEEPER"
+                RepFault.WOBBLY in badFault.faults -> "STEADY"
                 RepFault.TOO_FAST in badFault.faults -> "SLOW DOWN"
                 else -> null
             }

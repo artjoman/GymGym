@@ -22,7 +22,7 @@ import kotlin.math.hypot
  * smoothed to kill per-frame jitter, then fed to the shared [RepStateMachine]
  * whose hysteresis + minimum-frames-in-down guard against double counts.
  */
-class PushupCounter : RepCounter {
+class PushupCounter(private val tuning: FormTuning = FormTuning()) : RepCounter {
     override val exerciseName = "Pushup"
 
     private val stateMachine = RepStateMachine(downEnterThreshold = 105f, upEnterThreshold = 150f)
@@ -44,9 +44,14 @@ class PushupCounter : RepCounter {
         }
 
         smoothedFlexion = if (smoothedFlexion.isNaN()) fused else SMOOTHING * fused + (1 - SMOOTHING) * smoothedFlexion
-        val stats = stateMachine.process(smoothedFlexion, nowMs) ?: return null
+        val stats = stateMachine.process(smoothedFlexion, nowMs, normalizedLateral(pose)) ?: return null
         // A good push-up bends the (fused) flexion clearly past the count threshold.
-        return closingQuality(stats, GOOD_DEPTH_MAX, MIN_DURATION_MS)
+        return closingQuality(
+            stats,
+            GOOD_DEPTH_MAX + tuning.depthTolerance,
+            MIN_DURATION_MS,
+            WOBBLE_MAX * tuning.wobbleScale,
+        )
     }
 
     override fun reset() {
@@ -118,5 +123,6 @@ class PushupCounter : RepCounter {
         const val TOP_DRIFT = 0.05f           // slow follow of the top baseline
         const val GOOD_DEPTH_MAX = 95f        // fused flexion must reach ≤ this for good depth
         const val MIN_DURATION_MS = 800L      // faster than this reads as a bounced rep
+        const val WOBBLE_MAX = 0.20f          // side view: hips sag/pike less horizontally
     }
 }

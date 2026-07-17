@@ -27,9 +27,15 @@ class RepStateMachine(
     private var minAngle = Float.MAX_VALUE
     private var maxAngle = -Float.MAX_VALUE
     private var repStartMs = 0L
+    private var latMin = Float.MAX_VALUE
+    private var latMax = -Float.MAX_VALUE
+    private var latSeen = false
 
-    /** Feed the latest angle + timestamp. Returns [RepStats] exactly when a rep completes. */
-    fun process(angle: Float, nowMs: Long): RepStats? {
+    /**
+     * Feed the latest angle + timestamp, and optionally a normalized lateral
+     * position (for sway). Returns [RepStats] exactly when a rep completes.
+     */
+    fun process(angle: Float, nowMs: Long, lateral: Float? = null): RepStats? {
         return when (phase) {
             Phase.UNKNOWN, Phase.UP -> {
                 if (angle <= downEnterThreshold) {
@@ -38,9 +44,11 @@ class RepStateMachine(
                         repStartMs = nowMs
                         minAngle = angle
                         maxAngle = angle
-                    } else {
-                        observe(angle)
+                        latMin = Float.MAX_VALUE
+                        latMax = -Float.MAX_VALUE
+                        latSeen = false
                     }
+                    observe(angle, lateral)
                     framesInDown++
                     if (framesInDown >= minFramesInDown) phase = Phase.DOWN
                 } else {
@@ -51,9 +59,10 @@ class RepStateMachine(
                 null
             }
             Phase.DOWN -> {
-                observe(angle)
+                observe(angle, lateral)
                 if (angle >= upEnterThreshold) {
-                    val stats = RepStats(minAngle, maxAngle, (nowMs - repStartMs).coerceAtLeast(0))
+                    val sway = if (latSeen) latMax - latMin else 0f
+                    val stats = RepStats(minAngle, maxAngle, (nowMs - repStartMs).coerceAtLeast(0), sway)
                     phase = Phase.UP
                     framesInDown = 0
                     inRep = false
@@ -65,9 +74,14 @@ class RepStateMachine(
         }
     }
 
-    private fun observe(angle: Float) {
+    private fun observe(angle: Float, lateral: Float?) {
         if (angle < minAngle) minAngle = angle
         if (angle > maxAngle) maxAngle = angle
+        if (lateral != null) {
+            latSeen = true
+            if (lateral < latMin) latMin = lateral
+            if (lateral > latMax) latMax = lateral
+        }
     }
 
     fun reset() {
