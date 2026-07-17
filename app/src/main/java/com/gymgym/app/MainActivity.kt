@@ -28,6 +28,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.gymgym.app.data.PlanWithExercises
+import com.gymgym.app.ui.AppBackground
 import com.gymgym.app.ui.CameraScreen
 import com.gymgym.app.ui.Exercise
 import com.gymgym.app.ui.ExerciseSelectScreen
@@ -133,14 +134,20 @@ private fun AppRoot(viewModel: MainViewModel) {
         }
     }
 
-    NavHost(navController = navController, startDestination = Routes.HOME) {
+    val settings by viewModel.soundSettings.collectAsState()
+    AppBackground(
+        style = settings.backgroundStyle,
+        customPath = settings.customBackgroundPath,
+    ) {
+    NavHost(
+        navController = navController,
+        startDestination = Routes.HOME,
+        modifier = Modifier.fillMaxSize(),
+    ) {
         composable(Routes.HOME) {
             val profile by viewModel.profile.collectAsState()
-            val homeSettings by viewModel.soundSettings.collectAsState()
             ExerciseSelectScreen(
                 greeting = profile.displayName,
-                backgroundStyle = homeSettings.backgroundStyle,
-                customBackgroundPath = homeSettings.customBackgroundPath,
                 onExerciseSelected = ::startExercise,
                 onAutoDetect = ::startAuto,
                 onOpenPlans = { navController.navigate(Routes.PLANS) },
@@ -270,5 +277,6 @@ private fun AppRoot(viewModel: MainViewModel) {
                 onBack = { navController.popBackStack() },
             )
         }
+    }
     }
 }

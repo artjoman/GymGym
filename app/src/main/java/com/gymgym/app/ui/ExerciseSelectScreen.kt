@@ -21,13 +21,10 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.gymgym.app.settings.BackgroundStyle
 
 @Composable
 fun ExerciseSelectScreen(
     greeting: String?,
-    backgroundStyle: BackgroundStyle,
-    customBackgroundPath: String?,
     onExerciseSelected: (Exercise) -> Unit,
     onAutoDetect: () -> Unit,
     onOpenPlans: () -> Unit,
@@ -37,14 +34,13 @@ fun ExerciseSelectScreen(
     onOpenProfile: () -> Unit,
     onOpenSettings: () -> Unit,
 ) {
-    AppBackground(style = backgroundStyle, customPath = customBackgroundPath) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .systemBarsPadding()
-                .padding(horizontal = 20.dp, vertical = 16.dp),
-        ) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .systemBarsPadding()
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+    ) {
             // Wordmark
             Text(
                 buildAnnotatedString {
@@ -105,7 +101,6 @@ fun ExerciseSelectScreen(
             CreatorFooter()
             Spacer(Modifier.height(16.dp))
         }
-    }
 }
 
 @Composable
