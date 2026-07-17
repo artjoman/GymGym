@@ -27,6 +27,8 @@ import com.gymgym.app.pose.isPlausiblePerson
 import com.gymgym.app.profile.Profile
 import com.gymgym.app.profile.ProfileRepository
 import com.gymgym.app.profile.WeightUnit
+import com.gymgym.app.settings.AccentTheme
+import com.gymgym.app.settings.BackgroundStyle
 import com.gymgym.app.settings.CameraFacing
 import com.gymgym.app.settings.RepAnnouncementMode
 import com.gymgym.app.settings.SettingsRepository
@@ -640,6 +642,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setCameraFacing(facing: CameraFacing) =
         viewModelScope.launch { settingsRepository.setCameraFacing(facing) }
 
+    fun setAccentTheme(theme: AccentTheme) =
+        viewModelScope.launch { settingsRepository.setAccentTheme(theme) }
+
+    fun setBackgroundStyle(style: BackgroundStyle) =
+        viewModelScope.launch { settingsRepository.setBackgroundStyle(style) }
+
+    /** Copy a picked image into app storage and switch to it as the background. */
+    fun setCustomBackground(uri: Uri) = viewModelScope.launch {
+        val path = withContext(Dispatchers.IO) {
+            runCatching {
+                val app = getApplication<Application>()
+                // Fresh filename each time so the background recomposes (path changes).
+                app.filesDir.listFiles { f -> f.name.startsWith("custom_bg_") }
+                    ?.forEach { it.delete() }
+                val dest = java.io.File(app.filesDir, "custom_bg_${System.currentTimeMillis()}.jpg")
+                app.contentResolver.openInputStream(uri)?.use { input ->
+                    dest.outputStream().use { input.copyTo(it) }
+                } ?: error("no input stream")
+                dest.absolutePath
+            }.getOrNull()
+        }
+        if (path != null) settingsRepository.setCustomBackground(path)
+    }
+
     fun setDisplayName(value: String) =
         viewModelScope.launch { profileRepository.setDisplayName(value) }
 
@@ -670,6 +696,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         s.soundsEnabled, s.countdownVoice, s.repAnnouncement.name,
                         s.trackingLostBell, s.trackingRegainedChime, s.setCelebration,
                         s.voiceControl, s.cameraFacing.name,
+                        s.accentTheme.name, s.backgroundStyle.name,
                     )
                 },
                 profile = profile.value.let { p -> BackupProfile(p.displayName, p.weightUnit.name) },
@@ -725,6 +752,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 settingsRepository.setVoiceControl(voiceControl)
                 settingsRepository.setCameraFacing(
                     CameraFacing.entries.find { it.name == cameraFacing } ?: CameraFacing.BACK,
+                )
+                settingsRepository.setAccentTheme(
+                    AccentTheme.entries.find { it.name == accentTheme } ?: AccentTheme.EMERALD,
+                )
+                // CUSTOM can't restore (the image file isn't in the backup) → fall back.
+                val bg = BackgroundStyle.entries.find { it.name == backgroundStyle }
+                    ?: BackgroundStyle.GYM_EMERALD
+                settingsRepository.setBackgroundStyle(
+                    if (bg == BackgroundStyle.CUSTOM) BackgroundStyle.GYM_EMERALD else bg,
                 )
             }
             profileRepository.setDisplayName(data.profile.displayName)

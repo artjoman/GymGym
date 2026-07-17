@@ -18,7 +18,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.gymgym.app.data.WorkoutSession
-import com.gymgym.app.ui.theme.BrandGreen
 
 @Composable
 fun SessionDetailScreen(session: WorkoutSession?, onBack: () -> Unit) {
@@ -39,7 +38,7 @@ fun SessionDetailScreen(session: WorkoutSession?, onBack: () -> Unit) {
                 Text(
                     exerciseLabel(session.exerciseType).uppercase(),
                     style = MaterialTheme.typography.titleMedium,
-                    color = BrandGreen,
+                    color = MaterialTheme.colorScheme.primary,
                 )
                 val timed = isTimedExercise(session.exerciseType)
                 Row(verticalAlignment = Alignment.Bottom) {

@@ -63,7 +63,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
-            GymGymTheme {
+            val appSettings by viewModel.soundSettings.collectAsState()
+            GymGymTheme(accent = appSettings.accentTheme) {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     AppRoot(viewModel)
                 }
@@ -135,8 +136,11 @@ private fun AppRoot(viewModel: MainViewModel) {
     NavHost(navController = navController, startDestination = Routes.HOME) {
         composable(Routes.HOME) {
             val profile by viewModel.profile.collectAsState()
+            val homeSettings by viewModel.soundSettings.collectAsState()
             ExerciseSelectScreen(
                 greeting = profile.displayName,
+                backgroundStyle = homeSettings.backgroundStyle,
+                customBackgroundPath = homeSettings.customBackgroundPath,
                 onExerciseSelected = ::startExercise,
                 onAutoDetect = ::startAuto,
                 onOpenPlans = { navController.navigate(Routes.PLANS) },
@@ -260,6 +264,9 @@ private fun AppRoot(viewModel: MainViewModel) {
                 onTrackingRegainedChime = viewModel::setTrackingRegainedChime,
                 onSetCelebration = viewModel::setSetCelebration,
                 onVoiceControl = viewModel::setVoiceControl,
+                onAccentTheme = viewModel::setAccentTheme,
+                onBackgroundStyle = viewModel::setBackgroundStyle,
+                onCustomBackground = viewModel::setCustomBackground,
                 onBack = { navController.popBackStack() },
             )
         }

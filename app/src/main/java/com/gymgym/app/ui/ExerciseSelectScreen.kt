@@ -14,7 +14,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -22,11 +21,13 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.gymgym.app.ui.theme.BrandGreen
+import com.gymgym.app.settings.BackgroundStyle
 
 @Composable
 fun ExerciseSelectScreen(
     greeting: String?,
+    backgroundStyle: BackgroundStyle,
+    customBackgroundPath: String?,
     onExerciseSelected: (Exercise) -> Unit,
     onAutoDetect: () -> Unit,
     onOpenPlans: () -> Unit,
@@ -36,7 +37,7 @@ fun ExerciseSelectScreen(
     onOpenProfile: () -> Unit,
     onOpenSettings: () -> Unit,
 ) {
-    AppBackground {
+    AppBackground(style = backgroundStyle, customPath = customBackgroundPath) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -48,7 +49,7 @@ fun ExerciseSelectScreen(
             Text(
                 buildAnnotatedString {
                     withStyle(SpanStyle(color = MaterialTheme.colorScheme.onBackground)) { append("GYM") }
-                    withStyle(SpanStyle(color = BrandGreen)) { append("GYM") }
+                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary)) { append("GYM") }
                 },
                 style = MaterialTheme.typography.displayLarge,
                 fontSize = 44.sp,
@@ -100,9 +101,7 @@ fun ExerciseSelectScreen(
                 GymButton("Profile", onOpenProfile, Modifier.weight(1f), GymButtonStyle.Secondary)
                 GymButton("Settings", onOpenSettings, Modifier.weight(1f), GymButtonStyle.Secondary)
             }
-            Spacer(Modifier.height(22.dp))
-            ExerciseDemoBanner(modifier = Modifier.align(Alignment.CenterHorizontally))
-            Spacer(Modifier.height(18.dp))
+            Spacer(Modifier.height(28.dp))
             CreatorFooter()
             Spacer(Modifier.height(16.dp))
         }
@@ -114,7 +113,7 @@ private fun SectionLabel(text: String, top: androidx.compose.ui.unit.Dp) {
     Text(
         text = text.uppercase(),
         style = MaterialTheme.typography.labelMedium,
-        color = BrandGreen.copy(alpha = 0.9f),
+        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
         letterSpacing = 2.sp,
         fontWeight = FontWeight.SemiBold,
         modifier = Modifier.padding(top = top, bottom = 12.dp),

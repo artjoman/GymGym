@@ -3,21 +3,37 @@ package com.gymgym.app.ui.theme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
+import com.gymgym.app.settings.AccentTheme
 
-// Brand accent + a premium near-black surface set. The app commits to a single
-// dark theme so the gym photo background and neon accents stay consistent.
+// Default brand accent + a premium near-black surface set. The app commits to a
+// dark theme; only the accent changes with the selected color scheme.
 val BrandGreen = Color(0xFF7FE0A0)
 val BrandGreenDeep = Color(0xFF1B6B3A)
 val NeonCyan = Color(0xFF35E0FF)
 val NeonMagenta = Color(0xFFFF3DAE)
 
-private val DarkColors = darkColorScheme(
-    primary = BrandGreen,
-    onPrimary = Color(0xFF06210F),
-    secondary = NeonCyan,
-    onSecondary = Color(0xFF001A20),
-    tertiary = NeonMagenta,
+/** Accent trio exposed to components (buttons, wordmark) that draw gradients. */
+data class Brand(val accent: Color, val accentDeep: Color, val onAccent: Color)
+
+val LocalBrand = staticCompositionLocalOf {
+    Brand(BrandGreen, BrandGreenDeep, Color(0xFF06210F))
+}
+
+/** Legible foreground for text/icons sitting on the accent fill. */
+private fun onAccentFor(accent: Color): Color =
+    if (accent.luminance() > 0.45f) Color(0xFF08130C) else Color(0xFFF3FBF5)
+
+private fun schemeFor(accent: Color, deep: Color) = darkColorScheme(
+    primary = accent,
+    onPrimary = onAccentFor(accent),
+    primaryContainer = deep,
+    secondary = accent,
+    onSecondary = onAccentFor(accent),
+    tertiary = accent,
     background = Color(0xFF07090C),
     onBackground = Color(0xFFEAF2EC),
     surface = Color(0xFF10151B),
@@ -29,10 +45,18 @@ private val DarkColors = darkColorScheme(
 )
 
 @Composable
-fun GymGymTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = DarkColors,
-        typography = GymTypography,
-        content = content,
-    )
+fun GymGymTheme(
+    accent: AccentTheme = AccentTheme.EMERALD,
+    content: @Composable () -> Unit,
+) {
+    val accentColor = Color(accent.accent)
+    val deep = Color(accent.accentDeep)
+    val brand = Brand(accentColor, deep, onAccentFor(accentColor))
+    CompositionLocalProvider(LocalBrand provides brand) {
+        MaterialTheme(
+            colorScheme = schemeFor(accentColor, deep),
+            typography = GymTypography,
+            content = content,
+        )
+    }
 }

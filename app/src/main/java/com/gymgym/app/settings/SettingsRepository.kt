@@ -29,6 +29,9 @@ data class SoundSettings(
     val setCelebration: Boolean = true,
     val voiceControl: Boolean = false,
     val cameraFacing: CameraFacing = CameraFacing.BACK,
+    val accentTheme: AccentTheme = AccentTheme.EMERALD,
+    val backgroundStyle: BackgroundStyle = BackgroundStyle.GYM_EMERALD,
+    val customBackgroundPath: String? = null,
 )
 
 class SettingsRepository(context: Context) {
@@ -49,6 +52,13 @@ class SettingsRepository(context: Context) {
             cameraFacing = prefs[CAMERA_FACING]
                 ?.let { stored -> CameraFacing.entries.find { it.name == stored } }
                 ?: CameraFacing.BACK,
+            accentTheme = prefs[ACCENT_THEME]
+                ?.let { stored -> AccentTheme.entries.find { it.name == stored } }
+                ?: AccentTheme.EMERALD,
+            backgroundStyle = prefs[BACKGROUND_STYLE]
+                ?.let { stored -> BackgroundStyle.entries.find { it.name == stored } }
+                ?: BackgroundStyle.GYM_EMERALD,
+            customBackgroundPath = prefs[CUSTOM_BG_PATH],
         )
     }
 
@@ -74,6 +84,18 @@ class SettingsRepository(context: Context) {
     suspend fun setCameraFacing(facing: CameraFacing) =
         dataStore.edit { it[CAMERA_FACING] = facing.name }
 
+    suspend fun setAccentTheme(theme: AccentTheme) =
+        dataStore.edit { it[ACCENT_THEME] = theme.name }
+
+    suspend fun setBackgroundStyle(style: BackgroundStyle) =
+        dataStore.edit { it[BACKGROUND_STYLE] = style.name }
+
+    /** Persist the custom background file path and switch to the CUSTOM style. */
+    suspend fun setCustomBackground(path: String) = dataStore.edit {
+        it[CUSTOM_BG_PATH] = path
+        it[BACKGROUND_STYLE] = BackgroundStyle.CUSTOM.name
+    }
+
     private companion object {
         val SOUNDS_ENABLED = booleanPreferencesKey("sounds_enabled")
         val COUNTDOWN_VOICE = booleanPreferencesKey("countdown_voice")
@@ -83,5 +105,8 @@ class SettingsRepository(context: Context) {
         val SET_CELEBRATION = booleanPreferencesKey("set_celebration")
         val VOICE_CONTROL = booleanPreferencesKey("voice_control")
         val CAMERA_FACING = stringPreferencesKey("camera_facing")
+        val ACCENT_THEME = stringPreferencesKey("accent_theme")
+        val BACKGROUND_STYLE = stringPreferencesKey("background_style")
+        val CUSTOM_BG_PATH = stringPreferencesKey("custom_bg_path")
     }
 }

@@ -52,7 +52,6 @@ import com.gymgym.app.camera.PoseAnalyzer
 import com.gymgym.app.camera.VideoRecorder
 import com.gymgym.app.recording.RecordingStore
 import com.gymgym.app.settings.CameraFacing
-import com.gymgym.app.ui.theme.BrandGreen
 
 @Composable
 fun CameraScreen(
@@ -223,7 +222,7 @@ fun CameraScreen(
                         formatClock2(elapsedMs)
                     },
                     fontSize = if (progress != null) 52.sp else 72.sp,
-                    color = if (timerRunning) BrandGreen else Color.White,
+                    color = if (timerRunning) MaterialTheme.colorScheme.primary else Color.White,
                 )
                 // Standalone plank is voice/button controlled; a plan hold auto-runs.
                 if (progress == null && canListen) {
@@ -265,7 +264,7 @@ fun CameraScreen(
                         color = Color(0xFF06210F),
                         modifier = Modifier
                             .padding(start = 8.dp)
-                            .background(BrandGreen, RoundedCornerShape(6.dp))
+                            .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(6.dp))
                             .padding(horizontal = 6.dp, vertical = 2.dp),
                     )
                 }

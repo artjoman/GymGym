@@ -48,6 +48,8 @@ data class BackupSettings(
     val setCelebration: Boolean = true,
     val voiceControl: Boolean = false,
     val cameraFacing: String = "BACK",
+    val accentTheme: String = "EMERALD",
+    val backgroundStyle: String = "GYM_EMERALD",
 )
 
 @Serializable
