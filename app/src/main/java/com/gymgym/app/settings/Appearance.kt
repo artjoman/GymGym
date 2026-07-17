@@ -15,6 +15,12 @@ enum class AccentTheme(val label: String, val accent: Long, val accentDeep: Long
     CRIMSON("Crimson", 0xFFFF6B6BL, 0xFF8E2A2AL),
     LIME("Lime", 0xFFB6F24BL, 0xFF5E8A12L),
     AQUA("Aqua", 0xFF3FE0D0L, 0xFF166B62L),
+    TANGERINE("Tangerine", 0xFFFF8A4CL, 0xFFA0480FL),
+    ROSE("Rose", 0xFFFF5C8AL, 0xFF9C2E54L),
+    INDIGO("Indigo", 0xFF8090FFL, 0xFF2E3AA0L),
+    ORCHID("Orchid", 0xFFD488FFL, 0xFF6E2E9AL),
+    CYAN("Cyan", 0xFF46D6F0L, 0xFF12667AL),
+    SLATE("Slate", 0xFFA6BAD0L, 0xFF44566AL),
 }
 
 /**
