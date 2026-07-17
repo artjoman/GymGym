@@ -31,6 +31,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -56,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import com.gymgym.app.R
 import com.gymgym.app.settings.AccentTheme
 import com.gymgym.app.settings.BackgroundStyle
+import com.gymgym.app.settings.FormSensitivity
 import com.gymgym.app.settings.RepAnnouncementMode
 import com.gymgym.app.settings.SoundSettings
 
@@ -71,6 +73,7 @@ fun SettingsScreen(
     onVoiceControl: (Boolean) -> Unit,
     onFormFeedback: (Boolean) -> Unit,
     onStrictForm: (Boolean) -> Unit,
+    onFormSensitivity: (FormSensitivity) -> Unit,
     onAccentTheme: (AccentTheme) -> Unit,
     onBackgroundStyle: (BackgroundStyle) -> Unit,
     onCustomBackground: (Uri) -> Unit,
@@ -173,9 +176,26 @@ fun SettingsScreen(
             enabled = settings.formFeedback,
             onChange = onStrictForm,
         )
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text("Sensitivity", modifier = Modifier.weight(1f))
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                for (level in FormSensitivity.entries) {
+                    FilterChip(
+                        selected = settings.formSensitivity == level,
+                        enabled = settings.formFeedback,
+                        onClick = { onFormSensitivity(level) },
+                        label = { Text(level.label) },
+                    )
+                }
+            }
+        }
         Text(
-            "Flags shallow or bounced reps with a cue. Strict counting makes a bad " +
-                "rep not count toward the set.",
+            "Flags shallow, wobbly or bounced reps with a cue. Strict counting makes " +
+                "a bad rep not count toward the set; sensitivity sets how strict.",
             style = MaterialTheme.typography.bodySmall,
         )
         HorizontalDivider()

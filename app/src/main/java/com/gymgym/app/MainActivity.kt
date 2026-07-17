@@ -273,6 +273,7 @@ private fun AppRoot(viewModel: MainViewModel) {
                 onVoiceControl = viewModel::setVoiceControl,
                 onFormFeedback = viewModel::setFormFeedback,
                 onStrictForm = viewModel::setStrictForm,
+                onFormSensitivity = viewModel::setFormSensitivity,
                 onAccentTheme = viewModel::setAccentTheme,
                 onBackgroundStyle = viewModel::setBackgroundStyle,
                 onCustomBackground = viewModel::setCustomBackground,

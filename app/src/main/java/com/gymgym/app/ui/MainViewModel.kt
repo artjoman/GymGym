@@ -16,6 +16,7 @@ import com.gymgym.app.audio.VoiceFeedback
 import com.gymgym.app.counter.DumbbellPressCounter
 import com.gymgym.app.counter.PullupCounter
 import com.gymgym.app.counter.PushupCounter
+import com.gymgym.app.counter.FormTuning
 import com.gymgym.app.counter.RepCounter
 import com.gymgym.app.counter.RepFault
 import com.gymgym.app.counter.RepQuality
@@ -32,6 +33,7 @@ import com.gymgym.app.profile.WeightUnit
 import com.gymgym.app.settings.AccentTheme
 import com.gymgym.app.settings.BackgroundStyle
 import com.gymgym.app.settings.CameraFacing
+import com.gymgym.app.settings.FormSensitivity
 import com.gymgym.app.settings.RepAnnouncementMode
 import com.gymgym.app.settings.SettingsRepository
 import com.gymgym.app.settings.SoundSettings
@@ -667,12 +669,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun counterFor(exercise: Exercise): RepCounter? = when (exercise) {
-        Exercise.SQUAT -> SquatCounter()
-        Exercise.PUSHUP -> PushupCounter()
-        Exercise.PULLUP -> PullupCounter()
-        Exercise.DUMBBELL_PRESS -> DumbbellPressCounter()
-        Exercise.PLANK -> null // timed exercise: no rep counter
+    private fun counterFor(exercise: Exercise): RepCounter? {
+        val tuning = tuningFor(soundSettings.value.formSensitivity)
+        return when (exercise) {
+            Exercise.SQUAT -> SquatCounter(tuning)
+            Exercise.PUSHUP -> PushupCounter(tuning)
+            Exercise.PULLUP -> PullupCounter(tuning)
+            Exercise.DUMBBELL_PRESS -> DumbbellPressCounter(tuning)
+            Exercise.PLANK -> null // timed exercise: no rep counter
+        }
+    }
+
+    private fun tuningFor(sensitivity: FormSensitivity): FormTuning = when (sensitivity) {
+        FormSensitivity.LENIENT -> FormTuning(depthTolerance = 8f, wobbleScale = 1.4f)
+        FormSensitivity.STANDARD -> FormTuning()
+        FormSensitivity.STRICT -> FormTuning(depthTolerance = -6f, wobbleScale = 0.75f)
     }
 
     // --- Plan CRUD ---
@@ -714,6 +725,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setStrictForm(value: Boolean) =
         viewModelScope.launch { settingsRepository.setStrictForm(value) }
+
+    fun setFormSensitivity(value: FormSensitivity) =
+        viewModelScope.launch { settingsRepository.setFormSensitivity(value) }
 
     fun setAccentTheme(theme: AccentTheme) =
         viewModelScope.launch { settingsRepository.setAccentTheme(theme) }
@@ -770,7 +784,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         s.trackingLostBell, s.trackingRegainedChime, s.setCelebration,
                         s.voiceControl, s.cameraFacing.name,
                         s.accentTheme.name, s.backgroundStyle.name,
-                        s.formFeedback, s.strictForm,
+                        s.formFeedback, s.strictForm, s.formSensitivity.name,
                     )
                 },
                 profile = profile.value.let { p -> BackupProfile(p.displayName, p.weightUnit.name) },
@@ -839,6 +853,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 )
                 settingsRepository.setFormFeedback(formFeedback)
                 settingsRepository.setStrictForm(strictForm)
+                settingsRepository.setFormSensitivity(
+                    FormSensitivity.entries.find { it.name == formSensitivity }
+                        ?: FormSensitivity.STANDARD,
+                )
             }
             profileRepository.setDisplayName(data.profile.displayName)
             profileRepository.setWeightUnit(

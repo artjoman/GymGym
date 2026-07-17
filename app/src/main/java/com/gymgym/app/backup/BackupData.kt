@@ -53,6 +53,7 @@ data class BackupSettings(
     val backgroundStyle: String = "GYM_EMERALD",
     val formFeedback: Boolean = true,
     val strictForm: Boolean = false,
+    val formSensitivity: String = "STANDARD",
 )
 
 @Serializable

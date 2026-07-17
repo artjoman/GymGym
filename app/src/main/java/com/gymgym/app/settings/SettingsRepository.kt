@@ -20,6 +20,13 @@ enum class RepAnnouncementMode(val label: String, val step: Int) {
 
 enum class CameraFacing { BACK, FRONT }
 
+/** How strict the form check is; adjusts the good-form depth/wobble thresholds. */
+enum class FormSensitivity(val label: String) {
+    LENIENT("Lenient"),
+    STANDARD("Standard"),
+    STRICT("Strict"),
+}
+
 data class SoundSettings(
     val soundsEnabled: Boolean = true,
     val countdownVoice: Boolean = true,
@@ -36,6 +43,8 @@ data class SoundSettings(
     val formFeedback: Boolean = true,
     /** Strict counting: only good-form reps count toward the set. */
     val strictForm: Boolean = false,
+    /** How strict the form check is. */
+    val formSensitivity: FormSensitivity = FormSensitivity.STANDARD,
 )
 
 class SettingsRepository(context: Context) {
@@ -65,6 +74,9 @@ class SettingsRepository(context: Context) {
             customBackgroundPath = prefs[CUSTOM_BG_PATH],
             formFeedback = prefs[FORM_FEEDBACK] ?: true,
             strictForm = prefs[STRICT_FORM] ?: false,
+            formSensitivity = prefs[FORM_SENSITIVITY]
+                ?.let { stored -> FormSensitivity.entries.find { it.name == stored } }
+                ?: FormSensitivity.STANDARD,
         )
     }
 
@@ -106,6 +118,9 @@ class SettingsRepository(context: Context) {
 
     suspend fun setStrictForm(value: Boolean) = dataStore.edit { it[STRICT_FORM] = value }
 
+    suspend fun setFormSensitivity(value: FormSensitivity) =
+        dataStore.edit { it[FORM_SENSITIVITY] = value.name }
+
     private companion object {
         val SOUNDS_ENABLED = booleanPreferencesKey("sounds_enabled")
         val COUNTDOWN_VOICE = booleanPreferencesKey("countdown_voice")
@@ -120,5 +135,6 @@ class SettingsRepository(context: Context) {
         val CUSTOM_BG_PATH = stringPreferencesKey("custom_bg_path")
         val FORM_FEEDBACK = booleanPreferencesKey("form_feedback")
         val STRICT_FORM = booleanPreferencesKey("strict_form")
+        val FORM_SENSITIVITY = stringPreferencesKey("form_sensitivity")
     }
 }
