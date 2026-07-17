@@ -10,11 +10,13 @@ class SquatCounter : RepCounter {
 
     private val stateMachine = RepStateMachine(downEnterThreshold = 100f, upEnterThreshold = 160f)
 
-    override fun process(pose: PoseSnapshot): Boolean {
+    override fun process(pose: PoseSnapshot, nowMs: Long): RepQuality? {
         val angle = legAngle(pose, Landmark.LEFT_HIP, Landmark.LEFT_KNEE, Landmark.LEFT_ANKLE)
             ?: legAngle(pose, Landmark.RIGHT_HIP, Landmark.RIGHT_KNEE, Landmark.RIGHT_ANKLE)
-            ?: return false
-        return stateMachine.process(angle)
+            ?: return null
+        val stats = stateMachine.process(angle, nowMs) ?: return null
+        // A counted rep dips below 100°; a *good* squat reaches ~parallel (≤90°).
+        return closingQuality(stats, GOOD_DEPTH_MAX, MIN_DURATION_MS)
     }
 
     override fun reset() = stateMachine.reset()
@@ -24,5 +26,10 @@ class SquatCounter : RepCounter {
         val k = pose[knee] ?: return null
         val a = pose[ankle] ?: return null
         return angleBetween(h, k, a)
+    }
+
+    private companion object {
+        const val GOOD_DEPTH_MAX = 95f
+        const val MIN_DURATION_MS = 800L
     }
 }

@@ -517,7 +517,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
         if (_countdownValue.value != null) return
         if (!_isTracking.value) return
-        if (counter?.process(pose) == true) onRepCompleted()
+        if (counter?.process(pose, SystemClock.elapsedRealtime()) != null) onRepCompleted()
     }
 
     private fun onRepCompleted() {

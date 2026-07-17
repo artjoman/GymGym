@@ -17,17 +17,19 @@ class PullupCounter : RepCounter {
 
     private val stateMachine = RepStateMachine(downEnterThreshold = 90f, upEnterThreshold = 160f)
 
-    override fun process(pose: PoseSnapshot): Boolean {
+    override fun process(pose: PoseSnapshot, nowMs: Long): RepQuality? {
         val angle = armAngle(pose, Landmark.LEFT_SHOULDER, Landmark.LEFT_ELBOW, Landmark.LEFT_WRIST)
             ?: armAngle(pose, Landmark.RIGHT_SHOULDER, Landmark.RIGHT_ELBOW, Landmark.RIGHT_WRIST)
-            ?: return false
+            ?: return null
 
         val nose = pose[Landmark.NOSE]
         val wrist = pose[Landmark.LEFT_WRIST] ?: pose[Landmark.RIGHT_WRIST]
         val chinOverBar = nose != null && wrist != null && nose.y <= wrist.y
         val gatedAngle = if (chinOverBar) angle else FULLY_EXTENDED_ANGLE
 
-        return stateMachine.process(gatedAngle)
+        val stats = stateMachine.process(gatedAngle, nowMs) ?: return null
+        // A good pull-up drives the elbow well past the count threshold (chin high).
+        return closingQuality(stats, GOOD_DEPTH_MAX, MIN_DURATION_MS)
     }
 
     override fun reset() = stateMachine.reset()
@@ -41,5 +43,7 @@ class PullupCounter : RepCounter {
 
     private companion object {
         const val FULLY_EXTENDED_ANGLE = 180f
+        const val GOOD_DEPTH_MAX = 75f   // counted at ≤90°; a strong pull reaches ≤75°
+        const val MIN_DURATION_MS = 900L
     }
 }

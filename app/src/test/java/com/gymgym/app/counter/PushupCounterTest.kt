@@ -33,7 +33,11 @@ class PushupCounterTest {
 
     private fun countReps(counter: PushupCounter, ts: List<Float>, includeArms: Boolean = true): Int {
         var reps = 0
-        for (t in ts) if (counter.process(frame(t, includeArms))) reps++
+        var now = 0L
+        for (t in ts) {
+            if (counter.process(frame(t, includeArms), now) != null) reps++
+            now += 60L
+        }
         return reps
     }
 

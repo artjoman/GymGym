@@ -32,7 +32,7 @@ class PushupCounter : RepCounter {
     // so the top of a pushup is the *smallest* y). Anchors the torso-drop cue.
     private var topShoulderY = Float.NaN
 
-    override fun process(pose: PoseSnapshot): Boolean {
+    override fun process(pose: PoseSnapshot, nowMs: Long): RepQuality? {
         val elbow = averageElbowAngle(pose)
         val torso = torsoFlexion(pose)
 
@@ -40,11 +40,13 @@ class PushupCounter : RepCounter {
             elbow != null && torso != null -> minOf(elbow, torso)
             elbow != null -> elbow
             torso != null -> torso
-            else -> return false // neither arms nor torso readable this frame
+            else -> return null // neither arms nor torso readable this frame
         }
 
         smoothedFlexion = if (smoothedFlexion.isNaN()) fused else SMOOTHING * fused + (1 - SMOOTHING) * smoothedFlexion
-        return stateMachine.process(smoothedFlexion)
+        val stats = stateMachine.process(smoothedFlexion, nowMs) ?: return null
+        // A good push-up bends the (fused) flexion clearly past the count threshold.
+        return closingQuality(stats, GOOD_DEPTH_MAX, MIN_DURATION_MS)
     }
 
     override fun reset() {
@@ -114,5 +116,7 @@ class PushupCounter : RepCounter {
         const val FULL_DROP_FRACTION = 0.5f   // shoulder drop (× torso length) counted as full depth
         const val TOP_ANCHOR_FLEXION = 150f   // only re-anchor the top when arms are ~extended
         const val TOP_DRIFT = 0.05f           // slow follow of the top baseline
+        const val GOOD_DEPTH_MAX = 95f        // fused flexion must reach ≤ this for good depth
+        const val MIN_DURATION_MS = 800L      // faster than this reads as a bounced rep
     }
 }
