@@ -131,6 +131,35 @@ fun StatsScreen(
                     }
                 }
             }
+
+            // Form quality (good-rep %) over recent rep sessions, on a fixed 0–100 scale.
+            val formTrend = filtered
+                .filter { !isTimedExercise(it.exerciseType) && it.repCount > 0 }
+                .take(15)
+                .map { it.goodReps * 100 / it.repCount }
+                .reversed()
+            if (formTrend.size >= 2) {
+                Text("Form quality trend", style = MaterialTheme.typography.titleMedium)
+                Canvas(modifier = Modifier.fillMaxWidth().height(80.dp)) {
+                    val stepX = size.width / (formTrend.size - 1)
+                    val path = Path()
+                    formTrend.forEachIndexed { i, pct ->
+                        val x = stepX * i
+                        val y = size.height * (1f - pct / 100f)
+                        if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
+                    }
+                    drawPath(
+                        path = path,
+                        color = lineColor,
+                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = 5f),
+                    )
+                    formTrend.forEachIndexed { i, pct ->
+                        val x = stepX * i
+                        val y = size.height * (1f - pct / 100f)
+                        drawCircle(color = lineColor, radius = 6f, center = Offset(x, y))
+                    }
+                }
+            }
         }
 
         GymButton("Back", onBack, Modifier.padding(top = 8.dp), GymButtonStyle.Secondary)
