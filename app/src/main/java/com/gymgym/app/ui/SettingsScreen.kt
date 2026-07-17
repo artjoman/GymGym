@@ -69,6 +69,8 @@ fun SettingsScreen(
     onTrackingRegainedChime: (Boolean) -> Unit,
     onSetCelebration: (Boolean) -> Unit,
     onVoiceControl: (Boolean) -> Unit,
+    onFormFeedback: (Boolean) -> Unit,
+    onStrictForm: (Boolean) -> Unit,
     onAccentTheme: (AccentTheme) -> Unit,
     onBackgroundStyle: (BackgroundStyle) -> Unit,
     onCustomBackground: (Uri) -> Unit,
@@ -156,6 +158,26 @@ fun SettingsScreen(
                 Text(mode.label)
             }
         }
+        HorizontalDivider()
+
+        Text("Form check", style = MaterialTheme.typography.titleMedium)
+        SwitchRow(
+            label = "Form feedback",
+            checked = settings.formFeedback,
+            enabled = true,
+            onChange = onFormFeedback,
+        )
+        SwitchRow(
+            label = "Strict counting (only good reps)",
+            checked = settings.strictForm,
+            enabled = settings.formFeedback,
+            onChange = onStrictForm,
+        )
+        Text(
+            "Flags shallow or bounced reps with a cue. Strict counting makes a bad " +
+                "rep not count toward the set.",
+            style = MaterialTheme.typography.bodySmall,
+        )
         HorizontalDivider()
 
         Text("Hands-free control", style = MaterialTheme.typography.titleMedium)

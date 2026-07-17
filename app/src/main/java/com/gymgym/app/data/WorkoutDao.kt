@@ -28,6 +28,7 @@ interface WorkoutDao {
         SELECT exerciseType AS exerciseType,
                COUNT(*) AS sessionCount,
                SUM(repCount) AS totalReps,
+               SUM(goodReps) AS totalGoodReps,
                MAX(repCount) AS bestReps,
                AVG(repCount) AS avgReps,
                SUM(durationMs) AS totalDurationMs,

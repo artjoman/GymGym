@@ -8,9 +8,12 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [WorkoutSession::class, PlanEntity::class, PlanExerciseEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = true,
-    autoMigrations = [AutoMigration(from = 1, to = 2)],
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3), // adds workout_session.goodReps (default 0)
+    ],
 )
 abstract class GymGymDatabase : RoomDatabase() {
     abstract fun workoutDao(): WorkoutDao

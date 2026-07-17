@@ -20,6 +20,7 @@ data class BackupData(
 data class BackupSession(
     val exerciseType: String,
     val repCount: Int,
+    val goodReps: Int = 0,
     val startedAt: Long,
     val durationMs: Long,
 )
@@ -50,6 +51,8 @@ data class BackupSettings(
     val cameraFacing: String = "BACK",
     val accentTheme: String = "EMERALD",
     val backgroundStyle: String = "GYM_EMERALD",
+    val formFeedback: Boolean = true,
+    val strictForm: Boolean = false,
 )
 
 @Serializable

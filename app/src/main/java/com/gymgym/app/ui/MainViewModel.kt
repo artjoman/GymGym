@@ -17,6 +17,8 @@ import com.gymgym.app.counter.DumbbellPressCounter
 import com.gymgym.app.counter.PullupCounter
 import com.gymgym.app.counter.PushupCounter
 import com.gymgym.app.counter.RepCounter
+import com.gymgym.app.counter.RepFault
+import com.gymgym.app.counter.RepQuality
 import com.gymgym.app.counter.SquatCounter
 import com.gymgym.app.data.DraftExercise
 import com.gymgym.app.data.ExerciseStat
@@ -68,6 +70,9 @@ data class PlanProgress(
     val targetReps: Int,
 )
 
+/** Transient feedback for a just-completed rep: its form quality and whether it was counted. */
+data class RepFeedback(val quality: RepQuality, val counted: Boolean)
+
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val settingsRepository = SettingsRepository(application)
     private val profileRepository = ProfileRepository(application)
@@ -100,6 +105,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _repCount = MutableStateFlow(0)
     val repCount: StateFlow<Int> = _repCount.asStateFlow()
+
+    /** Reps in the current set/exercise completed with good form. */
+    private val _goodReps = MutableStateFlow(0)
+    val goodReps: StateFlow<Int> = _goodReps.asStateFlow()
+
+    /** Transient feedback about the just-completed rep; null when nothing to show. */
+    private val _repFeedback = MutableStateFlow<RepFeedback?>(null)
+    val repFeedback: StateFlow<RepFeedback?> = _repFeedback.asStateFlow()
 
     private val _latestPose = MutableStateFlow<PoseSnapshot?>(null)
     val latestPose: StateFlow<PoseSnapshot?> = _latestPose.asStateFlow()
@@ -158,6 +171,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var counter: RepCounter? = null
     private var countdownJob: Job? = null
     private var transitionJob: Job? = null
+    private var feedbackJob: Job? = null
     private var timerJob: Job? = null
     private var timerBaseMs = 0L
     private var timedLogged = false
@@ -175,6 +189,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var stepIndex = 0
     private var setIndex = 0
     private var exerciseRepsAccum = 0
+    private var exerciseGoodAccum = 0
 
     private val isPlanRun get() = planSteps.isNotEmpty()
     private fun currentStep(): PlanStep? = planSteps.getOrNull(stepIndex)
@@ -204,6 +219,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _requestExit.value = false
         _selectedExercise.value = exercise
         _repCount.value = 0
+        _goodReps.value = 0
+        _repFeedback.value = null
         sessionStartedAt = System.currentTimeMillis()
         counter = counterFor(exercise) // null for timed exercises
         _autoDetecting.value = false
@@ -290,11 +307,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      *  work, the true hold time in durationMs. */
     private fun logTimedSession(exercise: Exercise, heldMs: Long, startedAt: Long) {
         if (heldMs < 1_000) return // ignore sub-second taps
+        val seconds = (heldMs / 1_000).toInt()
         viewModelScope.launch {
             workoutRepository.log(
                 WorkoutSession(
                     exerciseType = exercise.name,
-                    repCount = (heldMs / 1_000).toInt(),
+                    repCount = seconds,
+                    goodReps = seconds, // a hold has no per-rep form; count it fully "good"
                     startedAt = startedAt,
                     durationMs = heldMs,
                 ),
@@ -324,6 +343,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _requestExit.value = false
         _selectedExercise.value = null
         _repCount.value = 0
+        _goodReps.value = 0
+        _repFeedback.value = null
         counter = null
         classifier.reset()
         _autoLocked.value = false
@@ -340,6 +361,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _autoLocked.value = true
         _selectedExercise.value = exercise
         _repCount.value = 0
+        _goodReps.value = 0
         counter = counterFor(exercise)
         sessionStartedAt = System.currentTimeMillis()
         _countdownValue.value = null
@@ -367,6 +389,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun skipToNextExercise() {
         if (!isPlanRun || _planComplete.value || _celebration.value != null) return
         exerciseRepsAccum += _repCount.value
+        exerciseGoodAccum += _goodReps.value
         finishCurrentExercise()
     }
 
@@ -374,10 +397,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val step = currentStep() ?: return
         if (isNewExercise) {
             exerciseRepsAccum = 0
+            exerciseGoodAccum = 0
             sessionStartedAt = System.currentTimeMillis()
         }
         _selectedExercise.value = step.exercise
         _repCount.value = 0
+        _goodReps.value = 0
+        _repFeedback.value = null
         counter = counterFor(step.exercise)
         // For a timed step the target is a hold duration (seconds stored in targetReps).
         timedTargetMs = if (step.exercise.timed) step.targetReps.toLong() * 1_000 else 0L
@@ -390,12 +416,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun onSetComplete() {
         val step = currentStep() ?: return
         exerciseRepsAccum += _repCount.value
+        exerciseGoodAccum += _goodReps.value
         val moreSets = setIndex < step.targetSets - 1
         val moreExercises = stepIndex < planSteps.size - 1
 
         // Final set of the final exercise → straight to the completion screen.
         if (!moreSets && !moreExercises) {
-            logSession(step.exercise, exerciseRepsAccum, sessionStartedAt)
+            logSession(step.exercise, exerciseRepsAccum, exerciseGoodAccum, sessionStartedAt)
             onPlanComplete()
             return
         }
@@ -424,7 +451,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             setIndex++
             beginCurrentStep(isNewExercise = false)
         } else {
-            logSession(step.exercise, exerciseRepsAccum, sessionStartedAt)
+            logSession(step.exercise, exerciseRepsAccum, exerciseGoodAccum, sessionStartedAt)
             stepIndex++
             setIndex = 0
             beginCurrentStep(isNewExercise = true)
@@ -433,7 +460,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun finishCurrentExercise() {
         val step = currentStep() ?: return
-        logSession(step.exercise, exerciseRepsAccum, sessionStartedAt)
+        logSession(step.exercise, exerciseRepsAccum, exerciseGoodAccum, sessionStartedAt)
         if (stepIndex < planSteps.size - 1) {
             stepIndex++
             setIndex = 0
@@ -517,17 +544,44 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
         if (_countdownValue.value != null) return
         if (!_isTracking.value) return
-        if (counter?.process(pose, SystemClock.elapsedRealtime()) != null) onRepCompleted()
+        counter?.process(pose, SystemClock.elapsedRealtime())?.let { onRepCompleted(it) }
     }
 
-    private fun onRepCompleted() {
-        _repCount.value = _repCount.value + 1
+    private fun onRepCompleted(quality: RepQuality) {
+        val s = soundSettings.value
+        val strict = s.formFeedback && s.strictForm
+        // In strict mode a bad rep is rejected (doesn't count toward the set).
+        val counts = quality.isGood || !strict
+        if (counts) {
+            _repCount.value += 1
+            if (quality.isGood) _goodReps.value += 1
+        }
+        if (s.formFeedback) showRepFeedback(quality, counts)
+        if (!counts) return
         val step = currentStep() ?: return // single ad-hoc exercise
         if (_repCount.value >= step.targetReps) onSetComplete()
     }
 
+    private fun showRepFeedback(quality: RepQuality, counted: Boolean) {
+        _repFeedback.value = RepFeedback(quality, counted)
+        feedbackJob?.cancel()
+        feedbackJob = viewModelScope.launch {
+            delay(REP_FEEDBACK_MS)
+            _repFeedback.value = null
+        }
+        if (!quality.isGood && soundSettings.value.soundsEnabled) speak(cueFor(quality))
+    }
+
+    private fun cueFor(quality: RepQuality): String = when {
+        RepFault.SHALLOW in quality.faults -> "Go deeper"
+        RepFault.TOO_FAST in quality.faults -> "Slow down"
+        else -> ""
+    }
+
     fun resetSession() {
         _repCount.value = 0
+        _goodReps.value = 0
+        _repFeedback.value = null
         counter?.reset()
         startCountdown()
     }
@@ -549,10 +603,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if (isPlanRun) {
             if (!_planComplete.value) {
                 val step = currentStep()
-                if (step != null) logSession(step.exercise, exerciseRepsAccum + _repCount.value, sessionStartedAt)
+                if (step != null) {
+                    logSession(
+                        step.exercise,
+                        exerciseRepsAccum + _repCount.value,
+                        exerciseGoodAccum + _goodReps.value,
+                        sessionStartedAt,
+                    )
+                }
             }
         } else {
-            logSession(_selectedExercise.value, _repCount.value, sessionStartedAt)
+            logSession(_selectedExercise.value, _repCount.value, _goodReps.value, sessionStartedAt)
         }
         clearSession()
     }
@@ -560,11 +621,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun clearSession() {
         countdownJob?.cancel()
         transitionJob?.cancel()
+        feedbackJob?.cancel()
         timerJob?.cancel()
         _timerRunning.value = false
         _elapsedMs.value = 0L
         timedLogged = false
         timedTargetMs = 0L
+        _goodReps.value = 0
+        _repFeedback.value = null
+        exerciseGoodAccum = 0
         _celebration.value = null
         _paused.value = false
         _countdownValue.value = null
@@ -586,13 +651,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /** Persist a finished exercise, but only if reps were actually counted. */
-    private fun logSession(exercise: Exercise?, reps: Int, startedAt: Long) {
+    private fun logSession(exercise: Exercise?, reps: Int, goodReps: Int, startedAt: Long) {
         if (exercise == null || reps < 1) return
         viewModelScope.launch {
             workoutRepository.log(
                 WorkoutSession(
                     exerciseType = exercise.name,
                     repCount = reps,
+                    goodReps = goodReps.coerceIn(0, reps),
                     startedAt = startedAt,
                     durationMs = (System.currentTimeMillis() - startedAt).coerceAtLeast(0),
                 ),
@@ -642,6 +708,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setCameraFacing(facing: CameraFacing) =
         viewModelScope.launch { settingsRepository.setCameraFacing(facing) }
 
+    fun setFormFeedback(value: Boolean) =
+        viewModelScope.launch { settingsRepository.setFormFeedback(value) }
+
+    fun setStrictForm(value: Boolean) =
+        viewModelScope.launch { settingsRepository.setStrictForm(value) }
+
     fun setAccentTheme(theme: AccentTheme) =
         viewModelScope.launch { settingsRepository.setAccentTheme(theme) }
 
@@ -681,7 +753,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val data = BackupData(
                 exportedAt = System.currentTimeMillis(),
                 sessions = workoutRepository.allOnce().map {
-                    BackupSession(it.exerciseType, it.repCount, it.startedAt, it.durationMs)
+                    BackupSession(it.exerciseType, it.repCount, it.goodReps, it.startedAt, it.durationMs)
                 },
                 plans = planRepository.allOnce().map { pw ->
                     BackupPlan(
@@ -697,6 +769,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         s.trackingLostBell, s.trackingRegainedChime, s.setCelebration,
                         s.voiceControl, s.cameraFacing.name,
                         s.accentTheme.name, s.backgroundStyle.name,
+                        s.formFeedback, s.strictForm,
                     )
                 },
                 profile = profile.value.let { p -> BackupProfile(p.displayName, p.weightUnit.name) },
@@ -724,6 +797,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     WorkoutSession(
                         exerciseType = it.exerciseType,
                         repCount = it.repCount,
+                        goodReps = it.goodReps.coerceIn(0, it.repCount),
                         startedAt = it.startedAt,
                         durationMs = it.durationMs,
                     )
@@ -762,6 +836,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 settingsRepository.setBackgroundStyle(
                     if (bg == BackgroundStyle.CUSTOM) BackgroundStyle.GYM_EMERALD else bg,
                 )
+                settingsRepository.setFormFeedback(formFeedback)
+                settingsRepository.setStrictForm(strictForm)
             }
             profileRepository.setDisplayName(data.profile.displayName)
             profileRepository.setWeightUnit(
@@ -800,6 +876,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         const val COUNTDOWN_SECONDS = 3
         const val GO_DISPLAY_MS = 700L
         const val TIMER_TICK_MS = 100L
+        const val REP_FEEDBACK_MS = 1_400L
         const val PLAN_COMPLETE_DISPLAY_MS = 1_800L
         const val CELEBRATION_DISPLAY_MS = 1_300L
         const val TRACKING_CHECK_INTERVAL_MS = 250L

@@ -271,6 +271,8 @@ private fun AppRoot(viewModel: MainViewModel) {
                 onTrackingRegainedChime = viewModel::setTrackingRegainedChime,
                 onSetCelebration = viewModel::setSetCelebration,
                 onVoiceControl = viewModel::setVoiceControl,
+                onFormFeedback = viewModel::setFormFeedback,
+                onStrictForm = viewModel::setStrictForm,
                 onAccentTheme = viewModel::setAccentTheme,
                 onBackgroundStyle = viewModel::setBackgroundStyle,
                 onCustomBackground = viewModel::setCustomBackground,

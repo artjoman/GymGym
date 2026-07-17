@@ -32,6 +32,10 @@ data class SoundSettings(
     val accentTheme: AccentTheme = AccentTheme.EMERALD,
     val backgroundStyle: BackgroundStyle = BackgroundStyle.GYM_EMERALD,
     val customBackgroundPath: String? = null,
+    /** Show live form feedback (shallow / too-fast cues) during a workout. */
+    val formFeedback: Boolean = true,
+    /** Strict counting: only good-form reps count toward the set. */
+    val strictForm: Boolean = false,
 )
 
 class SettingsRepository(context: Context) {
@@ -59,6 +63,8 @@ class SettingsRepository(context: Context) {
                 ?.let { stored -> BackgroundStyle.entries.find { it.name == stored } }
                 ?: BackgroundStyle.GYM_EMERALD,
             customBackgroundPath = prefs[CUSTOM_BG_PATH],
+            formFeedback = prefs[FORM_FEEDBACK] ?: true,
+            strictForm = prefs[STRICT_FORM] ?: false,
         )
     }
 
@@ -96,6 +102,10 @@ class SettingsRepository(context: Context) {
         it[BACKGROUND_STYLE] = BackgroundStyle.CUSTOM.name
     }
 
+    suspend fun setFormFeedback(value: Boolean) = dataStore.edit { it[FORM_FEEDBACK] = value }
+
+    suspend fun setStrictForm(value: Boolean) = dataStore.edit { it[STRICT_FORM] = value }
+
     private companion object {
         val SOUNDS_ENABLED = booleanPreferencesKey("sounds_enabled")
         val COUNTDOWN_VOICE = booleanPreferencesKey("countdown_voice")
@@ -108,5 +118,7 @@ class SettingsRepository(context: Context) {
         val ACCENT_THEME = stringPreferencesKey("accent_theme")
         val BACKGROUND_STYLE = stringPreferencesKey("background_style")
         val CUSTOM_BG_PATH = stringPreferencesKey("custom_bg_path")
+        val FORM_FEEDBACK = booleanPreferencesKey("form_feedback")
+        val STRICT_FORM = booleanPreferencesKey("strict_form")
     }
 }

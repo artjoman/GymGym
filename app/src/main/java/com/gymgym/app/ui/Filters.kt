@@ -47,6 +47,7 @@ fun aggregateStats(sessions: List<WorkoutSession>): List<ExerciseStat> =
                 exerciseType = type,
                 sessionCount = list.size,
                 totalReps = list.sumOf { it.repCount },
+                totalGoodReps = list.sumOf { it.goodReps },
                 bestReps = list.maxOf { it.repCount },
                 avgReps = list.map { it.repCount }.average(),
                 totalDurationMs = list.sumOf { it.durationMs },
