@@ -36,5 +36,10 @@ class SoundEffects(context: Context) {
         soundPool.play(comboId, 1f, 1f, 1, 0, 1f)
     }
 
+    /** A low, dull tone for a bad-form rep — reads as "not quite". */
+    fun playBadForm() {
+        soundPool.play(bellId, 0.7f, 0.7f, 1, 0, 0.6f)
+    }
+
     fun release() = soundPool.release()
 }

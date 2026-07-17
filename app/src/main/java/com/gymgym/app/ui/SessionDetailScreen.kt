@@ -61,7 +61,11 @@ fun SessionDetailScreen(session: WorkoutSession?, onBack: () -> Unit) {
                 DetailRow("Started", formatDateTime(session.startedAt))
                 DetailRow("Ended", formatDateTime(session.startedAt + session.durationMs))
                 DetailRow("Duration", formatDurationLong(session.durationMs))
-                if (!timed) DetailRow("Pace", formatPace(session.repCount, session.durationMs))
+                if (!timed) {
+                    DetailRow("Pace", formatPace(session.repCount, session.durationMs))
+                    val pct = if (session.repCount > 0) session.goodReps * 100 / session.repCount else 0
+                    DetailRow("Good form", "${session.goodReps}/${session.repCount} · $pct%")
+                }
             }
         }
 

@@ -55,11 +55,20 @@ fun StatsScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text(
-                                exerciseLabel(stat.exerciseType),
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
+                            Column {
+                                Text(
+                                    exerciseLabel(stat.exerciseType),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                                if (!isTimedExercise(stat.exerciseType) && stat.totalReps > 0) {
+                                    Text(
+                                        "${stat.totalGoodReps * 100 / stat.totalReps}% good form",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                            }
                             Text(
                                 "Last: ${formatDate(stat.lastPerformedAt)}",
                                 style = MaterialTheme.typography.bodySmall,

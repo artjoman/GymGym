@@ -50,6 +50,7 @@ import com.gymgym.app.audio.SoundEffects
 import com.gymgym.app.audio.VoiceCommandListener
 import com.gymgym.app.camera.CameraController
 import com.gymgym.app.camera.PoseAnalyzer
+import com.gymgym.app.counter.RepFault
 import com.gymgym.app.camera.VideoRecorder
 import com.gymgym.app.recording.RecordingStore
 import com.gymgym.app.settings.CameraFacing
@@ -78,6 +79,8 @@ fun CameraScreen(
     val autoLocked by viewModel.autoLocked.collectAsState()
     val elapsedMs by viewModel.elapsedMs.collectAsState()
     val timerRunning by viewModel.timerRunning.collectAsState()
+    val goodReps by viewModel.goodReps.collectAsState()
+    val repFeedback by viewModel.repFeedback.collectAsState()
     val timed = exercise?.timed == true
 
     val previewView = remember { PreviewView(context) }
@@ -198,6 +201,12 @@ fun CameraScreen(
         if (celebration != null && settings.soundsEnabled) sounds.playCelebration()
     }
 
+    // A dull tone when a rep is flagged for poor form (voice cue is spoken by the VM).
+    LaunchedEffect(repFeedback) {
+        val fb = repFeedback ?: return@LaunchedEffect
+        if (!fb.quality.isGood && settings.formFeedback && settings.soundsEnabled) sounds.playBadForm()
+    }
+
     // Bell on losing tracking, chime on regaining it — but only after the
     // person has been seen once, so the screen doesn't ring while setting up.
     var hasTracked by remember { mutableStateOf(false) }
@@ -249,15 +258,39 @@ fun CameraScreen(
                 }
             }
         } else if (!autoDetecting) {
-            Text(
-                text = if (progress != null) "${repCount} / ${progress.targetReps}" else repCount.toString(),
-                fontSize = 72.sp,
-                color = Color.White,
+            val badFault = repFeedback?.takeIf { !it.quality.isGood }?.quality
+            val cue = when {
+                badFault == null -> null
+                RepFault.SHALLOW in badFault.faults -> "GO DEEPER"
+                RepFault.TOO_FAST in badFault.faults -> "SLOW DOWN"
+                else -> null
+            }
+            Column(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .statusBarsPadding()
                     .padding(top = 24.dp),
-            )
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = if (progress != null) "${repCount} / ${progress.targetReps}" else repCount.toString(),
+                    fontSize = 72.sp,
+                    color = if (cue != null) Color(0xFFFFB020) else Color.White,
+                )
+                when {
+                    cue != null -> Text(
+                        text = cue,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFFFB020),
+                    )
+                    settings.formFeedback && repCount > 0 -> Text(
+                        text = "$goodReps good",
+                        fontSize = 15.sp,
+                        color = Color(0xFFCFD8DC),
+                    )
+                }
+            }
         }
 
         Column(
