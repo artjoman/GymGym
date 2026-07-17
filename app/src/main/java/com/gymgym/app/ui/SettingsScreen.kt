@@ -166,8 +166,9 @@ fun SettingsScreen(
             onChange = onVoiceControl,
         )
         Text(
-            "Say \"next\", \"pause\", \"resume\", or \"reset\" during a workout, or " +
-                "\"start\"/\"stop\" to control a plank timer. " +
+            "Say \"next\", \"pause\", \"resume\", or \"reset\" during a workout; " +
+                "\"start\"/\"stop\" for a plank timer; \"start/stop recording\"; or " +
+                "\"switch camera\". " +
                 "Uses on-device recognition and the microphone; needs mic permission.",
             style = MaterialTheme.typography.bodySmall,
         )

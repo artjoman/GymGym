@@ -33,6 +33,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -104,6 +105,10 @@ fun CameraScreen(
     }
 
     val canListen = settings.voiceControl && hasMicPermission
+    // Live snapshots so the remembered voice callback reads current state.
+    val frontFacing = rememberUpdatedState(settings.cameraFacing == CameraFacing.FRONT)
+    val recordingActive = rememberUpdatedState(recordingState.active)
+    val canRecord = rememberUpdatedState(recordingAvailable)
     val voiceListener = remember(canListen) {
         if (canListen) {
             VoiceCommandListener(context) { command ->
@@ -112,8 +117,18 @@ fun CameraScreen(
                     VoiceCommandListener.VoiceCommand.RESUME -> viewModel.resume()
                     VoiceCommandListener.VoiceCommand.NEXT -> viewModel.skipToNextExercise()
                     VoiceCommandListener.VoiceCommand.RESET -> viewModel.resetSession()
-                    VoiceCommandListener.VoiceCommand.START -> viewModel.startTimer()
-                    VoiceCommandListener.VoiceCommand.STOP -> viewModel.stopTimer()
+                    VoiceCommandListener.VoiceCommand.START_TIMER -> viewModel.startTimer()
+                    VoiceCommandListener.VoiceCommand.STOP_TIMER -> viewModel.stopTimer()
+                    VoiceCommandListener.VoiceCommand.START_RECORDING ->
+                        if (canRecord.value && !recordingActive.value) {
+                            videoRecorder.start(RecordingStore.newFile(context))
+                        }
+                    VoiceCommandListener.VoiceCommand.STOP_RECORDING ->
+                        if (recordingActive.value) videoRecorder.stop()
+                    VoiceCommandListener.VoiceCommand.SWITCH_CAMERA ->
+                        viewModel.setCameraFacing(
+                            if (frontFacing.value) CameraFacing.BACK else CameraFacing.FRONT,
+                        )
                 }
             }
         } else {

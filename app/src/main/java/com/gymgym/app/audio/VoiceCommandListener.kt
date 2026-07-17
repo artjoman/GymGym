@@ -22,7 +22,12 @@ class VoiceCommandListener(
     private val context: Context,
     private val onCommand: (VoiceCommand) -> Unit,
 ) {
-    enum class VoiceCommand { PAUSE, RESUME, NEXT, RESET, START, STOP }
+    enum class VoiceCommand {
+        PAUSE, RESUME, NEXT, RESET,
+        START_TIMER, STOP_TIMER,
+        START_RECORDING, STOP_RECORDING,
+        SWITCH_CAMERA,
+    }
 
     private val handler = Handler(Looper.getMainLooper())
     private var recognizer: SpeechRecognizer? = null
@@ -100,23 +105,34 @@ class VoiceCommandListener(
     }
 
     private fun parse(candidates: List<String>) {
-        val text = candidates.joinToString(" ").lowercase()
-        val command = when {
+        commandFor(candidates.joinToString(" ").lowercase())?.let(onCommand)
+    }
+
+    companion object {
+        private const val RESTART_DELAY_MS = 300L
+
+        /**
+         * Map recognized (lowercased) speech to a command. Order matters: multi-word
+         * intents ("start recording", "switch camera") and "restart" are matched
+         * before the bare "start"/"stop" timer rules. Visible for testing.
+         */
+        internal fun commandFor(text: String): VoiceCommand? = when {
+            text.contains("record") ->
+                if (containsAny(text, "stop", "end", "finish", "cancel")) {
+                    VoiceCommand.STOP_RECORDING
+                } else {
+                    VoiceCommand.START_RECORDING
+                }
+            containsAny(text, "switch", "flip", "camera") -> VoiceCommand.SWITCH_CAMERA
             containsAny(text, "next", "skip") -> VoiceCommand.NEXT
-            // "restart"/"again" must be checked before "start" so they don't match START.
             containsAny(text, "reset", "restart", "again") -> VoiceCommand.RESET
             containsAny(text, "resume", "continue", "unpause") -> VoiceCommand.RESUME
-            containsAny(text, "start", "begin") -> VoiceCommand.START
-            containsAny(text, "stop", "finish", "done", "end") -> VoiceCommand.STOP
+            containsAny(text, "start", "begin") -> VoiceCommand.START_TIMER
+            containsAny(text, "stop", "finish", "done", "end") -> VoiceCommand.STOP_TIMER
             containsAny(text, "pause", "wait", "hold") -> VoiceCommand.PAUSE
             else -> null
         }
-        command?.let(onCommand)
-    }
 
-    private fun containsAny(text: String, vararg words: String) = words.any { text.contains(it) }
-
-    private companion object {
-        const val RESTART_DELAY_MS = 300L
+        private fun containsAny(text: String, vararg words: String) = words.any { text.contains(it) }
     }
 }
