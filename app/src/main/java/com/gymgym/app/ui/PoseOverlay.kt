@@ -4,11 +4,15 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.lerp
 import com.gymgym.app.pose.Landmark
 import com.gymgym.app.pose.PoseSnapshot
+import com.gymgym.app.ui.theme.LocalBrand
 
 private val SKELETON_EDGES = listOf(
     Landmark.LEFT_SHOULDER to Landmark.RIGHT_SHOULDER,
@@ -26,8 +30,9 @@ private val SKELETON_EDGES = listOf(
 )
 
 /**
- * Draws a simple skeleton over the camera preview, scaled from image space to
- * the canvas, plus a red border while tracking is lost.
+ * Draws a soft neon skeleton over the camera preview in the app's accent color:
+ * a wide translucent glow under a brighter round-capped limb, with joints as a
+ * glowing dot with a white core. A rounded red frame shows while tracking is lost.
  */
 @Composable
 fun PoseOverlay(
@@ -36,9 +41,19 @@ fun PoseOverlay(
     mirror: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
+    val accent = LocalBrand.current.accent
+    val limb = lerp(accent, Color.White, 0.12f)   // brightened filament
+    val glow = accent.copy(alpha = 0.22f)
+    val jointGlow = accent.copy(alpha = 0.30f)
+    val jointCore = Color.White.copy(alpha = 0.92f)
+
     Canvas(modifier = modifier.fillMaxSize()) {
         if (!isTracking) {
-            drawRect(color = Color(0xFFE53935), style = Stroke(width = 12f))
+            drawRoundRect(
+                color = Color(0xFFFF5A5A),
+                style = Stroke(width = 10f),
+                cornerRadius = CornerRadius(36f, 36f),
+            )
         }
         if (pose == null || pose.imageWidth == 0 || pose.imageHeight == 0) return@Canvas
 
@@ -52,14 +67,25 @@ fun PoseOverlay(
             return Offset(if (mirror) size.width - x else x, point.y * scaleY)
         }
 
-        for ((from, to) in SKELETON_EDGES) {
-            val start = offsetOf(from) ?: continue
-            val end = offsetOf(to) ?: continue
-            drawLine(color = Color(0xFF7FE0A0), start = start, end = end, strokeWidth = 6f)
+        val edges = SKELETON_EDGES.mapNotNull { (from, to) ->
+            val s = offsetOf(from) ?: return@mapNotNull null
+            val e = offsetOf(to) ?: return@mapNotNull null
+            s to e
         }
+
+        // Glow pass first, so it never paints over an adjacent solid limb.
+        for ((s, e) in edges) {
+            drawLine(glow, s, e, strokeWidth = 16f, cap = StrokeCap.Round)
+        }
+        for ((s, e) in edges) {
+            drawLine(limb, s, e, strokeWidth = 6f, cap = StrokeCap.Round)
+        }
+
         for (landmark in pose.landmarks.keys) {
-            val center = offsetOf(landmark) ?: continue
-            drawCircle(color = Color(0xFF1B6B3A), radius = 10f, center = center)
+            val c = offsetOf(landmark) ?: continue
+            drawCircle(jointGlow, radius = 12f, center = c)
+            drawCircle(accent, radius = 6f, center = c)
+            drawCircle(jointCore, radius = 2.6f, center = c)
         }
     }
 }
