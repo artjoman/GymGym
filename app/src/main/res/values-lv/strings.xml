@@ -1,0 +1,256 @@
+<resources>
+    <string name="app_name">GymGym</string>
+
+    <!-- Common actions -->
+    <string name="action_save">Saglabāt</string>
+    <string name="action_cancel">Atcelt</string>
+    <string name="action_done">Gatavs</string>
+    <string name="action_back">Atpakaļ</string>
+    <string name="action_start">Sākt</string>
+    <string name="action_edit">Rediģēt</string>
+    <string name="action_delete">Dzēst</string>
+    <string name="action_export">Eksportēt</string>
+    <string name="action_import">Importēt</string>
+    <string name="action_resume">Turpināt</string>
+    <string name="action_share">Kopīgot</string>
+    <string name="action_play">Atskaņot</string>
+    <string name="action_replace">Aizstāt</string>
+
+    <!-- Home -->
+    <string name="home_greeting_default">Gatavs treniņam?</string>
+    <string name="home_greeting">Uz priekšu, %1$s!</string>
+    <string name="home_choose_exercise">Izvēlies vingrinājumu</string>
+    <string name="home_train_smarter">Trenējies gudrāk</string>
+    <string name="home_auto_detect">✨ Automātiskā noteikšana</string>
+    <string name="home_workout_plans">Treniņu plāni</string>
+    <string name="home_recordings">📹 Ieraksti</string>
+    <string name="nav_history">Vēsture</string>
+    <string name="nav_stats">Statistika</string>
+    <string name="nav_profile">Profils</string>
+    <string name="nav_settings">Iestatījumi</string>
+
+    <!-- Exercises -->
+    <string name="exercise_squat">Pietupiens</string>
+    <string name="exercise_pushup">Atspiešanās</string>
+    <string name="exercise_pullup">Pievilkšanās</string>
+    <string name="exercise_dumbbell_press">Hanteļu spiešana</string>
+    <string name="exercise_plank">Planka</string>
+    <string name="framing_side">Novieto tālruni sānis, visam ķermenim jābūt kadrā</string>
+    <string name="framing_pullup">Novieto tālruni pretī sev, stienim un visam ķermenim jābūt kadrā</string>
+    <string name="framing_press">Novieto tālruni pretī sev, rokām un rumpim jābūt kadrā</string>
+
+    <!-- Camera / workout -->
+    <string name="camera_auto_detect">Automātiskā noteikšana</string>
+    <string name="camera_auto_badge">AUTO</string>
+    <string name="camera_detecting">Notiek vingrinājuma noteikšana…</string>
+    <string name="camera_detecting_hint">Nostājies kadrā un sāc atkārtojumus</string>
+    <string name="camera_move_into_frame">Nostājies kadrā</string>
+    <string name="camera_say_start">Saki \"start\"</string>
+    <string name="camera_say_stop">Saki \"stop\"</string>
+    <string name="camera_start_timer">Sākt taimeri</string>
+    <string name="camera_stop_timer">Apturēt taimeri</string>
+    <string name="camera_reset">Atiestatīt</string>
+    <string name="camera_pause">Pauze</string>
+    <string name="camera_change_exercise">Mainīt vingrinājumu</string>
+    <string name="camera_skip_exercise">Izlaist vingrinājumu</string>
+    <string name="camera_stop_plan">Apturēt plānu</string>
+    <string name="camera_paused">Pauzēts</string>
+    <string name="camera_say_resume">Saki \"resume\" vai pieskaries</string>
+    <string name="camera_workout_complete">Treniņš pabeigts!</string>
+    <string name="camera_good_count">%1$d labi</string>
+    <string name="camera_plan_progress">%1$s · vingrinājums %2$d/%3$d · piegājiens %4$d/%5$d</string>
+    <string name="cd_start_recording">Sākt ierakstīšanu</string>
+    <string name="cd_switch_camera">Mainīt kameru</string>
+    <string name="cd_listening">Klausās</string>
+    <string name="cd_voice_paused">Balss pauzēta</string>
+    <string name="form_cue_shallow_caps">DZIĻĀK</string>
+    <string name="form_cue_wobbly_caps">NOTURI</string>
+    <string name="form_cue_fast_caps">LĒNĀK</string>
+    <string name="countdown_go">SĀC!</string>
+
+    <!-- Settings -->
+    <string name="settings_appearance">Izskats</string>
+    <string name="settings_color_scheme">Krāsu shēma</string>
+    <string name="settings_background">Fons</string>
+    <string name="settings_sound">Skaņas iestatījumi</string>
+    <string name="settings_all_sounds">Visas skaņas</string>
+    <string name="settings_countdown_voice">Atskaites balss (3…2…1…SĀC)</string>
+    <string name="settings_out_of_frame_bell">Signāls, izejot no kadra</string>
+    <string name="settings_back_in_frame_chime">Signāls, atgriežoties kadrā</string>
+    <string name="settings_combo_callout">Kombo paziņojums pēc piegājiena</string>
+    <string name="settings_spoken_rep_count">Atkārtojumu skaitīšana balsī</string>
+    <string name="settings_form_check">Tehnikas pārbaude</string>
+    <string name="settings_form_feedback">Tehnikas atgriezeniskā saite</string>
+    <string name="settings_strict_counting">Stingra skaitīšana (tikai labie)</string>
+    <string name="settings_sensitivity">Jutība</string>
+    <string name="settings_form_desc">Ar norādi atzīmē seklus, nestabilus vai atsitienā veiktus atkārtojumus. Stingra skaitīšana liek sliktam atkārtojumam neieskaitīties piegājienā; jutība nosaka, cik stingri.</string>
+    <string name="settings_hands_free">Balss vadība</string>
+    <string name="settings_voice_control">Balss vadība (beta)</string>
+    <string name="settings_voice_desc">Treniņā saki \"next\", \"pause\", \"resume\" vai \"reset\"; \"start\"/\"stop\" plankas taimerim; \"start/stop recording\"; vai \"switch camera\". Izmanto atpazīšanu ierīcē un mikrofonu; nepieciešama mikrofona atļauja.</string>
+    <string name="settings_about">Par lietotni</string>
+    <string name="settings_privacy_policy">Privātuma politika</string>
+    <string name="settings_version">v%1$s</string>
+    <string name="bg_upload">Augšupielādēt</string>
+
+    <!-- Spoken rep count modes -->
+    <string name="rep_off">Izslēgts</string>
+    <string name="rep_every">Katru atkārtojumu</string>
+    <string name="rep_every_5">Ik pēc 5 atkārtojumiem</string>
+    <string name="rep_every_10">Ik pēc 10 atkārtojumiem</string>
+
+    <!-- Form sensitivity -->
+    <string name="sensitivity_lenient">Iecietīga</string>
+    <string name="sensitivity_standard">Standarta</string>
+    <string name="sensitivity_strict">Stingra</string>
+
+    <!-- Accent color schemes -->
+    <string name="accent_emerald">Smaragds</string>
+    <string name="accent_azure">Debeszils</string>
+    <string name="accent_violet">Violets</string>
+    <string name="accent_magenta">Fuksīns</string>
+    <string name="accent_amber">Dzintars</string>
+    <string name="accent_crimson">Sarkanbrūns</string>
+    <string name="accent_lime">Laima</string>
+    <string name="accent_aqua">Akvamarīns</string>
+    <string name="accent_tangerine">Mandarīns</string>
+    <string name="accent_rose">Rožains</string>
+    <string name="accent_indigo">Indigo</string>
+    <string name="accent_orchid">Orhideja</string>
+    <string name="accent_cyan">Ciāns</string>
+    <string name="accent_slate">Slāneklis</string>
+
+    <!-- Background styles -->
+    <string name="bg_none">Nav</string>
+    <string name="bg_gym_emerald">Smaragds</string>
+    <string name="bg_gym_azure">Debeszils</string>
+    <string name="bg_gym_violet">Violets</string>
+    <string name="bg_gym_amber">Dzintars</string>
+    <string name="bg_custom">Tavs foto</string>
+
+    <!-- Date range filters -->
+    <string name="range_all">Visi</string>
+    <string name="range_24h">24 h</string>
+    <string name="range_7d">7 d</string>
+    <string name="range_30d">30 d</string>
+
+    <!-- Weight unit -->
+    <string name="unit_kg">Kilogrami (kg)</string>
+    <string name="unit_lb">Mārciņas (lb)</string>
+
+    <!-- Stats -->
+    <string name="stats_title">Statistika</string>
+    <string name="stats_empty">Vēl nav statistikas. Pabeidz piegājienu, lai sāktu uzskaiti.</string>
+    <string name="stats_good_form">%1$d%% laba tehnika</string>
+    <string name="stats_last">Pēdējais: %1$s</string>
+    <string name="stats_cell_last">Pēdējais</string>
+    <string name="stats_sessions">Sesijas</string>
+    <string name="stats_total_reps">Kopā atkārt.</string>
+    <string name="stats_best_set">Labākais piegāj.</string>
+    <string name="stats_avg_reps">Vidēji atkārt.</string>
+    <string name="stats_total_time">Kopējais laiks</string>
+    <string name="stats_since">Kopš</string>
+    <string name="stats_best_hold">Labākais laiks</string>
+    <string name="stats_avg_hold">Vidējais laiks</string>
+    <string name="stats_reps_trend">Atkārtojumu tendence</string>
+    <string name="stats_form_trend">Tehnikas tendence</string>
+
+    <!-- History -->
+    <string name="history_title">Vēsture</string>
+    <string name="history_empty">Vēl nav treniņu. Pabeidz piegājienu, lai to redzētu šeit.</string>
+    <string name="history_empty_filtered">Neviena sesija neatbilst šim filtram.</string>
+    <string name="history_meta">%1$s · %2$s</string>
+
+    <!-- Session detail -->
+    <string name="session_title">Sesijas informācija</string>
+    <string name="session_unavailable">Šī sesija vairs nav pieejama.</string>
+    <string name="session_reps_suffix"> atkārt.</string>
+    <string name="session_started">Sākts</string>
+    <string name="session_ended">Beidzies</string>
+    <string name="session_duration">Ilgums</string>
+    <string name="session_pace">Temps</string>
+    <string name="session_good_form">Laba tehnika</string>
+    <string name="session_good_form_value">%1$d/%2$d · %3$d%%</string>
+
+    <!-- Plans -->
+    <string name="plans_title">Treniņu plāni</string>
+    <string name="plans_new">Jauns plāns</string>
+    <string name="plans_empty">Vēl nav plānu. Izveido vienu, lai izpildītu vairākus vingrinājumus pēc kārtas.</string>
+    <string name="plans_no_exercises">Nav vingrinājumu</string>
+    <string name="plan_edit_edit">Rediģēt plānu</string>
+    <string name="plan_name_label">Plāna nosaukums</string>
+    <string name="plan_add_exercise">Pievienot vingrinājumu</string>
+    <string name="plan_reps">Atkārt.</string>
+    <string name="plan_seconds">Sekundes</string>
+    <string name="plan_sets">Piegājieni</string>
+    <string name="plan_summary_reps">%1$s %2$d×%3$d</string>
+    <string name="plan_summary_seconds">%1$s %2$ds×%3$d</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Profils</string>
+    <string name="profile_display_name">Attēlojamais vārds</string>
+    <string name="profile_weight_unit">Svara mērvienība</string>
+    <string name="profile_backup_title">Dublējums un pārsūtīšana</string>
+    <string name="profile_backup_desc">Saglabā treniņus, plānus un iestatījumus failā un pēc tam importē tos citā ierīcē. Video netiek iekļauti.</string>
+    <string name="profile_import_title">Importēt datus?</string>
+    <string name="profile_import_warning">Tas aizstās šajā ierīcē esošos treniņus, plānus un iestatījumus. To nevar atsaukt.</string>
+    <string name="toast_backup_saved">Dublējums saglabāts</string>
+    <string name="toast_export_failed">Eksportēšana neizdevās</string>
+    <string name="toast_data_imported">Dati importēti</string>
+    <string name="toast_import_failed">Importēšana neizdevās — vai tas ir GymGym dublējums?</string>
+
+    <!-- Recordings -->
+    <string name="recordings_title">Ieraksti</string>
+    <string name="recordings_desc">Kopīgo treniņu ar treneri, lai saņemtu atsauksmes.</string>
+    <string name="recordings_empty">Vēl nav ierakstu. Treniņa ekrānā pieskaries ● REC, lai ierakstītu.</string>
+
+    <!-- Creator footer -->
+    <string name="creator_prefix">Radīts ar </string>
+    <string name="creator_suffix"> — projectorum.com</string>
+
+    <!-- Spoken (TTS) -->
+    <string name="speak_timer_started">Taimeris sākts</string>
+    <string name="speak_time">Laiks: %1$s</string>
+    <string name="speak_detected">Noteikts: %1$s</string>
+    <string name="speak_workout_complete">Treniņš pabeigts!</string>
+    <string name="speak_go">Sāc!</string>
+    <string name="cue_shallow">Dziļāk</string>
+    <string name="cue_wobbly">Noturi</string>
+    <string name="cue_fast">Lēnāk</string>
+
+    <!-- Duration formatting -->
+    <string name="duration_s">%1$ds</string>
+    <string name="duration_ms">%1$dmin %2$ds</string>
+    <string name="duration_hms">%1$dst %2$dmin %3$ds</string>
+    <string name="pace">%1$s atk./min</string>
+    <string name="pace_none">—</string>
+
+    <!-- Reps as a count (plural) -->
+    <plurals name="reps">
+        <item quantity="zero">%1$d atkārtojumu</item>
+        <item quantity="one">%1$d atkārtojums</item>
+        <item quantity="other">%1$d atkārtojumi</item>
+    </plurals>
+
+    <!-- Spoken duration components (plural) -->
+    <plurals name="spoken_minutes">
+        <item quantity="zero">%1$d minūšu</item>
+        <item quantity="one">%1$d minūte</item>
+        <item quantity="other">%1$d minūtes</item>
+    </plurals>
+    <plurals name="spoken_seconds">
+        <item quantity="zero">%1$d sekunžu</item>
+        <item quantity="one">%1$d sekunde</item>
+        <item quantity="other">%1$d sekundes</item>
+    </plurals>
+
+    <!-- Arcade set-complete callouts -->
+    <string-array name="combo_words">
+        <item>LIELISKI!</item>
+        <item>FORŠI!</item>
+        <item>APBRĪNOJAMI!</item>
+        <item>KOMBO!</item>
+        <item>JAUKI!</item>
+        <item>PERFEKTI!</item>
+        <item>BUMS!</item>
+    </string-array>
+</resources>

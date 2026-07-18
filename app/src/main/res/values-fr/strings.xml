@@ -1,0 +1,253 @@
+<resources>
+    <string name="app_name">GymGym</string>
+
+    <!-- Common actions -->
+    <string name="action_save">Enregistrer</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="action_done">Terminé</string>
+    <string name="action_back">Retour</string>
+    <string name="action_start">Démarrer</string>
+    <string name="action_edit">Modifier</string>
+    <string name="action_delete">Supprimer</string>
+    <string name="action_export">Exporter</string>
+    <string name="action_import">Importer</string>
+    <string name="action_resume">Reprendre</string>
+    <string name="action_share">Partager</string>
+    <string name="action_play">Lire</string>
+    <string name="action_replace">Remplacer</string>
+
+    <!-- Home -->
+    <string name="home_greeting_default">Prêt à vous entraîner ?</string>
+    <string name="home_greeting">C\'est parti, %1$s</string>
+    <string name="home_choose_exercise">Choisissez votre exercice</string>
+    <string name="home_train_smarter">Entraînez-vous mieux</string>
+    <string name="home_auto_detect">✨ Détection auto</string>
+    <string name="home_workout_plans">Programmes</string>
+    <string name="home_recordings">📹 Enregistrements</string>
+    <string name="nav_history">Historique</string>
+    <string name="nav_stats">Statistiques</string>
+    <string name="nav_profile">Profil</string>
+    <string name="nav_settings">Réglages</string>
+
+    <!-- Exercises -->
+    <string name="exercise_squat">Squat</string>
+    <string name="exercise_pushup">Pompes</string>
+    <string name="exercise_pullup">Tractions</string>
+    <string name="exercise_dumbbell_press">Développé haltères</string>
+    <string name="exercise_plank">Gainage</string>
+    <string name="framing_side">Placez le téléphone sur le côté, tout le corps dans le cadre</string>
+    <string name="framing_pullup">Placez le téléphone face à vous, la barre et tout le corps dans le cadre</string>
+    <string name="framing_press">Placez le téléphone face à vous, bras et torse dans le cadre</string>
+
+    <!-- Camera / workout -->
+    <string name="camera_auto_detect">Détection auto</string>
+    <string name="camera_auto_badge">AUTO</string>
+    <string name="camera_detecting">Détection de l\'exercice…</string>
+    <string name="camera_detecting_hint">Mettez-vous dans le cadre et commencez vos répétitions</string>
+    <string name="camera_move_into_frame">Placez-vous dans le cadre</string>
+    <string name="camera_say_start">Dites \"start\"</string>
+    <string name="camera_say_stop">Dites \"stop\"</string>
+    <string name="camera_start_timer">Démarrer le minuteur</string>
+    <string name="camera_stop_timer">Arrêter le minuteur</string>
+    <string name="camera_reset">Réinitialiser</string>
+    <string name="camera_pause">Pause</string>
+    <string name="camera_change_exercise">Changer d\'exercice</string>
+    <string name="camera_skip_exercise">Passer l\'exercice</string>
+    <string name="camera_stop_plan">Arrêter le programme</string>
+    <string name="camera_paused">En pause</string>
+    <string name="camera_say_resume">Dites \"resume\" ou touchez</string>
+    <string name="camera_workout_complete">Séance terminée !</string>
+    <string name="camera_good_count">%1$d correctes</string>
+    <string name="camera_plan_progress">%1$s · exercice %2$d/%3$d · série %4$d/%5$d</string>
+    <string name="cd_start_recording">Démarrer l\'enregistrement</string>
+    <string name="cd_switch_camera">Changer de caméra</string>
+    <string name="cd_listening">À l\'écoute</string>
+    <string name="cd_voice_paused">Voix en pause</string>
+    <string name="form_cue_shallow_caps">PLUS BAS</string>
+    <string name="form_cue_wobbly_caps">STABLE</string>
+    <string name="form_cue_fast_caps">RALENTISSEZ</string>
+    <string name="countdown_go">GO !</string>
+
+    <!-- Settings -->
+    <string name="settings_appearance">Apparence</string>
+    <string name="settings_color_scheme">Thème de couleur</string>
+    <string name="settings_background">Arrière-plan</string>
+    <string name="settings_sound">Réglages du son</string>
+    <string name="settings_all_sounds">Tous les sons</string>
+    <string name="settings_countdown_voice">Voix du décompte (3…2…1…GO)</string>
+    <string name="settings_out_of_frame_bell">Signal de sortie du cadre</string>
+    <string name="settings_back_in_frame_chime">Signal de retour dans le cadre</string>
+    <string name="settings_combo_callout">Annonce de combo en fin de série</string>
+    <string name="settings_spoken_rep_count">Comptage vocal des répétitions</string>
+    <string name="settings_form_check">Contrôle de la technique</string>
+    <string name="settings_form_feedback">Retour sur la technique</string>
+    <string name="settings_strict_counting">Comptage strict (répétitions correctes uniquement)</string>
+    <string name="settings_sensitivity">Sensibilité</string>
+    <string name="settings_form_desc">Signale par un indice les répétitions trop courtes, instables ou avec rebond. Le comptage strict fait qu\'une mauvaise répétition ne compte pas pour la série ; la sensibilité règle le niveau d\'exigence.</string>
+    <string name="settings_hands_free">Commande vocale</string>
+    <string name="settings_voice_control">Commande vocale (bêta)</string>
+    <string name="settings_voice_desc">Dites \"next\", \"pause\", \"resume\" ou \"reset\" pendant la séance ; \"start\"/\"stop\" pour le minuteur de gainage ; \"start/stop recording\" ; ou \"switch camera\". Utilise la reconnaissance sur l\'appareil et le micro ; nécessite l\'autorisation du micro.</string>
+    <string name="settings_about">À propos</string>
+    <string name="settings_privacy_policy">Politique de confidentialité</string>
+    <string name="settings_version">v%1$s</string>
+    <string name="bg_upload">Importer</string>
+
+    <!-- Spoken rep count modes -->
+    <string name="rep_off">Désactivé</string>
+    <string name="rep_every">Chaque répétition</string>
+    <string name="rep_every_5">Toutes les 5 répétitions</string>
+    <string name="rep_every_10">Toutes les 10 répétitions</string>
+
+    <!-- Form sensitivity -->
+    <string name="sensitivity_lenient">Souple</string>
+    <string name="sensitivity_standard">Standard</string>
+    <string name="sensitivity_strict">Strict</string>
+
+    <!-- Accent color schemes -->
+    <string name="accent_emerald">Émeraude</string>
+    <string name="accent_azure">Azur</string>
+    <string name="accent_violet">Violet</string>
+    <string name="accent_magenta">Magenta</string>
+    <string name="accent_amber">Ambre</string>
+    <string name="accent_crimson">Cramoisi</string>
+    <string name="accent_lime">Citron vert</string>
+    <string name="accent_aqua">Aqua</string>
+    <string name="accent_tangerine">Mandarine</string>
+    <string name="accent_rose">Rose</string>
+    <string name="accent_indigo">Indigo</string>
+    <string name="accent_orchid">Orchidée</string>
+    <string name="accent_cyan">Cyan</string>
+    <string name="accent_slate">Ardoise</string>
+
+    <!-- Background styles -->
+    <string name="bg_none">Aucun</string>
+    <string name="bg_gym_emerald">Émeraude</string>
+    <string name="bg_gym_azure">Azur</string>
+    <string name="bg_gym_violet">Violet</string>
+    <string name="bg_gym_amber">Ambre</string>
+    <string name="bg_custom">Votre photo</string>
+
+    <!-- Date range filters -->
+    <string name="range_all">Tout</string>
+    <string name="range_24h">24 h</string>
+    <string name="range_7d">7 j</string>
+    <string name="range_30d">30 j</string>
+
+    <!-- Weight unit -->
+    <string name="unit_kg">Kilogrammes (kg)</string>
+    <string name="unit_lb">Livres (lb)</string>
+
+    <!-- Stats -->
+    <string name="stats_title">Statistiques</string>
+    <string name="stats_empty">Pas encore de statistiques. Terminez une série pour commencer le suivi.</string>
+    <string name="stats_good_form">%1$d%% de bonne technique</string>
+    <string name="stats_last">Dernière : %1$s</string>
+    <string name="stats_cell_last">Dernière</string>
+    <string name="stats_sessions">Séances</string>
+    <string name="stats_total_reps">Répét. totales</string>
+    <string name="stats_best_set">Meilleure série</string>
+    <string name="stats_avg_reps">Répét. moy.</string>
+    <string name="stats_total_time">Temps total</string>
+    <string name="stats_since">Depuis</string>
+    <string name="stats_best_hold">Meilleur temps</string>
+    <string name="stats_avg_hold">Temps moyen</string>
+    <string name="stats_reps_trend">Tendance des répétitions</string>
+    <string name="stats_form_trend">Tendance de la technique</string>
+
+    <!-- History -->
+    <string name="history_title">Historique</string>
+    <string name="history_empty">Pas encore d\'entraînements. Terminez une série pour la voir ici.</string>
+    <string name="history_empty_filtered">Aucune séance ne correspond à ce filtre.</string>
+    <string name="history_meta">%1$s · %2$s</string>
+
+    <!-- Session detail -->
+    <string name="session_title">Détail de la séance</string>
+    <string name="session_unavailable">Cette séance n\'est plus disponible.</string>
+    <string name="session_reps_suffix"> répét.</string>
+    <string name="session_started">Début</string>
+    <string name="session_ended">Fin</string>
+    <string name="session_duration">Durée</string>
+    <string name="session_pace">Rythme</string>
+    <string name="session_good_form">Bonne technique</string>
+    <string name="session_good_form_value">%1$d/%2$d · %3$d%%</string>
+
+    <!-- Plans -->
+    <string name="plans_title">Programmes</string>
+    <string name="plans_new">Nouveau programme</string>
+    <string name="plans_empty">Pas encore de programme. Créez-en un pour enchaîner plusieurs exercices.</string>
+    <string name="plans_no_exercises">Aucun exercice</string>
+    <string name="plan_edit_edit">Modifier le programme</string>
+    <string name="plan_name_label">Nom du programme</string>
+    <string name="plan_add_exercise">Ajouter un exercice</string>
+    <string name="plan_reps">Répét.</string>
+    <string name="plan_seconds">Secondes</string>
+    <string name="plan_sets">Séries</string>
+    <string name="plan_summary_reps">%1$s %2$d×%3$d</string>
+    <string name="plan_summary_seconds">%1$s %2$ds×%3$d</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Profil</string>
+    <string name="profile_display_name">Nom affiché</string>
+    <string name="profile_weight_unit">Unité de poids</string>
+    <string name="profile_backup_title">Sauvegarde et transfert</string>
+    <string name="profile_backup_desc">Enregistrez vos entraînements, programmes et réglages dans un fichier, puis importez-le sur un autre appareil. Les vidéos ne sont pas incluses.</string>
+    <string name="profile_import_title">Importer les données ?</string>
+    <string name="profile_import_warning">Cela remplace les entraînements, programmes et réglages actuellement sur cet appareil. Action irréversible.</string>
+    <string name="toast_backup_saved">Sauvegarde enregistrée</string>
+    <string name="toast_export_failed">Échec de l\'exportation</string>
+    <string name="toast_data_imported">Données importées</string>
+    <string name="toast_import_failed">Échec de l\'importation — est-ce une sauvegarde GymGym ?</string>
+
+    <!-- Recordings -->
+    <string name="recordings_title">Enregistrements</string>
+    <string name="recordings_desc">Partagez une séance avec votre coach pour avoir un retour.</string>
+    <string name="recordings_empty">Pas encore d\'enregistrements. Touchez ● REC sur l\'écran d\'entraînement pour enregistrer.</string>
+
+    <!-- Creator footer -->
+    <string name="creator_prefix">Créé avec </string>
+    <string name="creator_suffix"> par projectorum.com</string>
+
+    <!-- Spoken (TTS) -->
+    <string name="speak_timer_started">Minuteur démarré</string>
+    <string name="speak_time">Temps, %1$s</string>
+    <string name="speak_detected">%1$s détecté</string>
+    <string name="speak_workout_complete">Séance terminée !</string>
+    <string name="speak_go">Go !</string>
+    <string name="cue_shallow">Plus bas</string>
+    <string name="cue_wobbly">Stable</string>
+    <string name="cue_fast">Ralentissez</string>
+
+    <!-- Duration formatting -->
+    <string name="duration_s">%1$ds</string>
+    <string name="duration_ms">%1$dmin %2$ds</string>
+    <string name="duration_hms">%1$dh %2$dmin %3$ds</string>
+    <string name="pace">%1$s rép/min</string>
+    <string name="pace_none">—</string>
+
+    <!-- Reps as a count (plural) -->
+    <plurals name="reps">
+        <item quantity="one">%1$d répétition</item>
+        <item quantity="other">%1$d répétitions</item>
+    </plurals>
+
+    <!-- Spoken duration components (plural) -->
+    <plurals name="spoken_minutes">
+        <item quantity="one">%1$d minute</item>
+        <item quantity="other">%1$d minutes</item>
+    </plurals>
+    <plurals name="spoken_seconds">
+        <item quantity="one">%1$d seconde</item>
+        <item quantity="other">%1$d secondes</item>
+    </plurals>
+
+    <!-- Arcade set-complete callouts -->
+    <string-array name="combo_words">
+        <item>SUPER !</item>
+        <item>BRAVO !</item>
+        <item>INCROYABLE !</item>
+        <item>COMBO !</item>
+        <item>BIEN !</item>
+        <item>PARFAIT !</item>
+        <item>BOUM !</item>
+    </string-array>
+</resources>
