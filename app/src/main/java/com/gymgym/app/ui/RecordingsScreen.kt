@@ -22,6 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.gymgym.app.R
 import com.gymgym.app.recording.RecordingStore
 import java.io.File
 import java.text.SimpleDateFormat
@@ -36,9 +38,9 @@ fun RecordingsScreen(onBack: () -> Unit) {
     var files by remember { mutableStateOf(RecordingStore.list(context)) }
 
     Column(modifier = Modifier.fillMaxSize().systemBarsPadding().padding(24.dp)) {
-        Text("Recordings", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.recordings_title), style = MaterialTheme.typography.headlineSmall)
         Text(
-            "Share a workout with your trainer for feedback.",
+            stringResource(R.string.recordings_desc),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 4.dp),
@@ -46,7 +48,7 @@ fun RecordingsScreen(onBack: () -> Unit) {
 
         if (files.isEmpty()) {
             Text(
-                "No recordings yet. Tap ● REC on the workout screen to record.",
+                stringResource(R.string.recordings_empty),
                 modifier = Modifier.padding(vertical = 24.dp),
             )
         } else {
@@ -68,7 +70,7 @@ fun RecordingsScreen(onBack: () -> Unit) {
             }
         }
 
-        GymButton("Back", onBack, Modifier.padding(top = 16.dp), GymButtonStyle.Secondary)
+        GymButton(stringResource(R.string.action_back), onBack, Modifier.padding(top = 16.dp), GymButtonStyle.Secondary)
     }
 }
 
@@ -95,9 +97,9 @@ private fun RecordingRow(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                GymButton("Share", onShare)
-                TextButton(onClick = onPlay) { Text("Play") }
-                TextButton(onClick = onDelete) { Text("Delete") }
+                GymButton(stringResource(R.string.action_share), onShare)
+                TextButton(onClick = onPlay) { Text(stringResource(R.string.action_play)) }
+                TextButton(onClick = onDelete) { Text(stringResource(R.string.action_delete)) }
             }
         }
     }

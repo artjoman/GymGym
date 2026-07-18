@@ -54,6 +54,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import com.gymgym.app.R
 import com.gymgym.app.BuildConfig
 import com.gymgym.app.settings.AccentTheme
@@ -88,13 +89,13 @@ fun SettingsScreen(
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text("Appearance", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.settings_appearance), style = MaterialTheme.typography.headlineSmall)
 
-        Text("Color scheme", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.settings_color_scheme), style = MaterialTheme.typography.titleMedium)
         AccentRow(selected = settings.accentTheme, onSelect = onAccentTheme)
 
         Text(
-            "Background",
+            stringResource(R.string.settings_background),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 8.dp),
         )
@@ -106,10 +107,10 @@ fun SettingsScreen(
         )
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-        Text("Sound settings", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.settings_sound), style = MaterialTheme.typography.headlineSmall)
 
         SwitchRow(
-            label = "All sounds",
+            label = stringResource(R.string.settings_all_sounds),
             checked = settings.soundsEnabled,
             enabled = true,
             onChange = onSoundsEnabled,
@@ -117,32 +118,32 @@ fun SettingsScreen(
         HorizontalDivider()
 
         SwitchRow(
-            label = "Countdown voice (3…2…1…GO)",
+            label = stringResource(R.string.settings_countdown_voice),
             checked = settings.countdownVoice,
             enabled = settings.soundsEnabled,
             onChange = onCountdownVoice,
         )
         SwitchRow(
-            label = "Out-of-frame bell",
+            label = stringResource(R.string.settings_out_of_frame_bell),
             checked = settings.trackingLostBell,
             enabled = settings.soundsEnabled,
             onChange = onTrackingLostBell,
         )
         SwitchRow(
-            label = "Back-in-frame chime",
+            label = stringResource(R.string.settings_back_in_frame_chime),
             checked = settings.trackingRegainedChime,
             enabled = settings.soundsEnabled,
             onChange = onTrackingRegainedChime,
         )
         SwitchRow(
-            label = "Set-complete combo callout",
+            label = stringResource(R.string.settings_combo_callout),
             checked = settings.setCelebration,
             enabled = true,
             onChange = onSetCelebration,
         )
         HorizontalDivider()
 
-        Text("Spoken rep count", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.settings_spoken_rep_count), style = MaterialTheme.typography.titleMedium)
         for (mode in RepAnnouncementMode.entries) {
             Row(
                 modifier = Modifier
@@ -159,20 +160,20 @@ fun SettingsScreen(
                     enabled = settings.soundsEnabled,
                     onClick = { onRepAnnouncement(mode) },
                 )
-                Text(mode.label)
+                Text(stringResource(mode.labelRes()))
             }
         }
         HorizontalDivider()
 
-        Text("Form check", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.settings_form_check), style = MaterialTheme.typography.titleMedium)
         SwitchRow(
-            label = "Form feedback",
+            label = stringResource(R.string.settings_form_feedback),
             checked = settings.formFeedback,
             enabled = true,
             onChange = onFormFeedback,
         )
         SwitchRow(
-            label = "Strict counting (only good reps)",
+            label = stringResource(R.string.settings_strict_counting),
             checked = settings.strictForm,
             enabled = settings.formFeedback,
             onChange = onStrictForm,
@@ -182,42 +183,38 @@ fun SettingsScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text("Sensitivity", modifier = Modifier.weight(1f))
+            Text(stringResource(R.string.settings_sensitivity), modifier = Modifier.weight(1f))
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 for (level in FormSensitivity.entries) {
                     FilterChip(
                         selected = settings.formSensitivity == level,
                         enabled = settings.formFeedback,
                         onClick = { onFormSensitivity(level) },
-                        label = { Text(level.label) },
+                        label = { Text(stringResource(level.labelRes())) },
                     )
                 }
             }
         }
         Text(
-            "Flags shallow, wobbly or bounced reps with a cue. Strict counting makes " +
-                "a bad rep not count toward the set; sensitivity sets how strict.",
+            stringResource(R.string.settings_form_desc),
             style = MaterialTheme.typography.bodySmall,
         )
         HorizontalDivider()
 
-        Text("Hands-free control", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.settings_hands_free), style = MaterialTheme.typography.titleMedium)
         SwitchRow(
-            label = "Voice control (beta)",
+            label = stringResource(R.string.settings_voice_control),
             checked = settings.voiceControl,
             enabled = true,
             onChange = onVoiceControl,
         )
         Text(
-            "Say \"next\", \"pause\", \"resume\", or \"reset\" during a workout; " +
-                "\"start\"/\"stop\" for a plank timer; \"start/stop recording\"; or " +
-                "\"switch camera\". " +
-                "Uses on-device recognition and the microphone; needs mic permission.",
+            stringResource(R.string.settings_voice_desc),
             style = MaterialTheme.typography.bodySmall,
         )
         HorizontalDivider()
 
-        Text("About", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.settings_about), style = MaterialTheme.typography.titleMedium)
         val context = LocalContext.current
         TextButton(
             onClick = {
@@ -229,13 +226,13 @@ fun SettingsScreen(
             },
             contentPadding = PaddingValues(0.dp),
         ) {
-            Text("Privacy policy")
+            Text(stringResource(R.string.settings_privacy_policy))
         }
 
-        GymButton("Done", onBack, Modifier.padding(top = 16.dp))
+        GymButton(stringResource(R.string.action_done), onBack, Modifier.padding(top = 16.dp))
 
         Text(
-            "v${BuildConfig.VERSION_NAME}",
+            stringResource(R.string.settings_version, BuildConfig.VERSION_NAME),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -281,7 +278,7 @@ private fun AccentRow(selected: AccentTheme, onSelect: (AccentTheme) -> Unit) {
                 if (isSel) {
                     Icon(
                         Icons.Rounded.Check,
-                        contentDescription = theme.label,
+                        contentDescription = stringResource(theme.labelRes()),
                         tint = if (color.luminance() > 0.45f) Color(0xFF08130C) else Color.White,
                         modifier = Modifier.size(22.dp),
                     )
@@ -320,7 +317,7 @@ private fun BackgroundRow(
         for (style in BackgroundStyle.entries) {
             when (style) {
                 BackgroundStyle.CUSTOM -> BgTile(
-                    label = "Upload",
+                    label = stringResource(R.string.bg_upload),
                     selected = selected == BackgroundStyle.CUSTOM,
                     customPath = customPath,
                     isUpload = true,
@@ -331,7 +328,7 @@ private fun BackgroundRow(
                     },
                 )
                 else -> BgTile(
-                    label = style.label,
+                    label = stringResource(style.labelRes()),
                     selected = selected == style,
                     previewRes = previewRes(style),
                     onClick = { onSelect(style) },

@@ -26,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.gymgym.app.R
 import com.gymgym.app.data.DraftExercise
 import com.gymgym.app.data.PlanWithExercises
 
@@ -57,14 +59,14 @@ fun PlanEditScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            if (existing == null) "New plan" else "Edit plan",
+            if (existing == null) stringResource(R.string.plans_new) else stringResource(R.string.plan_edit_edit),
             style = MaterialTheme.typography.headlineSmall,
         )
 
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
-            label = { Text("Plan name") },
+            label = { Text(stringResource(R.string.plan_name_label)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -100,7 +102,7 @@ fun PlanEditScreen(
             onClick = { rows.add(DraftRow(Exercise.SQUAT, reps = 10, sets = 3)) },
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text("Add exercise")
+            Text(stringResource(R.string.plan_add_exercise))
         }
 
         Row(
@@ -108,7 +110,7 @@ fun PlanEditScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             GymButton(
-                text = "Save",
+                text = stringResource(R.string.action_save),
                 onClick = {
                     onSave(
                         existing?.plan?.id ?: 0L,
@@ -118,7 +120,7 @@ fun PlanEditScreen(
                 },
                 enabled = name.isNotBlank() && rows.isNotEmpty(),
             )
-            TextButton(onClick = onCancel) { Text("Cancel") }
+            TextButton(onClick = onCancel) { Text(stringResource(R.string.action_cancel)) }
         }
     }
 }
@@ -142,7 +144,7 @@ private fun ExerciseRowCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                OutlinedButton(onClick = onCycleExercise) { Text(row.exercise.displayName) }
+                OutlinedButton(onClick = onCycleExercise) { Text(stringResource(row.exercise.labelRes())) }
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     TextButton(onClick = onMoveUp, enabled = canMoveUp) { Text("↑") }
                     TextButton(onClick = onMoveDown, enabled = canMoveDown) { Text("↓") }
@@ -150,11 +152,11 @@ private fun ExerciseRowCard(
                 }
             }
             if (row.exercise.timed) {
-                Stepper(label = "Seconds", value = row.reps, step = 5, onChange = onReps)
+                Stepper(label = stringResource(R.string.plan_seconds), value = row.reps, step = 5, onChange = onReps)
             } else {
-                Stepper(label = "Reps", value = row.reps, onChange = onReps)
+                Stepper(label = stringResource(R.string.plan_reps), value = row.reps, onChange = onReps)
             }
-            Stepper(label = "Sets", value = row.sets, onChange = onSets)
+            Stepper(label = stringResource(R.string.plan_sets), value = row.sets, onChange = onSets)
         }
     }
 }

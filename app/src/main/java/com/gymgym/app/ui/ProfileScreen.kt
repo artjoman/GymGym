@@ -30,6 +30,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.gymgym.app.profile.Profile
+import androidx.compose.ui.res.stringResource
+import com.gymgym.app.R
 import com.gymgym.app.profile.WeightUnit
 
 @Composable
@@ -58,7 +60,7 @@ fun ProfileScreen(
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("Profile", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.profile_title), style = MaterialTheme.typography.headlineSmall)
 
         // Local edit state so keystrokes are immediate; persistence to DataStore
         // happens in the background. Binding the field straight to the async
@@ -67,12 +69,12 @@ fun ProfileScreen(
         OutlinedTextField(
             value = name,
             onValueChange = { name = it; onDisplayName(it) },
-            label = { Text("Display name") },
+            label = { Text(stringResource(R.string.profile_display_name)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
 
-        Text("Weight unit", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.profile_weight_unit), style = MaterialTheme.typography.titleMedium)
         for (unit in WeightUnit.entries) {
             Row(
                 modifier = Modifier
@@ -87,16 +89,15 @@ fun ProfileScreen(
                     selected = profile.weightUnit == unit,
                     onClick = { onWeightUnit(unit) },
                 )
-                Text(unit.label)
+                Text(stringResource(unit.labelRes()))
             }
         }
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
 
-        Text("Backup & transfer", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.profile_backup_title), style = MaterialTheme.typography.titleMedium)
         Text(
-            "Save your workouts, plans, and settings to a file, then import it on " +
-                "another device. Videos are not included.",
+            stringResource(R.string.profile_backup_desc),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -105,13 +106,13 @@ fun ProfileScreen(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             GymButton(
-                text = "Export",
+                text = stringResource(R.string.action_export),
                 onClick = { exportLauncher.launch("gymgym-backup.json") },
                 modifier = Modifier.weight(1f),
                 style = GymButtonStyle.Secondary,
             )
             GymButton(
-                text = "Import",
+                text = stringResource(R.string.action_import),
                 onClick = {
                     importLauncher.launch(
                         arrayOf("application/json", "application/octet-stream", "text/*"),
@@ -122,28 +123,23 @@ fun ProfileScreen(
             )
         }
 
-        GymButton("Done", onBack, Modifier.padding(top = 16.dp))
+        GymButton(stringResource(R.string.action_done), onBack, Modifier.padding(top = 16.dp))
     }
 
     val importUri = pendingImport
     if (importUri != null) {
         AlertDialog(
             onDismissRequest = { pendingImport = null },
-            title = { Text("Import data?") },
-            text = {
-                Text(
-                    "This replaces the workouts, plans, and settings currently on " +
-                        "this device with the backup. This can't be undone.",
-                )
-            },
+            title = { Text(stringResource(R.string.profile_import_title)) },
+            text = { Text(stringResource(R.string.profile_import_warning)) },
             confirmButton = {
                 TextButton(onClick = {
                     onImport(importUri)
                     pendingImport = null
-                }) { Text("Replace") }
+                }) { Text(stringResource(R.string.action_replace)) }
             },
             dismissButton = {
-                TextButton(onClick = { pendingImport = null }) { Text("Cancel") }
+                TextButton(onClick = { pendingImport = null }) { Text(stringResource(R.string.action_cancel)) }
             },
         )
     }
