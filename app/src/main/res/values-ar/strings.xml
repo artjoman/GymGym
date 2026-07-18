@@ -1,0 +1,265 @@
+<resources>
+    <string name="app_name">GymGym</string>
+
+    <!-- Common actions -->
+    <string name="action_save">حفظ</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="action_done">تم</string>
+    <string name="action_back">رجوع</string>
+    <string name="action_start">ابدأ</string>
+    <string name="action_edit">تعديل</string>
+    <string name="action_delete">حذف</string>
+    <string name="action_export">تصدير</string>
+    <string name="action_import">استيراد</string>
+    <string name="action_resume">استئناف</string>
+    <string name="action_share">مشاركة</string>
+    <string name="action_play">تشغيل</string>
+    <string name="action_replace">استبدال</string>
+
+    <!-- Home -->
+    <string name="home_greeting_default">هل أنت مستعد للتمرين؟</string>
+    <string name="home_greeting">هيا بنا يا %1$s!</string>
+    <string name="home_choose_exercise">اختر تمرينك</string>
+    <string name="home_train_smarter">تدرّب بذكاء</string>
+    <string name="home_auto_detect">✨ كشف تلقائي</string>
+    <string name="home_workout_plans">خطط التمرين</string>
+    <string name="home_recordings">📹 التسجيلات</string>
+    <string name="nav_history">السجل</string>
+    <string name="nav_stats">الإحصائيات</string>
+    <string name="nav_profile">الملف الشخصي</string>
+    <string name="nav_settings">الإعدادات</string>
+
+    <!-- Exercises -->
+    <string name="exercise_squat">القرفصاء</string>
+    <string name="exercise_pushup">تمرين الضغط</string>
+    <string name="exercise_pullup">العقلة</string>
+    <string name="exercise_dumbbell_press">ضغط الدمبل</string>
+    <string name="exercise_plank">البلانك</string>
+    <string name="framing_side">ضع الهاتف على الجانب بحيث يظهر الجسم كاملاً في الإطار</string>
+    <string name="framing_pullup">ضع الهاتف أمامك بحيث تظهر العارضة والجسم كاملاً في الإطار</string>
+    <string name="framing_press">ضع الهاتف أمامك بحيث تظهر الذراعان والجذع في الإطار</string>
+
+    <!-- Camera / workout -->
+    <string name="camera_auto_detect">كشف تلقائي</string>
+    <string name="camera_auto_badge">تلقائي</string>
+    <string name="camera_detecting">جارٍ كشف التمرين…</string>
+    <string name="camera_detecting_hint">ادخل إلى الإطار وابدأ التكرارات</string>
+    <string name="camera_move_into_frame">ادخل إلى الإطار</string>
+    <string name="camera_say_start">قل \"start\"</string>
+    <string name="camera_say_stop">قل \"stop\"</string>
+    <string name="camera_start_timer">بدء المؤقت</string>
+    <string name="camera_stop_timer">إيقاف المؤقت</string>
+    <string name="camera_reset">إعادة تعيين</string>
+    <string name="camera_pause">إيقاف مؤقت</string>
+    <string name="camera_change_exercise">تغيير التمرين</string>
+    <string name="camera_skip_exercise">تخطي التمرين</string>
+    <string name="camera_stop_plan">إيقاف الخطة</string>
+    <string name="camera_paused">متوقف مؤقتاً</string>
+    <string name="camera_say_resume">قل \"resume\" أو انقر</string>
+    <string name="camera_workout_complete">اكتمل التمرين!</string>
+    <string name="camera_good_count">%1$d صحيحة</string>
+    <string name="camera_plan_progress">%1$s · تمرين %2$d/%3$d · مجموعة %4$d/%5$d</string>
+    <string name="cd_start_recording">بدء التسجيل</string>
+    <string name="cd_switch_camera">تبديل الكاميرا</string>
+    <string name="cd_listening">جارٍ الاستماع</string>
+    <string name="cd_voice_paused">الصوت متوقف</string>
+    <string name="form_cue_shallow_caps">انزل أعمق</string>
+    <string name="form_cue_wobbly_caps">ثبّت نفسك</string>
+    <string name="form_cue_fast_caps">أبطئ</string>
+    <string name="countdown_go">انطلق!</string>
+
+    <!-- Settings -->
+    <string name="settings_appearance">المظهر</string>
+    <string name="settings_color_scheme">نظام الألوان</string>
+    <string name="settings_background">الخلفية</string>
+    <string name="settings_sound">إعدادات الصوت</string>
+    <string name="settings_all_sounds">كل الأصوات</string>
+    <string name="settings_countdown_voice">صوت العد التنازلي (3…2…1…انطلق)</string>
+    <string name="settings_out_of_frame_bell">تنبيه الخروج من الإطار</string>
+    <string name="settings_back_in_frame_chime">تنبيه العودة إلى الإطار</string>
+    <string name="settings_combo_callout">هتاف الكومبو عند انتهاء المجموعة</string>
+    <string name="settings_spoken_rep_count">نطق عدّ التكرارات</string>
+    <string name="settings_form_check">فحص الأداء</string>
+    <string name="settings_form_feedback">ملاحظات الأداء</string>
+    <string name="settings_strict_counting">عدّ صارم (الصحيحة فقط)</string>
+    <string name="settings_sensitivity">الحساسية</string>
+    <string name="settings_form_desc">يضع علامة على التكرارات السطحية أو غير الثابتة أو المندفعة عبر تنبيه. العدّ الصارم يجعل التكرار السيئ لا يُحتسب ضمن المجموعة؛ والحساسية تحدد مدى الصرامة.</string>
+    <string name="settings_hands_free">التحكم بلا يدين</string>
+    <string name="settings_voice_control">التحكم الصوتي (تجريبي)</string>
+    <string name="settings_voice_desc">أثناء التمرين قل \"next\" أو \"pause\" أو \"resume\" أو \"reset\"؛ و\"start\"/\"stop\" لمؤقت البلانك؛ و\"start/stop recording\"؛ أو \"switch camera\". يستخدم التعرّف على الجهاز والميكروفون؛ ويتطلب إذن الميكروفون.</string>
+    <string name="settings_about">حول التطبيق</string>
+    <string name="settings_privacy_policy">سياسة الخصوصية</string>
+    <string name="settings_version">v%1$s</string>
+    <string name="bg_upload">رفع</string>
+
+    <!-- Spoken rep count modes -->
+    <string name="rep_off">إيقاف</string>
+    <string name="rep_every">كل تكرار</string>
+    <string name="rep_every_5">كل 5 تكرارات</string>
+    <string name="rep_every_10">كل 10 تكرارات</string>
+
+    <!-- Form sensitivity -->
+    <string name="sensitivity_lenient">متساهلة</string>
+    <string name="sensitivity_standard">قياسية</string>
+    <string name="sensitivity_strict">صارمة</string>
+
+    <!-- Accent color schemes -->
+    <string name="accent_emerald">زمردي</string>
+    <string name="accent_azure">أزرق سماوي</string>
+    <string name="accent_violet">بنفسجي</string>
+    <string name="accent_magenta">أرجواني</string>
+    <string name="accent_amber">كهرماني</string>
+    <string name="accent_crimson">قرمزي</string>
+    <string name="accent_lime">ليموني</string>
+    <string name="accent_aqua">مائي</string>
+    <string name="accent_tangerine">يوسفي</string>
+    <string name="accent_rose">وردي</string>
+    <string name="accent_indigo">نيلي</string>
+    <string name="accent_orchid">أوركيد</string>
+    <string name="accent_cyan">سماوي</string>
+    <string name="accent_slate">رمادي داكن</string>
+
+    <!-- Background styles -->
+    <string name="bg_none">بلا</string>
+    <string name="bg_gym_emerald">زمردي</string>
+    <string name="bg_gym_azure">أزرق سماوي</string>
+    <string name="bg_gym_violet">بنفسجي</string>
+    <string name="bg_gym_amber">كهرماني</string>
+    <string name="bg_custom">صورتك</string>
+
+    <!-- Date range filters -->
+    <string name="range_all">الكل</string>
+    <string name="range_24h">24 س</string>
+    <string name="range_7d">7 أيام</string>
+    <string name="range_30d">30 يوماً</string>
+
+    <!-- Weight unit -->
+    <string name="unit_kg">كيلوغرام (kg)</string>
+    <string name="unit_lb">رطل (lb)</string>
+
+    <!-- Stats -->
+    <string name="stats_title">الإحصائيات</string>
+    <string name="stats_empty">لا توجد إحصائيات بعد. أكمل مجموعة لبدء التتبع.</string>
+    <string name="stats_good_form">%1$d%% بأداء جيد</string>
+    <string name="stats_last">الأخير: %1$s</string>
+    <string name="stats_cell_last">الأخير</string>
+    <string name="stats_sessions">الجلسات</string>
+    <string name="stats_total_reps">إجمالي التكرارات</string>
+    <string name="stats_best_set">أفضل مجموعة</string>
+    <string name="stats_avg_reps">متوسط التكرارات</string>
+    <string name="stats_total_time">الوقت الإجمالي</string>
+    <string name="stats_since">منذ</string>
+    <string name="stats_best_hold">أفضل مدة</string>
+    <string name="stats_avg_hold">متوسط المدة</string>
+    <string name="stats_reps_trend">اتجاه التكرارات</string>
+    <string name="stats_form_trend">اتجاه جودة الأداء</string>
+
+    <!-- History -->
+    <string name="history_title">السجل</string>
+    <string name="history_empty">لا توجد تمارين بعد. أكمل مجموعة لتظهر هنا.</string>
+    <string name="history_empty_filtered">لا توجد جلسات مطابقة لهذا الفلتر.</string>
+    <string name="history_meta">%1$s · %2$s</string>
+
+    <!-- Session detail -->
+    <string name="session_title">تفاصيل الجلسة</string>
+    <string name="session_unavailable">هذه الجلسة لم تعد متاحة.</string>
+    <string name="session_reps_suffix"> تكرار</string>
+    <string name="session_started">البداية</string>
+    <string name="session_ended">النهاية</string>
+    <string name="session_duration">المدة</string>
+    <string name="session_pace">الإيقاع</string>
+    <string name="session_good_form">أداء جيد</string>
+    <string name="session_good_form_value">%1$d/%2$d · %3$d%%</string>
+
+    <!-- Plans -->
+    <string name="plans_title">خطط التمرين</string>
+    <string name="plans_new">خطة جديدة</string>
+    <string name="plans_empty">لا توجد خطط بعد. أنشئ خطة لأداء عدة تمارين متتالية.</string>
+    <string name="plans_no_exercises">لا توجد تمارين</string>
+    <string name="plan_edit_edit">تعديل الخطة</string>
+    <string name="plan_name_label">اسم الخطة</string>
+    <string name="plan_add_exercise">إضافة تمرين</string>
+    <string name="plan_reps">تكرارات</string>
+    <string name="plan_seconds">ثوانٍ</string>
+    <string name="plan_sets">مجموعات</string>
+    <string name="plan_summary_reps">%1$s %2$d×%3$d</string>
+    <string name="plan_summary_seconds">%1$s %2$dث×%3$d</string>
+
+    <!-- Profile -->
+    <string name="profile_title">الملف الشخصي</string>
+    <string name="profile_display_name">الاسم المعروض</string>
+    <string name="profile_weight_unit">وحدة الوزن</string>
+    <string name="profile_backup_title">النسخ الاحتياطي والنقل</string>
+    <string name="profile_backup_desc">احفظ تمارينك وخططك وإعداداتك في ملف، ثم استوردها على جهاز آخر. لا تُضمَّن مقاطع الفيديو.</string>
+    <string name="profile_import_title">استيراد البيانات؟</string>
+    <string name="profile_import_warning">سيؤدي هذا إلى استبدال التمارين والخطط والإعدادات الموجودة حالياً على هذا الجهاز. لا يمكن التراجع عن ذلك.</string>
+    <string name="toast_backup_saved">تم حفظ النسخة الاحتياطية</string>
+    <string name="toast_export_failed">فشل التصدير</string>
+    <string name="toast_data_imported">تم استيراد البيانات</string>
+    <string name="toast_import_failed">فشل الاستيراد — هل هذه نسخة GymGym احتياطية؟</string>
+
+    <!-- Recordings -->
+    <string name="recordings_title">التسجيلات</string>
+    <string name="recordings_desc">شارك تمريناً مع مدربك للحصول على ملاحظات.</string>
+    <string name="recordings_empty">لا توجد تسجيلات بعد. انقر ● REC في شاشة التمرين للتسجيل.</string>
+
+    <!-- Creator footer -->
+    <string name="creator_prefix">صُنع بحب </string>
+    <string name="creator_suffix"> بواسطة projectorum.com</string>
+
+    <!-- Spoken (TTS) -->
+    <string name="speak_timer_started">بدأ المؤقت</string>
+    <string name="speak_time">الوقت، %1$s</string>
+    <string name="speak_detected">تم كشف %1$s</string>
+    <string name="speak_workout_complete">اكتمل التمرين!</string>
+    <string name="speak_go">انطلق!</string>
+    <string name="cue_shallow">انزل أعمق</string>
+    <string name="cue_wobbly">ثبّت نفسك</string>
+    <string name="cue_fast">أبطئ</string>
+
+    <!-- Duration formatting -->
+    <string name="duration_s">%1$dث</string>
+    <string name="duration_ms">%1$dد %2$dث</string>
+    <string name="duration_hms">%1$dس %2$dد %3$dث</string>
+    <string name="pace">%1$s تكرار/د</string>
+    <string name="pace_none">—</string>
+
+    <!-- Reps as a count (plural) -->
+    <plurals name="reps">
+        <item quantity="zero">%1$d تكرار</item>
+        <item quantity="one">%1$d تكرار</item>
+        <item quantity="two">%1$d تكرار</item>
+        <item quantity="few">%1$d تكرارات</item>
+        <item quantity="many">%1$d تكراراً</item>
+        <item quantity="other">%1$d تكرار</item>
+    </plurals>
+
+    <!-- Spoken duration components (plural) -->
+    <plurals name="spoken_minutes">
+        <item quantity="zero">%1$d دقيقة</item>
+        <item quantity="one">%1$d دقيقة</item>
+        <item quantity="two">%1$d دقيقتان</item>
+        <item quantity="few">%1$d دقائق</item>
+        <item quantity="many">%1$d دقيقة</item>
+        <item quantity="other">%1$d دقيقة</item>
+    </plurals>
+    <plurals name="spoken_seconds">
+        <item quantity="zero">%1$d ثانية</item>
+        <item quantity="one">%1$d ثانية</item>
+        <item quantity="two">%1$d ثانيتان</item>
+        <item quantity="few">%1$d ثوانٍ</item>
+        <item quantity="many">%1$d ثانية</item>
+        <item quantity="other">%1$d ثانية</item>
+    </plurals>
+
+    <!-- Arcade set-complete callouts -->
+    <string-array name="combo_words">
+        <item>رائع!</item>
+        <item>ممتاز!</item>
+        <item>مذهل!</item>
+        <item>كومبو!</item>
+        <item>جيد!</item>
+        <item>مثالي!</item>
+        <item>بوم!</item>
+    </string-array>
+</resources>

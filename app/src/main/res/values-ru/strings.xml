@@ -1,0 +1,259 @@
+<resources>
+    <string name="app_name">GymGym</string>
+
+    <!-- Common actions -->
+    <string name="action_save">Сохранить</string>
+    <string name="action_cancel">Отмена</string>
+    <string name="action_done">Готово</string>
+    <string name="action_back">Назад</string>
+    <string name="action_start">Начать</string>
+    <string name="action_edit">Изменить</string>
+    <string name="action_delete">Удалить</string>
+    <string name="action_export">Экспорт</string>
+    <string name="action_import">Импорт</string>
+    <string name="action_resume">Продолжить</string>
+    <string name="action_share">Поделиться</string>
+    <string name="action_play">Воспроизвести</string>
+    <string name="action_replace">Заменить</string>
+
+    <!-- Home -->
+    <string name="home_greeting_default">Готовы к тренировке?</string>
+    <string name="home_greeting">Поехали, %1$s!</string>
+    <string name="home_choose_exercise">Выберите упражнение</string>
+    <string name="home_train_smarter">Тренируйтесь умнее</string>
+    <string name="home_auto_detect">✨ Автоопределение</string>
+    <string name="home_workout_plans">Планы тренировок</string>
+    <string name="home_recordings">📹 Записи</string>
+    <string name="nav_history">История</string>
+    <string name="nav_stats">Статистика</string>
+    <string name="nav_profile">Профиль</string>
+    <string name="nav_settings">Настройки</string>
+
+    <!-- Exercises -->
+    <string name="exercise_squat">Приседания</string>
+    <string name="exercise_pushup">Отжимания</string>
+    <string name="exercise_pullup">Подтягивания</string>
+    <string name="exercise_dumbbell_press">Жим гантелей</string>
+    <string name="exercise_plank">Планка</string>
+    <string name="framing_side">Поставьте телефон сбоку, чтобы всё тело было в кадре</string>
+    <string name="framing_pullup">Поставьте телефон перед собой, чтобы перекладина и всё тело были в кадре</string>
+    <string name="framing_press">Поставьте телефон перед собой, чтобы руки и корпус были в кадре</string>
+
+    <!-- Camera / workout -->
+    <string name="camera_auto_detect">Автоопределение</string>
+    <string name="camera_auto_badge">АВТО</string>
+    <string name="camera_detecting">Определение упражнения…</string>
+    <string name="camera_detecting_hint">Встаньте в кадр и начните повторения</string>
+    <string name="camera_move_into_frame">Встаньте в кадр</string>
+    <string name="camera_say_start">Скажите \"start\"</string>
+    <string name="camera_say_stop">Скажите \"stop\"</string>
+    <string name="camera_start_timer">Запустить таймер</string>
+    <string name="camera_stop_timer">Остановить таймер</string>
+    <string name="camera_reset">Сбросить</string>
+    <string name="camera_pause">Пауза</string>
+    <string name="camera_change_exercise">Сменить упражнение</string>
+    <string name="camera_skip_exercise">Пропустить упражнение</string>
+    <string name="camera_stop_plan">Остановить план</string>
+    <string name="camera_paused">Пауза</string>
+    <string name="camera_say_resume">Скажите \"resume\" или коснитесь</string>
+    <string name="camera_workout_complete">Тренировка завершена!</string>
+    <string name="camera_good_count">%1$d правильных</string>
+    <string name="camera_plan_progress">%1$s · упражнение %2$d/%3$d · подход %4$d/%5$d</string>
+    <string name="cd_start_recording">Начать запись</string>
+    <string name="cd_switch_camera">Сменить камеру</string>
+    <string name="cd_listening">Слушаю</string>
+    <string name="cd_voice_paused">Голос на паузе</string>
+    <string name="form_cue_shallow_caps">ГЛУБЖЕ</string>
+    <string name="form_cue_wobbly_caps">РОВНЕЕ</string>
+    <string name="form_cue_fast_caps">МЕДЛЕННЕЕ</string>
+    <string name="countdown_go">ВПЕРЁД!</string>
+
+    <!-- Settings -->
+    <string name="settings_appearance">Оформление</string>
+    <string name="settings_color_scheme">Цветовая схема</string>
+    <string name="settings_background">Фон</string>
+    <string name="settings_sound">Настройки звука</string>
+    <string name="settings_all_sounds">Все звуки</string>
+    <string name="settings_countdown_voice">Голосовой отсчёт (3…2…1…ВПЕРЁД)</string>
+    <string name="settings_out_of_frame_bell">Сигнал выхода из кадра</string>
+    <string name="settings_back_in_frame_chime">Сигнал возврата в кадр</string>
+    <string name="settings_combo_callout">Комбо-возглас в конце подхода</string>
+    <string name="settings_spoken_rep_count">Озвучивание счёта повторений</string>
+    <string name="settings_form_check">Контроль техники</string>
+    <string name="settings_form_feedback">Подсказки по технике</string>
+    <string name="settings_strict_counting">Строгий счёт (только правильные)</string>
+    <string name="settings_sensitivity">Чувствительность</string>
+    <string name="settings_form_desc">Отмечает подсказкой неглубокие, неустойчивые или рывковые повторения. При строгом счёте плохое повторение не засчитывается в подход; чувствительность задаёт строгость.</string>
+    <string name="settings_hands_free">Голосовое управление</string>
+    <string name="settings_voice_control">Голосовое управление (бета)</string>
+    <string name="settings_voice_desc">Во время тренировки говорите \"next\", \"pause\", \"resume\" или \"reset\"; \"start\"/\"stop\" для таймера планки; \"start/stop recording\"; или \"switch camera\". Использует распознавание на устройстве и микрофон; нужен доступ к микрофону.</string>
+    <string name="settings_about">О приложении</string>
+    <string name="settings_privacy_policy">Политика конфиденциальности</string>
+    <string name="settings_version">v%1$s</string>
+    <string name="bg_upload">Загрузить</string>
+
+    <!-- Spoken rep count modes -->
+    <string name="rep_off">Выкл.</string>
+    <string name="rep_every">Каждое повторение</string>
+    <string name="rep_every_5">Каждые 5 повторений</string>
+    <string name="rep_every_10">Каждые 10 повторений</string>
+
+    <!-- Form sensitivity -->
+    <string name="sensitivity_lenient">Мягкая</string>
+    <string name="sensitivity_standard">Стандартная</string>
+    <string name="sensitivity_strict">Строгая</string>
+
+    <!-- Accent color schemes -->
+    <string name="accent_emerald">Изумруд</string>
+    <string name="accent_azure">Лазурь</string>
+    <string name="accent_violet">Фиолетовый</string>
+    <string name="accent_magenta">Пурпурный</string>
+    <string name="accent_amber">Янтарь</string>
+    <string name="accent_crimson">Багровый</string>
+    <string name="accent_lime">Лайм</string>
+    <string name="accent_aqua">Аквамарин</string>
+    <string name="accent_tangerine">Мандарин</string>
+    <string name="accent_rose">Розовый</string>
+    <string name="accent_indigo">Индиго</string>
+    <string name="accent_orchid">Орхидея</string>
+    <string name="accent_cyan">Циан</string>
+    <string name="accent_slate">Графит</string>
+
+    <!-- Background styles -->
+    <string name="bg_none">Нет</string>
+    <string name="bg_gym_emerald">Изумруд</string>
+    <string name="bg_gym_azure">Лазурь</string>
+    <string name="bg_gym_violet">Фиолетовый</string>
+    <string name="bg_gym_amber">Янтарь</string>
+    <string name="bg_custom">Ваше фото</string>
+
+    <!-- Date range filters -->
+    <string name="range_all">Все</string>
+    <string name="range_24h">24 ч</string>
+    <string name="range_7d">7 д</string>
+    <string name="range_30d">30 д</string>
+
+    <!-- Weight unit -->
+    <string name="unit_kg">Килограммы (кг)</string>
+    <string name="unit_lb">Фунты (lb)</string>
+
+    <!-- Stats -->
+    <string name="stats_title">Статистика</string>
+    <string name="stats_empty">Пока нет статистики. Завершите подход, чтобы начать учёт.</string>
+    <string name="stats_good_form">%1$d%% с хорошей техникой</string>
+    <string name="stats_last">Последний: %1$s</string>
+    <string name="stats_cell_last">Последний</string>
+    <string name="stats_sessions">Сессии</string>
+    <string name="stats_total_reps">Всего повт.</string>
+    <string name="stats_best_set">Лучший подход</string>
+    <string name="stats_avg_reps">Ср. повт.</string>
+    <string name="stats_total_time">Общее время</string>
+    <string name="stats_since">С</string>
+    <string name="stats_best_hold">Лучшее время</string>
+    <string name="stats_avg_hold">Ср. время</string>
+    <string name="stats_reps_trend">Динамика повторений</string>
+    <string name="stats_form_trend">Динамика техники</string>
+
+    <!-- History -->
+    <string name="history_title">История</string>
+    <string name="history_empty">Пока нет тренировок. Завершите подход, чтобы увидеть его здесь.</string>
+    <string name="history_empty_filtered">Нет сессий по этому фильтру.</string>
+    <string name="history_meta">%1$s · %2$s</string>
+
+    <!-- Session detail -->
+    <string name="session_title">Детали сессии</string>
+    <string name="session_unavailable">Эта сессия больше недоступна.</string>
+    <string name="session_reps_suffix"> повт.</string>
+    <string name="session_started">Начало</string>
+    <string name="session_ended">Конец</string>
+    <string name="session_duration">Длительность</string>
+    <string name="session_pace">Темп</string>
+    <string name="session_good_form">Хорошая техника</string>
+    <string name="session_good_form_value">%1$d/%2$d · %3$d%%</string>
+
+    <!-- Plans -->
+    <string name="plans_title">Планы тренировок</string>
+    <string name="plans_new">Новый план</string>
+    <string name="plans_empty">Пока нет планов. Создайте план, чтобы выполнять несколько упражнений подряд.</string>
+    <string name="plans_no_exercises">Нет упражнений</string>
+    <string name="plan_edit_edit">Изменить план</string>
+    <string name="plan_name_label">Название плана</string>
+    <string name="plan_add_exercise">Добавить упражнение</string>
+    <string name="plan_reps">Повт.</string>
+    <string name="plan_seconds">Секунды</string>
+    <string name="plan_sets">Подходы</string>
+    <string name="plan_summary_reps">%1$s %2$d×%3$d</string>
+    <string name="plan_summary_seconds">%1$s %2$dс×%3$d</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Профиль</string>
+    <string name="profile_display_name">Отображаемое имя</string>
+    <string name="profile_weight_unit">Единица веса</string>
+    <string name="profile_backup_title">Резервная копия и перенос</string>
+    <string name="profile_backup_desc">Сохраните тренировки, планы и настройки в файл, затем импортируйте его на другом устройстве. Видео не включаются.</string>
+    <string name="profile_import_title">Импортировать данные?</string>
+    <string name="profile_import_warning">Это заменит тренировки, планы и настройки на этом устройстве. Действие нельзя отменить.</string>
+    <string name="toast_backup_saved">Копия сохранена</string>
+    <string name="toast_export_failed">Не удалось экспортировать</string>
+    <string name="toast_data_imported">Данные импортированы</string>
+    <string name="toast_import_failed">Не удалось импортировать — это резервная копия GymGym?</string>
+
+    <!-- Recordings -->
+    <string name="recordings_title">Записи</string>
+    <string name="recordings_desc">Поделитесь тренировкой с тренером, чтобы получить отзыв.</string>
+    <string name="recordings_empty">Пока нет записей. Нажмите ● REC на экране тренировки, чтобы записать.</string>
+
+    <!-- Creator footer -->
+    <string name="creator_prefix">Создано с </string>
+    <string name="creator_suffix"> — projectorum.com</string>
+
+    <!-- Spoken (TTS) -->
+    <string name="speak_timer_started">Таймер запущен</string>
+    <string name="speak_time">Время: %1$s</string>
+    <string name="speak_detected">Определено: %1$s</string>
+    <string name="speak_workout_complete">Тренировка завершена!</string>
+    <string name="speak_go">Вперёд!</string>
+    <string name="cue_shallow">Глубже</string>
+    <string name="cue_wobbly">Ровнее</string>
+    <string name="cue_fast">Медленнее</string>
+
+    <!-- Duration formatting -->
+    <string name="duration_s">%1$dс</string>
+    <string name="duration_ms">%1$dмин %2$dс</string>
+    <string name="duration_hms">%1$dч %2$dмин %3$dс</string>
+    <string name="pace">%1$s повт/мин</string>
+    <string name="pace_none">—</string>
+
+    <!-- Reps as a count (plural) -->
+    <plurals name="reps">
+        <item quantity="one">%1$d повторение</item>
+        <item quantity="few">%1$d повторения</item>
+        <item quantity="many">%1$d повторений</item>
+        <item quantity="other">%1$d повторения</item>
+    </plurals>
+
+    <!-- Spoken duration components (plural) -->
+    <plurals name="spoken_minutes">
+        <item quantity="one">%1$d минута</item>
+        <item quantity="few">%1$d минуты</item>
+        <item quantity="many">%1$d минут</item>
+        <item quantity="other">%1$d минуты</item>
+    </plurals>
+    <plurals name="spoken_seconds">
+        <item quantity="one">%1$d секунда</item>
+        <item quantity="few">%1$d секунды</item>
+        <item quantity="many">%1$d секунд</item>
+        <item quantity="other">%1$d секунды</item>
+    </plurals>
+
+    <!-- Arcade set-complete callouts -->
+    <string-array name="combo_words">
+        <item>СУПЕР!</item>
+        <item>ОТЛИЧНО!</item>
+        <item>КЛАСС!</item>
+        <item>КОМБО!</item>
+        <item>МОЛОДЕЦ!</item>
+        <item>ИДЕАЛЬНО!</item>
+        <item>БУМ!</item>
+    </string-array>
+</resources>

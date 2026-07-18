@@ -1,0 +1,250 @@
+<resources>
+    <string name="app_name">GymGym</string>
+
+    <!-- Common actions -->
+    <string name="action_save">保存</string>
+    <string name="action_cancel">取消</string>
+    <string name="action_done">完成</string>
+    <string name="action_back">返回</string>
+    <string name="action_start">开始</string>
+    <string name="action_edit">编辑</string>
+    <string name="action_delete">删除</string>
+    <string name="action_export">导出</string>
+    <string name="action_import">导入</string>
+    <string name="action_resume">继续</string>
+    <string name="action_share">分享</string>
+    <string name="action_play">播放</string>
+    <string name="action_replace">替换</string>
+
+    <!-- Home -->
+    <string name="home_greeting_default">准备好训练了吗？</string>
+    <string name="home_greeting">开始吧，%1$s！</string>
+    <string name="home_choose_exercise">选择你的动作</string>
+    <string name="home_train_smarter">更聪明地训练</string>
+    <string name="home_auto_detect">✨ 自动识别</string>
+    <string name="home_workout_plans">训练计划</string>
+    <string name="home_recordings">📹 录像</string>
+    <string name="nav_history">历史</string>
+    <string name="nav_stats">统计</string>
+    <string name="nav_profile">个人资料</string>
+    <string name="nav_settings">设置</string>
+
+    <!-- Exercises -->
+    <string name="exercise_squat">深蹲</string>
+    <string name="exercise_pushup">俯卧撑</string>
+    <string name="exercise_pullup">引体向上</string>
+    <string name="exercise_dumbbell_press">哑铃推举</string>
+    <string name="exercise_plank">平板支撑</string>
+    <string name="framing_side">将手机放在侧面，全身入镜</string>
+    <string name="framing_pullup">将手机正对自己，单杠和全身入镜</string>
+    <string name="framing_press">将手机正对自己，手臂和躯干入镜</string>
+
+    <!-- Camera / workout -->
+    <string name="camera_auto_detect">自动识别</string>
+    <string name="camera_auto_badge">自动</string>
+    <string name="camera_detecting">正在识别动作…</string>
+    <string name="camera_detecting_hint">进入画面并开始做动作</string>
+    <string name="camera_move_into_frame">请进入画面</string>
+    <string name="camera_say_start">说“start”</string>
+    <string name="camera_say_stop">说“stop”</string>
+    <string name="camera_start_timer">开始计时</string>
+    <string name="camera_stop_timer">停止计时</string>
+    <string name="camera_reset">重置</string>
+    <string name="camera_pause">暂停</string>
+    <string name="camera_change_exercise">更换动作</string>
+    <string name="camera_skip_exercise">跳过动作</string>
+    <string name="camera_stop_plan">停止计划</string>
+    <string name="camera_paused">已暂停</string>
+    <string name="camera_say_resume">说“resume”或点按</string>
+    <string name="camera_workout_complete">训练完成！</string>
+    <string name="camera_good_count">%1$d 个达标</string>
+    <string name="camera_plan_progress">%1$s · 动作 %2$d/%3$d · 组 %4$d/%5$d</string>
+    <string name="cd_start_recording">开始录制</string>
+    <string name="cd_switch_camera">切换摄像头</string>
+    <string name="cd_listening">聆听中</string>
+    <string name="cd_voice_paused">语音已暂停</string>
+    <string name="form_cue_shallow_caps">再深一点</string>
+    <string name="form_cue_wobbly_caps">保持稳定</string>
+    <string name="form_cue_fast_caps">放慢一点</string>
+    <string name="countdown_go">开始！</string>
+
+    <!-- Settings -->
+    <string name="settings_appearance">外观</string>
+    <string name="settings_color_scheme">配色方案</string>
+    <string name="settings_background">背景</string>
+    <string name="settings_sound">声音设置</string>
+    <string name="settings_all_sounds">所有声音</string>
+    <string name="settings_countdown_voice">倒计时语音（3…2…1…开始）</string>
+    <string name="settings_out_of_frame_bell">出画提示音</string>
+    <string name="settings_back_in_frame_chime">回画提示音</string>
+    <string name="settings_combo_callout">组完成连击喊话</string>
+    <string name="settings_spoken_rep_count">语音计数</string>
+    <string name="settings_form_check">动作检查</string>
+    <string name="settings_form_feedback">动作反馈</string>
+    <string name="settings_strict_counting">严格计数（仅达标）</string>
+    <string name="settings_sensitivity">灵敏度</string>
+    <string name="settings_form_desc">用提示标记过浅、不稳或借力的动作。严格计数会让不达标的动作不计入该组；灵敏度决定严格程度。</string>
+    <string name="settings_hands_free">免手操作</string>
+    <string name="settings_voice_control">语音控制（测试版）</string>
+    <string name="settings_voice_desc">训练时说“next”“pause”“resume”或“reset”；用“start”/“stop”控制平板支撑计时；“start/stop recording”；或“switch camera”。使用设备端识别和麦克风；需要麦克风权限。</string>
+    <string name="settings_about">关于</string>
+    <string name="settings_privacy_policy">隐私政策</string>
+    <string name="settings_version">v%1$s</string>
+    <string name="bg_upload">上传</string>
+
+    <!-- Spoken rep count modes -->
+    <string name="rep_off">关闭</string>
+    <string name="rep_every">每次</string>
+    <string name="rep_every_5">每 5 次</string>
+    <string name="rep_every_10">每 10 次</string>
+
+    <!-- Form sensitivity -->
+    <string name="sensitivity_lenient">宽松</string>
+    <string name="sensitivity_standard">标准</string>
+    <string name="sensitivity_strict">严格</string>
+
+    <!-- Accent color schemes -->
+    <string name="accent_emerald">祖母绿</string>
+    <string name="accent_azure">天蓝</string>
+    <string name="accent_violet">紫罗兰</string>
+    <string name="accent_magenta">品红</string>
+    <string name="accent_amber">琥珀</string>
+    <string name="accent_crimson">绯红</string>
+    <string name="accent_lime">青柠</string>
+    <string name="accent_aqua">水绿</string>
+    <string name="accent_tangerine">橘色</string>
+    <string name="accent_rose">玫瑰</string>
+    <string name="accent_indigo">靛蓝</string>
+    <string name="accent_orchid">兰紫</string>
+    <string name="accent_cyan">青色</string>
+    <string name="accent_slate">石板灰</string>
+
+    <!-- Background styles -->
+    <string name="bg_none">无</string>
+    <string name="bg_gym_emerald">祖母绿</string>
+    <string name="bg_gym_azure">天蓝</string>
+    <string name="bg_gym_violet">紫罗兰</string>
+    <string name="bg_gym_amber">琥珀</string>
+    <string name="bg_custom">你的照片</string>
+
+    <!-- Date range filters -->
+    <string name="range_all">全部</string>
+    <string name="range_24h">24 小时</string>
+    <string name="range_7d">7 天</string>
+    <string name="range_30d">30 天</string>
+
+    <!-- Weight unit -->
+    <string name="unit_kg">千克 (kg)</string>
+    <string name="unit_lb">磅 (lb)</string>
+
+    <!-- Stats -->
+    <string name="stats_title">统计</string>
+    <string name="stats_empty">还没有统计数据。完成一组即可开始记录。</string>
+    <string name="stats_good_form">%1$d%% 动作达标</string>
+    <string name="stats_last">最近：%1$s</string>
+    <string name="stats_cell_last">最近</string>
+    <string name="stats_sessions">次数</string>
+    <string name="stats_total_reps">总次数</string>
+    <string name="stats_best_set">最佳组</string>
+    <string name="stats_avg_reps">平均次数</string>
+    <string name="stats_total_time">总时长</string>
+    <string name="stats_since">起始</string>
+    <string name="stats_best_hold">最长坚持</string>
+    <string name="stats_avg_hold">平均坚持</string>
+    <string name="stats_reps_trend">近期次数趋势</string>
+    <string name="stats_form_trend">动作质量趋势</string>
+
+    <!-- History -->
+    <string name="history_title">历史</string>
+    <string name="history_empty">还没有训练记录。完成一组后会显示在这里。</string>
+    <string name="history_empty_filtered">没有符合此筛选的记录。</string>
+    <string name="history_meta">%1$s · %2$s</string>
+
+    <!-- Session detail -->
+    <string name="session_title">训练详情</string>
+    <string name="session_unavailable">该记录已不可用。</string>
+    <string name="session_reps_suffix"> 次</string>
+    <string name="session_started">开始</string>
+    <string name="session_ended">结束</string>
+    <string name="session_duration">时长</string>
+    <string name="session_pace">节奏</string>
+    <string name="session_good_form">动作达标</string>
+    <string name="session_good_form_value">%1$d/%2$d · %3$d%%</string>
+
+    <!-- Plans -->
+    <string name="plans_title">训练计划</string>
+    <string name="plans_new">新建计划</string>
+    <string name="plans_empty">还没有计划。创建一个即可连续完成多个动作。</string>
+    <string name="plans_no_exercises">无动作</string>
+    <string name="plan_edit_edit">编辑计划</string>
+    <string name="plan_name_label">计划名称</string>
+    <string name="plan_add_exercise">添加动作</string>
+    <string name="plan_reps">次数</string>
+    <string name="plan_seconds">秒数</string>
+    <string name="plan_sets">组数</string>
+    <string name="plan_summary_reps">%1$s %2$d×%3$d</string>
+    <string name="plan_summary_seconds">%1$s %2$d秒×%3$d</string>
+
+    <!-- Profile -->
+    <string name="profile_title">个人资料</string>
+    <string name="profile_display_name">显示名称</string>
+    <string name="profile_weight_unit">重量单位</string>
+    <string name="profile_backup_title">备份与传输</string>
+    <string name="profile_backup_desc">将训练、计划和设置保存为文件，然后在另一台设备上导入。不包含视频。</string>
+    <string name="profile_import_title">导入数据？</string>
+    <string name="profile_import_warning">这将替换本设备上当前的训练、计划和设置，且无法撤销。</string>
+    <string name="toast_backup_saved">备份已保存</string>
+    <string name="toast_export_failed">导出失败</string>
+    <string name="toast_data_imported">数据已导入</string>
+    <string name="toast_import_failed">导入失败——这是 GymGym 的备份吗？</string>
+
+    <!-- Recordings -->
+    <string name="recordings_title">录像</string>
+    <string name="recordings_desc">把训练分享给教练以获得反馈。</string>
+    <string name="recordings_empty">还没有录像。在训练界面点按 ● REC 即可录制。</string>
+
+    <!-- Creator footer -->
+    <string name="creator_prefix">用心打造 </string>
+    <string name="creator_suffix"> · projectorum.com</string>
+
+    <!-- Spoken (TTS) -->
+    <string name="speak_timer_started">计时开始</string>
+    <string name="speak_time">时间：%1$s</string>
+    <string name="speak_detected">已识别：%1$s</string>
+    <string name="speak_workout_complete">训练完成！</string>
+    <string name="speak_go">开始！</string>
+    <string name="cue_shallow">再深一点</string>
+    <string name="cue_wobbly">保持稳定</string>
+    <string name="cue_fast">放慢一点</string>
+
+    <!-- Duration formatting -->
+    <string name="duration_s">%1$d秒</string>
+    <string name="duration_ms">%1$d分%2$d秒</string>
+    <string name="duration_hms">%1$d时%2$d分%3$d秒</string>
+    <string name="pace">%1$s 次/分</string>
+    <string name="pace_none">—</string>
+
+    <!-- Reps as a count (plural) -->
+    <plurals name="reps">
+        <item quantity="other">%1$d 次</item>
+    </plurals>
+
+    <!-- Spoken duration components (plural) -->
+    <plurals name="spoken_minutes">
+        <item quantity="other">%1$d 分钟</item>
+    </plurals>
+    <plurals name="spoken_seconds">
+        <item quantity="other">%1$d 秒</item>
+    </plurals>
+
+    <!-- Arcade set-complete callouts -->
+    <string-array name="combo_words">
+        <item>超棒！</item>
+        <item>很好！</item>
+        <item>太赞！</item>
+        <item>连击！</item>
+        <item>不错！</item>
+        <item>完美！</item>
+        <item>砰！</item>
+    </string-array>
+</resources>
