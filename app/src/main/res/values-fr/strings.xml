@@ -306,4 +306,16 @@
     <string name="plan_untitled_workout">Séance sans titre</string>
     <string name="plan_default_workout_name">Séance %1$d</string>
     <string name="plan_no_exercises">Aucun exercice pour l\'instant. Ajoutez-en un depuis la bibliothèque.</string>
+    <!-- Programs (Phase 3) -->
+    <string name="home_programs">Programmes</string>
+    <string name="programs_title">Programmes</string>
+    <string name="programs_use">Utiliser ce programme</string>
+    <string name="programs_active_note">Le définit comme votre plan actif, se terminant dans 3 mois.</string>
+    <string name="programs_activated">Programme activé</string>
+    <string name="prog_full_beginner">Full body débutant</string>
+    <string name="prog_full_standard">Full body standard</string>
+    <string name="prog_home">Entraînement à la maison</string>
+    <string name="prog_street">Street workout</string>
+    <string name="prog_weighted">Base lestée</string>
+    <string name="prog_ppl">Poussée / Tirage / Jambes</string>
 </resources>

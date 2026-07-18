@@ -312,4 +312,16 @@
     <string name="plan_untitled_workout">Тренировка без названия</string>
     <string name="plan_default_workout_name">Тренировка %1$d</string>
     <string name="plan_no_exercises">Упражнений пока нет. Добавьте из библиотеки.</string>
+    <!-- Programs (Phase 3) -->
+    <string name="home_programs">Программы</string>
+    <string name="programs_title">Программы</string>
+    <string name="programs_use">Использовать программу</string>
+    <string name="programs_active_note">Сделает это активным планом с окончанием через 3 месяца.</string>
+    <string name="programs_activated">Программа активирована</string>
+    <string name="prog_full_beginner">Всё тело: новичок</string>
+    <string name="prog_full_standard">Всё тело: стандарт</string>
+    <string name="prog_home">Домашняя тренировка</string>
+    <string name="prog_street">Уличная тренировка</string>
+    <string name="prog_weighted">База с весом</string>
+    <string name="prog_ppl">Жим / Тяга / Ноги</string>
 </resources>

@@ -36,6 +36,7 @@ import com.gymgym.app.ui.CameraScreen
 import com.gymgym.app.ui.Exercise
 import com.gymgym.app.ui.ExerciseLibraryScreen
 import com.gymgym.app.ui.ExerciseSelectScreen
+import com.gymgym.app.ui.ProgramsScreen
 import com.gymgym.app.ui.HistoryScreen
 import com.gymgym.app.ui.MainViewModel
 import com.gymgym.app.ui.PlanEditScreen
@@ -59,6 +60,7 @@ private object Routes {
     const val SETTINGS = "settings"
     const val RECORDINGS = "recordings"
     const val LIBRARY = "library"
+    const val PROGRAMS = "programs"
 }
 
 class MainActivity : ComponentActivity() {
@@ -153,6 +155,7 @@ private fun AppRoot(viewModel: MainViewModel) {
                 onExerciseSelected = ::startExercise,
                 onAutoDetect = ::startAuto,
                 onOpenLibrary = { navController.navigate(Routes.LIBRARY) },
+                onOpenPrograms = { navController.navigate(Routes.PROGRAMS) },
                 onOpenPlans = { navController.navigate(Routes.PLANS) },
                 onOpenRecordings = { navController.navigate(Routes.RECORDINGS) },
                 onOpenHistory = { navController.navigate(Routes.HISTORY) },
@@ -183,6 +186,21 @@ private fun AppRoot(viewModel: MainViewModel) {
                 onTest = ::startExercise,
                 onAddCustom = viewModel::addCustomExercise,
                 onDeleteCustom = viewModel::deleteCustomExercise,
+                onBack = { navController.popBackStack() },
+            )
+        }
+        composable(Routes.PROGRAMS) {
+            val ctx = LocalContext.current
+            ProgramsScreen(
+                onUse = { program ->
+                    viewModel.useProgram(program)
+                    Toast.makeText(
+                        ctx,
+                        ctx.getString(R.string.programs_activated),
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                    navController.popBackStack()
+                },
                 onBack = { navController.popBackStack() },
             )
         }

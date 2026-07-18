@@ -318,4 +318,16 @@
     <string name="plan_untitled_workout">تدريب بدون عنوان</string>
     <string name="plan_default_workout_name">التدريب %1$d</string>
     <string name="plan_no_exercises">لا توجد تمارين بعد. أضف واحدًا من المكتبة.</string>
+    <!-- Programs (Phase 3) -->
+    <string name="home_programs">البرامج</string>
+    <string name="programs_title">البرامج</string>
+    <string name="programs_use">استخدام هذا البرنامج</string>
+    <string name="programs_active_note">يجعله خطتك النشطة، وينتهي بعد 3 أشهر.</string>
+    <string name="programs_activated">تم تفعيل البرنامج</string>
+    <string name="prog_full_beginner">الجسم كامل للمبتدئين</string>
+    <string name="prog_full_standard">الجسم كامل قياسي</string>
+    <string name="prog_home">تمرين منزلي</string>
+    <string name="prog_street">تمارين الشارع</string>
+    <string name="prog_weighted">الأساس بالأوزان</string>
+    <string name="prog_ppl">دفع / سحب / أرجل</string>
 </resources>

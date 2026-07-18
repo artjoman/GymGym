@@ -303,4 +303,16 @@
     <string name="plan_untitled_workout">未命名训练</string>
     <string name="plan_default_workout_name">训练 %1$d</string>
     <string name="plan_no_exercises">还没有动作。从动作库添加一个。</string>
+    <!-- Programs (Phase 3) -->
+    <string name="home_programs">训练计划</string>
+    <string name="programs_title">训练计划</string>
+    <string name="programs_use">使用此计划</string>
+    <string name="programs_active_note">将其设为当前计划，3 个月后结束。</string>
+    <string name="programs_activated">计划已激活</string>
+    <string name="prog_full_beginner">全身初级</string>
+    <string name="prog_full_standard">全身标准</string>
+    <string name="prog_home">居家训练</string>
+    <string name="prog_street">街头健身</string>
+    <string name="prog_weighted">负重基础</string>
+    <string name="prog_ppl">推 / 拉 / 腿</string>
 </resources>

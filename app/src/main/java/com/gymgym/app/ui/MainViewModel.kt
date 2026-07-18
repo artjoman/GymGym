@@ -36,6 +36,7 @@ import com.gymgym.app.data.PlanWithCycles
 import com.gymgym.app.data.WorkoutSession
 import com.gymgym.app.data.WorkoutWithExercises
 import com.gymgym.app.exercise.ExerciseRef
+import com.gymgym.app.program.Program
 import com.gymgym.app.pose.PoseSnapshot
 import com.gymgym.app.pose.isPlausiblePerson
 import com.gymgym.app.profile.Profile
@@ -727,6 +728,33 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setActivePlan(id: Long) =
         viewModelScope.launch { planRepository.setActivePlan(id) }
+
+    /** Materialize a preset [program] into the active plan (end date = today + 3 months). */
+    fun useProgram(program: Program) = viewModelScope.launch {
+        val end = java.util.Calendar.getInstance().apply {
+            add(java.util.Calendar.MONTH, 3)
+        }.timeInMillis
+        val draft = DraftPlan(
+            name = str(program.nameRes),
+            endDate = end,
+            cycles = program.cycles.map { c ->
+                DraftCycle(
+                    name = c.name,
+                    workouts = c.workouts.map { w ->
+                        DraftWorkout(
+                            name = w.name,
+                            weekday = null,
+                            exercises = w.exercises.map { e ->
+                                DraftWorkoutExercise(e.ref, e.reps, e.sets, e.seconds)
+                            },
+                        )
+                    },
+                )
+            },
+        )
+        val id = planRepository.savePlan(0L, draft)
+        planRepository.setActivePlan(id)
+    }
 
     // --- Settings & profile ---
 

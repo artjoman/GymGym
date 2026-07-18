@@ -277,6 +277,25 @@
     <string name="plan_default_workout_name">Workout %1$d</string>
     <string name="plan_no_exercises">No exercises yet. Add one from the library.</string>
 
+    <!-- Programs (Phase 3) -->
+    <string name="home_programs">Programs</string>
+    <string name="programs_title">Programs</string>
+    <string name="programs_use">Use this program</string>
+    <string name="programs_active_note">Sets this as your active plan, ending in 3 months.</string>
+    <string name="programs_activated">Program activated</string>
+    <string name="prog_full_beginner">Full Body Beginner</string>
+    <string name="prog_full_standard">Full Body Standard</string>
+    <string name="prog_home">Home Workout</string>
+    <string name="prog_street">Street Workout</string>
+    <string name="prog_weighted">Weighted Base</string>
+    <string name="prog_ppl">Push / Pull / Legs</string>
+    <string name="desc_full_beginner">Simple full-body sessions to build the habit — three bodyweight-focused workouts.</string>
+    <string name="desc_full_standard">Balanced full-body training with more volume across three workouts.</string>
+    <string name="desc_home">No equipment needed — bodyweight only, two rotating workouts.</string>
+    <string name="desc_street">Calisthenics on bars: pullups, dips and core, two workouts.</string>
+    <string name="desc_weighted">Heavy compound lifts for strength. Requires weights.</string>
+    <string name="desc_ppl">The classic push / pull / legs split across three focused days.</string>
+
     <!-- Profile -->
     <string name="profile_title">Profile</string>
     <string name="profile_display_name">Display name</string>

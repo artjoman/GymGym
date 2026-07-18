@@ -309,4 +309,16 @@
     <string name="plan_untitled_workout">Treniņš bez nosaukuma</string>
     <string name="plan_default_workout_name">Treniņš %1$d</string>
     <string name="plan_no_exercises">Vēl nav vingrinājumu. Pievieno vienu no bibliotēkas.</string>
+    <!-- Programs (Phase 3) -->
+    <string name="home_programs">Programmas</string>
+    <string name="programs_title">Programmas</string>
+    <string name="programs_use">Izmantot šo programmu</string>
+    <string name="programs_active_note">Iestata to kā aktīvo plānu, kas beidzas pēc 3 mēnešiem.</string>
+    <string name="programs_activated">Programma aktivizēta</string>
+    <string name="prog_full_beginner">Visa ķermeņa iesācējs</string>
+    <string name="prog_full_standard">Visa ķermeņa standarts</string>
+    <string name="prog_home">Treniņš mājās</string>
+    <string name="prog_street">Ielu treniņš</string>
+    <string name="prog_weighted">Bāze ar svariem</string>
+    <string name="prog_ppl">Grūšana / Vilkšana / Kājas</string>
 </resources>

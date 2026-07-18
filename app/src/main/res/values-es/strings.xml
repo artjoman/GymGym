@@ -306,4 +306,16 @@
     <string name="plan_untitled_workout">Entrenamiento sin título</string>
     <string name="plan_default_workout_name">Entrenamiento %1$d</string>
     <string name="plan_no_exercises">Aún no hay ejercicios. Añade uno de la biblioteca.</string>
+    <!-- Programs (Phase 3) -->
+    <string name="home_programs">Programas</string>
+    <string name="programs_title">Programas</string>
+    <string name="programs_use">Usar este programa</string>
+    <string name="programs_active_note">Lo establece como tu plan activo, con fin en 3 meses.</string>
+    <string name="programs_activated">Programa activado</string>
+    <string name="prog_full_beginner">Cuerpo completo principiante</string>
+    <string name="prog_full_standard">Cuerpo completo estándar</string>
+    <string name="prog_home">Entrenamiento en casa</string>
+    <string name="prog_street">Street workout</string>
+    <string name="prog_weighted">Base con peso</string>
+    <string name="prog_ppl">Empuje / Tirón / Pierna</string>
 </resources>
