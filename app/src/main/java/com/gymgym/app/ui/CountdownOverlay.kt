@@ -15,8 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.gymgym.app.R
 
 /**
  * Full-screen countdown overlay; [value] of 0 renders as "GO!".
@@ -43,7 +45,7 @@ fun CountdownOverlay(value: Int, modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = if (value == 0) "GO!" else value.toString(),
+            text = if (value == 0) stringResource(R.string.countdown_go) else value.toString(),
             fontSize = 120.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,

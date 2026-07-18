@@ -77,3 +77,11 @@ fun WeightUnit.labelRes(): Int = when (this) {
     WeightUnit.KG -> R.string.unit_kg
     WeightUnit.LB -> R.string.unit_lb
 }
+
+@StringRes
+fun DateRange.labelRes(): Int = when (this) {
+    DateRange.ALL -> R.string.range_all
+    DateRange.DAY -> R.string.range_24h
+    DateRange.WEEK -> R.string.range_7d
+    DateRange.MONTH -> R.string.range_30d
+}

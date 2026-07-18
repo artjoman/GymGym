@@ -10,7 +10,9 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.gymgym.app.R
 import com.gymgym.app.data.ExerciseStat
 import com.gymgym.app.data.WorkoutSession
 
@@ -67,13 +69,13 @@ fun FilterBar(filter: WorkoutFilter, onFilter: (WorkoutFilter) -> Unit) {
             FilterChip(
                 selected = filter.exercise == null,
                 onClick = { onFilter(filter.copy(exercise = null)) },
-                label = { Text("All") },
+                label = { Text(stringResource(R.string.range_all)) },
             )
             for (ex in Exercise.entries) {
                 FilterChip(
                     selected = filter.exercise == ex,
                     onClick = { onFilter(filter.copy(exercise = ex)) },
-                    label = { Text(ex.displayName) },
+                    label = { Text(stringResource(ex.labelRes())) },
                 )
             }
         }
@@ -82,7 +84,7 @@ fun FilterBar(filter: WorkoutFilter, onFilter: (WorkoutFilter) -> Unit) {
                 FilterChip(
                     selected = filter.range == range,
                     onClick = { onFilter(filter.copy(range = range)) },
-                    label = { Text(range.label) },
+                    label = { Text(stringResource(range.labelRes())) },
                 )
             }
         }

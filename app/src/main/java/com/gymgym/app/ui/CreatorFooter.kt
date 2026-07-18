@@ -12,7 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.gymgym.app.R
 
 private const val CREATOR_URL = "https://projectorum.com/"
 
@@ -32,13 +34,13 @@ fun CreatorFooter(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.Center,
     ) {
         Text(
-            "Created with ",
+            stringResource(R.string.creator_prefix),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Text("♥", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.tertiary)
         Text(
-            " by projectorum.com",
+            stringResource(R.string.creator_suffix),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primary,
         )

@@ -15,6 +15,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.gymgym.app.R
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
@@ -51,51 +53,55 @@ fun ExerciseSelectScreen(
                 fontSize = 44.sp,
             )
             Text(
-                text = if (greeting.isNullOrBlank()) "Ready to train?" else "Let's go, $greeting",
+                text = if (greeting.isNullOrBlank()) {
+                    stringResource(R.string.home_greeting_default)
+                } else {
+                    stringResource(R.string.home_greeting, greeting)
+                },
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            SectionLabel("Choose your exercise", top = 20.dp)
+            SectionLabel(stringResource(R.string.home_choose_exercise), top = 20.dp)
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 for (exercise in Exercise.entries) {
                     GymButton(
-                        text = exercise.displayName,
+                        text = stringResource(exercise.labelRes()),
                         onClick = { onExerciseSelected(exercise) },
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
                 GymButton(
-                    text = "✨ Auto-detect",
+                    text = stringResource(R.string.home_auto_detect),
                     onClick = onAutoDetect,
                     style = GymButtonStyle.Secondary,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
 
-            SectionLabel("Train smarter", top = 26.dp)
+            SectionLabel(stringResource(R.string.home_train_smarter), top = 26.dp)
             GymButton(
-                text = "Workout plans",
+                text = stringResource(R.string.home_workout_plans),
                 onClick = onOpenPlans,
                 style = GymButtonStyle.Secondary,
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(12.dp))
             GymButton(
-                text = "📹 Recordings",
+                text = stringResource(R.string.home_recordings),
                 onClick = onOpenRecordings,
                 style = GymButtonStyle.Secondary,
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                GymButton("History", onOpenHistory, Modifier.weight(1f), GymButtonStyle.Secondary)
-                GymButton("Stats", onOpenStats, Modifier.weight(1f), GymButtonStyle.Secondary)
+                GymButton(stringResource(R.string.nav_history), onOpenHistory, Modifier.weight(1f), GymButtonStyle.Secondary)
+                GymButton(stringResource(R.string.nav_stats), onOpenStats, Modifier.weight(1f), GymButtonStyle.Secondary)
             }
             Spacer(Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                GymButton("Profile", onOpenProfile, Modifier.weight(1f), GymButtonStyle.Secondary)
-                GymButton("Settings", onOpenSettings, Modifier.weight(1f), GymButtonStyle.Secondary)
+                GymButton(stringResource(R.string.nav_profile), onOpenProfile, Modifier.weight(1f), GymButtonStyle.Secondary)
+                GymButton(stringResource(R.string.nav_settings), onOpenSettings, Modifier.weight(1f), GymButtonStyle.Secondary)
             }
             Spacer(Modifier.height(28.dp))
             CreatorFooter()
