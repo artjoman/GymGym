@@ -9,29 +9,30 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gymgym.app.R
-import com.gymgym.app.data.PlanWithExercises
+import com.gymgym.app.data.PlanWithCycles
 
 @Composable
 fun PlanListScreen(
-    plans: List<PlanWithExercises>,
-    onRun: (PlanWithExercises) -> Unit,
+    plans: List<PlanWithCycles>,
     onEdit: (Long) -> Unit,
     onNew: () -> Unit,
     onDelete: (Long) -> Unit,
+    onSetActive: (Long) -> Unit,
     onBack: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize().systemBarsPadding().padding(24.dp)) {
@@ -56,9 +57,9 @@ fun PlanListScreen(
                 items(plans, key = { it.plan.id }) { plan ->
                     PlanCard(
                         plan = plan,
-                        onRun = { onRun(plan) },
                         onEdit = { onEdit(plan.plan.id) },
                         onDelete = { onDelete(plan.plan.id) },
+                        onSetActive = { onSetActive(plan.plan.id) },
                     )
                 }
             }
@@ -72,43 +73,57 @@ fun PlanListScreen(
 
 @Composable
 private fun PlanCard(
-    plan: PlanWithExercises,
-    onRun: () -> Unit,
+    plan: PlanWithCycles,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
+    onSetActive: () -> Unit,
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    plan.plan.name,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f),
+                )
+                if (plan.plan.isActive) {
+                    AssistChip(
+                        onClick = {},
+                        enabled = false,
+                        label = { Text(stringResource(R.string.plans_active)) },
+                        colors = AssistChipDefaults.assistChipColors(
+                            disabledLabelColor = MaterialTheme.colorScheme.primary,
+                        ),
+                    )
+                }
+            }
             Text(
-                plan.plan.name,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Text(
-                planSummary(LocalContext.current, plan),
+                planSummary(
+                    cycles = plan.cycles.size,
+                    workouts = plan.workoutCount,
+                ),
                 style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 4.dp),
             )
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Button(onClick = onRun) { Text(stringResource(R.string.action_start)) }
                 OutlinedButton(onClick = onEdit) { Text(stringResource(R.string.action_edit)) }
+                if (!plan.plan.isActive) {
+                    OutlinedButton(onClick = onSetActive) { Text(stringResource(R.string.plans_set_active)) }
+                }
                 TextButton(onClick = onDelete) { Text(stringResource(R.string.action_delete)) }
             }
         }
     }
 }
 
-private fun planSummary(context: Context, plan: PlanWithExercises): String {
-    val parts = plan.orderedExercises.map { e ->
-        val label = exerciseLabel(context, e.exerciseType)
-        if (isTimedExercise(e.exerciseType)) {
-            context.getString(R.string.plan_summary_seconds, label, e.targetReps, e.targetSets)
-        } else {
-            context.getString(R.string.plan_summary_reps, label, e.targetReps, e.targetSets)
-        }
-    }
-    return if (parts.isEmpty()) context.getString(R.string.plans_no_exercises) else parts.joinToString(" · ")
+@Composable
+private fun planSummary(cycles: Int, workouts: Int): String {
+    val cyclesText = pluralStringResource(R.plurals.plan_cycles, cycles, cycles)
+    val workoutsText = pluralStringResource(R.plurals.plan_workouts, workouts, workouts)
+    return "$cyclesText · $workoutsText"
 }

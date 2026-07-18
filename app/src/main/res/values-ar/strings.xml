@@ -296,4 +296,26 @@
     <string name="muscle_biceps">ذات رأسين</string>
     <string name="muscle_traps">شبه منحرفة</string>
     <string name="muscle_abs">بطن</string>
+    <!-- Plan hierarchy (Phase 2) -->
+    <string name="action_clear">مسح</string>
+    <string name="plans_active">نشط</string>
+    <string name="plans_set_active">تفعيل</string>
+    <string name="plan_end_date">تاريخ الانتهاء</string>
+    <string name="plan_end_date_none">بدون تاريخ انتهاء</string>
+    <string name="plan_pick_date">اختيار تاريخ</string>
+    <string name="plan_cycles_label">الدورات</string>
+    <string name="plan_no_cycles">لا توجد دورات بعد. أضف واحدة لتجميع التدريبات.</string>
+    <string name="plan_new_cycle">دورة جديدة</string>
+    <string name="plan_edit_cycle">تعديل الدورة</string>
+    <string name="plan_cycle_name">اسم الدورة</string>
+    <string name="plan_untitled_cycle">دورة بدون عنوان</string>
+    <string name="plan_default_cycle_name">الدورة %1$d</string>
+    <string name="plan_workouts_label">التدريبات</string>
+    <string name="plan_no_workouts">لا توجد تدريبات بعد. أضف واحدًا ليحتوي على تمارين.</string>
+    <string name="plan_add_workout">إضافة تدريب</string>
+    <string name="plan_edit_workout">تعديل التدريب</string>
+    <string name="plan_workout_name">اسم التدريب</string>
+    <string name="plan_untitled_workout">تدريب بدون عنوان</string>
+    <string name="plan_default_workout_name">التدريب %1$d</string>
+    <string name="plan_no_exercises">لا توجد تمارين بعد. أضف واحدًا من المكتبة.</string>
 </resources>

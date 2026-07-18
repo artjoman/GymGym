@@ -290,4 +290,26 @@
     <string name="muscle_biceps">бицепс</string>
     <string name="muscle_traps">трапеции</string>
     <string name="muscle_abs">пресс</string>
+    <!-- Plan hierarchy (Phase 2) -->
+    <string name="action_clear">Очистить</string>
+    <string name="plans_active">Активный</string>
+    <string name="plans_set_active">Сделать активным</string>
+    <string name="plan_end_date">Дата окончания</string>
+    <string name="plan_end_date_none">Без даты окончания</string>
+    <string name="plan_pick_date">Выбрать дату</string>
+    <string name="plan_cycles_label">Циклы</string>
+    <string name="plan_no_cycles">Циклов пока нет. Добавьте, чтобы сгруппировать тренировки.</string>
+    <string name="plan_new_cycle">Новый цикл</string>
+    <string name="plan_edit_cycle">Изменить цикл</string>
+    <string name="plan_cycle_name">Название цикла</string>
+    <string name="plan_untitled_cycle">Цикл без названия</string>
+    <string name="plan_default_cycle_name">Цикл %1$d</string>
+    <string name="plan_workouts_label">Тренировки</string>
+    <string name="plan_no_workouts">Тренировок пока нет. Добавьте, чтобы включить упражнения.</string>
+    <string name="plan_add_workout">Добавить тренировку</string>
+    <string name="plan_edit_workout">Изменить тренировку</string>
+    <string name="plan_workout_name">Название тренировки</string>
+    <string name="plan_untitled_workout">Тренировка без названия</string>
+    <string name="plan_default_workout_name">Тренировка %1$d</string>
+    <string name="plan_no_exercises">Упражнений пока нет. Добавьте из библиотеки.</string>
 </resources>

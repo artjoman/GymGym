@@ -284,4 +284,26 @@
     <string name="muscle_biceps">biceps</string>
     <string name="muscle_traps">trapèzes</string>
     <string name="muscle_abs">abdos</string>
+    <!-- Plan hierarchy (Phase 2) -->
+    <string name="action_clear">Effacer</string>
+    <string name="plans_active">Actif</string>
+    <string name="plans_set_active">Activer</string>
+    <string name="plan_end_date">Date de fin</string>
+    <string name="plan_end_date_none">Aucune date de fin</string>
+    <string name="plan_pick_date">Choisir une date</string>
+    <string name="plan_cycles_label">Cycles</string>
+    <string name="plan_no_cycles">Aucun cycle pour l\'instant. Ajoutez-en un pour regrouper les séances.</string>
+    <string name="plan_new_cycle">Nouveau cycle</string>
+    <string name="plan_edit_cycle">Modifier le cycle</string>
+    <string name="plan_cycle_name">Nom du cycle</string>
+    <string name="plan_untitled_cycle">Cycle sans titre</string>
+    <string name="plan_default_cycle_name">Cycle %1$d</string>
+    <string name="plan_workouts_label">Séances</string>
+    <string name="plan_no_workouts">Aucune séance pour l\'instant. Ajoutez-en une pour contenir des exercices.</string>
+    <string name="plan_add_workout">Ajouter une séance</string>
+    <string name="plan_edit_workout">Modifier la séance</string>
+    <string name="plan_workout_name">Nom de la séance</string>
+    <string name="plan_untitled_workout">Séance sans titre</string>
+    <string name="plan_default_workout_name">Séance %1$d</string>
+    <string name="plan_no_exercises">Aucun exercice pour l\'instant. Ajoutez-en un depuis la bibliothèque.</string>
 </resources>

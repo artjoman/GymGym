@@ -9,9 +9,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.gymgym.app.GymGymApp
 import com.gymgym.app.backup.BackupCustomExercise
+import com.gymgym.app.backup.BackupCycle
 import com.gymgym.app.backup.BackupData
 import com.gymgym.app.backup.BackupPlan
-import com.gymgym.app.backup.BackupPlanExercise
+import com.gymgym.app.backup.BackupWorkout
+import com.gymgym.app.backup.BackupWorkoutExercise
 import com.gymgym.app.backup.BackupProfile
 import com.gymgym.app.backup.BackupSession
 import com.gymgym.app.backup.BackupSettings
@@ -25,10 +27,15 @@ import com.gymgym.app.counter.RepFault
 import com.gymgym.app.counter.RepQuality
 import com.gymgym.app.counter.SquatCounter
 import com.gymgym.app.data.CustomExercise
-import com.gymgym.app.data.DraftExercise
+import com.gymgym.app.data.DraftCycle
+import com.gymgym.app.data.DraftPlan
+import com.gymgym.app.data.DraftWorkout
+import com.gymgym.app.data.DraftWorkoutExercise
 import com.gymgym.app.data.ExerciseStat
-import com.gymgym.app.data.PlanWithExercises
+import com.gymgym.app.data.PlanWithCycles
 import com.gymgym.app.data.WorkoutSession
+import com.gymgym.app.data.WorkoutWithExercises
+import com.gymgym.app.exercise.ExerciseRef
 import com.gymgym.app.pose.PoseSnapshot
 import com.gymgym.app.pose.isPlausiblePerson
 import com.gymgym.app.profile.Profile
@@ -105,8 +112,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val profile: StateFlow<Profile> = profileRepository.profile
         .stateIn(viewModelScope, SharingStarted.Eagerly, Profile())
 
-    val plans: StateFlow<List<PlanWithExercises>> = planRepository.plans
+    val plans: StateFlow<List<PlanWithCycles>> = planRepository.plans
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val activePlan: StateFlow<PlanWithCycles?> = planRepository.activePlan
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     val customExercises: StateFlow<List<CustomExercise>> = customExerciseRepository.all
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -383,13 +393,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // --- Plan run ---
 
-    fun startPlan(plan: PlanWithExercises) {
-        val steps = plan.orderedExercises.mapNotNull { pe ->
-            val ex = Exercise.entries.find { it.name == pe.exerciseType } ?: return@mapNotNull null
-            PlanStep(ex, pe.targetReps.coerceAtLeast(1), pe.targetSets.coerceAtLeast(1))
+    /**
+     * Run a single [workout]'s exercises through the plan engine. Only AI-counted
+     * exercises run for now; manual/custom exercises are skipped until Phase 5
+     * adds a manual-execution path.
+     */
+    fun startWorkout(workout: WorkoutWithExercises, planLabel: String) {
+        val steps = workout.orderedExercises.mapNotNull { we ->
+            val ex = ExerciseRef.counter(we.exerciseRef) ?: return@mapNotNull null
+            val reps = if (ex.timed) (we.targetSeconds ?: we.targetReps) else we.targetReps
+            PlanStep(ex, reps.coerceAtLeast(1), we.targetSets.coerceAtLeast(1))
         }
         if (steps.isEmpty()) return
-        planName = plan.plan.name
+        planName = planLabel
         planSteps = steps
         stepIndex = 0
         setIndex = 0
@@ -397,6 +413,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _requestExit.value = false
         beginCurrentStep(isNewExercise = true)
     }
+
+    /** Whether [workout] contains at least one AI-counted exercise (i.e. is runnable now). */
+    fun workoutIsRunnable(workout: WorkoutWithExercises): Boolean =
+        workout.exercises.any { ExerciseRef.counter(it.exerciseRef) != null }
 
     /** Manual "skip" — bank the current exercise's reps and jump to the next exercise. */
     fun skipToNextExercise() {
@@ -699,11 +719,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // --- Plan CRUD ---
 
-    fun savePlan(id: Long, name: String, exercises: List<DraftExercise>) =
-        viewModelScope.launch { planRepository.savePlan(id, name, exercises) }
+    fun savePlan(id: Long, draft: DraftPlan) =
+        viewModelScope.launch { planRepository.savePlan(id, draft) }
 
     fun deletePlan(id: Long) =
         viewModelScope.launch { planRepository.deletePlan(id) }
+
+    fun setActivePlan(id: Long) =
+        viewModelScope.launch { planRepository.setActivePlan(id) }
 
     // --- Settings & profile ---
 
@@ -795,8 +818,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 plans = planRepository.allOnce().map { pw ->
                     BackupPlan(
                         name = pw.plan.name,
-                        exercises = pw.orderedExercises.map {
-                            BackupPlanExercise(it.exerciseType, it.targetReps, it.targetSets, it.position)
+                        endDate = pw.plan.endDate,
+                        isActive = pw.plan.isActive,
+                        cycles = pw.orderedCycles.map { cw ->
+                            BackupCycle(
+                                name = cw.cycle.name,
+                                workouts = cw.orderedWorkouts.map { ww ->
+                                    BackupWorkout(
+                                        name = ww.workout.name,
+                                        weekday = ww.workout.weekday,
+                                        exercises = ww.orderedExercises.map {
+                                            BackupWorkoutExercise(
+                                                it.exerciseRef, it.targetReps, it.targetSets,
+                                                it.targetSeconds, it.position,
+                                            )
+                                        },
+                                    )
+                                },
+                            )
                         },
                     )
                 },
@@ -844,15 +883,32 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 },
             )
             planRepository.deleteAll()
+            var restoredActive: Long? = null
             data.plans.forEach { p ->
-                planRepository.savePlan(
-                    id = 0L,
+                val draft = DraftPlan(
                     name = p.name,
-                    exercises = p.exercises.sortedBy { it.position }.map {
-                        DraftExercise(it.exerciseType, it.targetReps, it.targetSets)
+                    endDate = p.endDate,
+                    cycles = p.cycles.map { c ->
+                        DraftCycle(
+                            name = c.name,
+                            workouts = c.workouts.map { w ->
+                                DraftWorkout(
+                                    name = w.name,
+                                    weekday = w.weekday,
+                                    exercises = w.exercises.sortedBy { it.position }.map {
+                                        DraftWorkoutExercise(
+                                            it.exerciseRef, it.targetReps, it.targetSets, it.targetSeconds,
+                                        )
+                                    },
+                                )
+                            },
+                        )
                     },
                 )
+                val newId = planRepository.savePlan(0L, draft)
+                if (p.isActive) restoredActive = newId
             }
+            restoredActive?.let { planRepository.setActivePlan(it) }
             customExerciseRepository.replaceAll(
                 data.customExercises.map {
                     CustomExercise(name = it.name, createdAt = it.createdAt)

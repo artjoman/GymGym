@@ -287,4 +287,26 @@
     <string name="muscle_biceps">biceps</string>
     <string name="muscle_traps">trapecveida</string>
     <string name="muscle_abs">vēders</string>
+    <!-- Plan hierarchy (Phase 2) -->
+    <string name="action_clear">Notīrīt</string>
+    <string name="plans_active">Aktīvs</string>
+    <string name="plans_set_active">Aktivizēt</string>
+    <string name="plan_end_date">Beigu datums</string>
+    <string name="plan_end_date_none">Nav beigu datuma</string>
+    <string name="plan_pick_date">Izvēlēties datumu</string>
+    <string name="plan_cycles_label">Cikli</string>
+    <string name="plan_no_cycles">Vēl nav ciklu. Pievieno vienu, lai grupētu treniņus.</string>
+    <string name="plan_new_cycle">Jauns cikls</string>
+    <string name="plan_edit_cycle">Rediģēt ciklu</string>
+    <string name="plan_cycle_name">Cikla nosaukums</string>
+    <string name="plan_untitled_cycle">Cikls bez nosaukuma</string>
+    <string name="plan_default_cycle_name">Cikls %1$d</string>
+    <string name="plan_workouts_label">Treniņi</string>
+    <string name="plan_no_workouts">Vēl nav treniņu. Pievieno vienu, lai iekļautu vingrinājumus.</string>
+    <string name="plan_add_workout">Pievienot treniņu</string>
+    <string name="plan_edit_workout">Rediģēt treniņu</string>
+    <string name="plan_workout_name">Treniņa nosaukums</string>
+    <string name="plan_untitled_workout">Treniņš bez nosaukuma</string>
+    <string name="plan_default_workout_name">Treniņš %1$d</string>
+    <string name="plan_no_exercises">Vēl nav vingrinājumu. Pievieno vienu no bibliotēkas.</string>
 </resources>

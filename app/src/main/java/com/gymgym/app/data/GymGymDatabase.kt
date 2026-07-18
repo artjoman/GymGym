@@ -10,10 +10,12 @@ import androidx.room.RoomDatabase
     entities = [
         WorkoutSession::class,
         PlanEntity::class,
-        PlanExerciseEntity::class,
+        CycleEntity::class,
+        WorkoutEntity::class,
+        WorkoutExerciseEntity::class,
         CustomExercise::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -35,7 +37,7 @@ abstract class GymGymDatabase : RoomDatabase() {
                     context.applicationContext,
                     GymGymDatabase::class.java,
                     "gymgym.db",
-                ).build().also { instance = it }
+                ).addMigrations(MIGRATION_4_5).build().also { instance = it }
             }
     }
 }

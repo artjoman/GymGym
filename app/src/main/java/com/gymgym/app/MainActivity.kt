@@ -31,7 +31,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.gymgym.app.data.PlanWithExercises
 import com.gymgym.app.ui.AppBackground
 import com.gymgym.app.ui.CameraScreen
 import com.gymgym.app.ui.Exercise
@@ -130,13 +129,6 @@ private fun AppRoot(viewModel: MainViewModel) {
         }
     }
 
-    fun startPlan(plan: PlanWithExercises) = requireCameraThen {
-        adManager.onWorkoutOpen(activity) {
-            viewModel.startPlan(plan)
-            navController.navigate(Routes.CAMERA)
-        }
-    }
-
     fun startAuto() = requireCameraThen {
         adManager.onWorkoutOpen(activity) {
             viewModel.startAuto()
@@ -198,10 +190,10 @@ private fun AppRoot(viewModel: MainViewModel) {
             val plans by viewModel.plans.collectAsState()
             PlanListScreen(
                 plans = plans,
-                onRun = ::startPlan,
                 onEdit = { id -> navController.navigate("${Routes.PLAN_EDIT}/$id") },
                 onNew = { navController.navigate("${Routes.PLAN_EDIT}/0") },
                 onDelete = viewModel::deletePlan,
+                onSetActive = viewModel::setActivePlan,
                 onBack = { navController.popBackStack() },
             )
         }
@@ -211,13 +203,15 @@ private fun AppRoot(viewModel: MainViewModel) {
         ) { entry ->
             val planId = entry.arguments?.getLong("planId") ?: 0L
             val plans by viewModel.plans.collectAsState()
+            val customExercises by viewModel.customExercises.collectAsState()
             val existing = plans.find { it.plan.id == planId }
             // For an edit, wait until the plan has loaded before seeding the form.
             if (planId == 0L || existing != null) {
                 PlanEditScreen(
                     existing = existing,
-                    onSave = { id, name, exercises ->
-                        viewModel.savePlan(id, name, exercises)
+                    customExercises = customExercises,
+                    onSave = { id, draft ->
+                        viewModel.savePlan(id, draft)
                         navController.popBackStack()
                     },
                     onCancel = { navController.popBackStack() },

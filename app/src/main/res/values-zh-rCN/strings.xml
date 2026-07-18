@@ -281,4 +281,26 @@
     <string name="muscle_biceps">二头肌</string>
     <string name="muscle_traps">斜方肌</string>
     <string name="muscle_abs">腹肌</string>
+    <!-- Plan hierarchy (Phase 2) -->
+    <string name="action_clear">清除</string>
+    <string name="plans_active">当前</string>
+    <string name="plans_set_active">设为当前</string>
+    <string name="plan_end_date">结束日期</string>
+    <string name="plan_end_date_none">无结束日期</string>
+    <string name="plan_pick_date">选择日期</string>
+    <string name="plan_cycles_label">周期</string>
+    <string name="plan_no_cycles">还没有周期。添加一个来分组训练。</string>
+    <string name="plan_new_cycle">新建周期</string>
+    <string name="plan_edit_cycle">编辑周期</string>
+    <string name="plan_cycle_name">周期名称</string>
+    <string name="plan_untitled_cycle">未命名周期</string>
+    <string name="plan_default_cycle_name">周期 %1$d</string>
+    <string name="plan_workouts_label">训练</string>
+    <string name="plan_no_workouts">还没有训练。添加一个来包含动作。</string>
+    <string name="plan_add_workout">添加训练</string>
+    <string name="plan_edit_workout">编辑训练</string>
+    <string name="plan_workout_name">训练名称</string>
+    <string name="plan_untitled_workout">未命名训练</string>
+    <string name="plan_default_workout_name">训练 %1$d</string>
+    <string name="plan_no_exercises">还没有动作。从动作库添加一个。</string>
 </resources>

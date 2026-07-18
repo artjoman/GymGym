@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class BackupData(
-    val version: Int = 2,
+    val version: Int = 3,
     val exportedAt: Long,
     val sessions: List<BackupSession> = emptyList(),
     val plans: List<BackupPlan> = emptyList(),
@@ -35,14 +35,30 @@ data class BackupSession(
 @Serializable
 data class BackupPlan(
     val name: String,
-    val exercises: List<BackupPlanExercise> = emptyList(),
+    val endDate: Long? = null,
+    val isActive: Boolean = false,
+    val cycles: List<BackupCycle> = emptyList(),
 )
 
 @Serializable
-data class BackupPlanExercise(
-    val exerciseType: String,
+data class BackupCycle(
+    val name: String,
+    val workouts: List<BackupWorkout> = emptyList(),
+)
+
+@Serializable
+data class BackupWorkout(
+    val name: String,
+    val weekday: Int? = null,
+    val exercises: List<BackupWorkoutExercise> = emptyList(),
+)
+
+@Serializable
+data class BackupWorkoutExercise(
+    val exerciseRef: String,
     val targetReps: Int,
     val targetSets: Int,
+    val targetSeconds: Int? = null,
     val position: Int,
 )
 

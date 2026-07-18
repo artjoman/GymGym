@@ -284,4 +284,26 @@
     <string name="muscle_biceps">bíceps</string>
     <string name="muscle_traps">trapecios</string>
     <string name="muscle_abs">abdominales</string>
+    <!-- Plan hierarchy (Phase 2) -->
+    <string name="action_clear">Borrar</string>
+    <string name="plans_active">Activo</string>
+    <string name="plans_set_active">Activar</string>
+    <string name="plan_end_date">Fecha de fin</string>
+    <string name="plan_end_date_none">Sin fecha de fin</string>
+    <string name="plan_pick_date">Elegir fecha</string>
+    <string name="plan_cycles_label">Ciclos</string>
+    <string name="plan_no_cycles">Aún no hay ciclos. Añade uno para agrupar entrenamientos.</string>
+    <string name="plan_new_cycle">Nuevo ciclo</string>
+    <string name="plan_edit_cycle">Editar ciclo</string>
+    <string name="plan_cycle_name">Nombre del ciclo</string>
+    <string name="plan_untitled_cycle">Ciclo sin título</string>
+    <string name="plan_default_cycle_name">Ciclo %1$d</string>
+    <string name="plan_workouts_label">Entrenamientos</string>
+    <string name="plan_no_workouts">Aún no hay entrenamientos. Añade uno para contener ejercicios.</string>
+    <string name="plan_add_workout">Añadir entrenamiento</string>
+    <string name="plan_edit_workout">Editar entrenamiento</string>
+    <string name="plan_workout_name">Nombre del entrenamiento</string>
+    <string name="plan_untitled_workout">Entrenamiento sin título</string>
+    <string name="plan_default_workout_name">Entrenamiento %1$d</string>
+    <string name="plan_no_exercises">Aún no hay ejercicios. Añade uno de la biblioteca.</string>
 </resources>

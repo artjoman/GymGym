@@ -14,6 +14,7 @@
     <string name="action_resume">Resume</string>
     <string name="action_share">Share</string>
     <string name="action_add">Add</string>
+    <string name="action_clear">Clear</string>
     <string name="action_play">Play</string>
     <string name="action_replace">Replace</string>
 
@@ -254,6 +255,27 @@
     <string name="plan_sets">Sets</string>
     <string name="plan_summary_reps">%1$s %2$d×%3$d</string>
     <string name="plan_summary_seconds">%1$s %2$ds×%3$d</string>
+    <!-- Plan hierarchy (Phase 2) -->
+    <string name="plans_active">Active</string>
+    <string name="plans_set_active">Set active</string>
+    <string name="plan_end_date">End date</string>
+    <string name="plan_end_date_none">No end date</string>
+    <string name="plan_pick_date">Pick date</string>
+    <string name="plan_cycles_label">Cycles</string>
+    <string name="plan_no_cycles">No cycles yet. Add one to group workouts.</string>
+    <string name="plan_new_cycle">New cycle</string>
+    <string name="plan_edit_cycle">Edit cycle</string>
+    <string name="plan_cycle_name">Cycle name</string>
+    <string name="plan_untitled_cycle">Untitled cycle</string>
+    <string name="plan_default_cycle_name">Cycle %1$d</string>
+    <string name="plan_workouts_label">Workouts</string>
+    <string name="plan_no_workouts">No workouts yet. Add one to hold exercises.</string>
+    <string name="plan_add_workout">Add workout</string>
+    <string name="plan_edit_workout">Edit workout</string>
+    <string name="plan_workout_name">Workout name</string>
+    <string name="plan_untitled_workout">Untitled workout</string>
+    <string name="plan_default_workout_name">Workout %1$d</string>
+    <string name="plan_no_exercises">No exercises yet. Add one from the library.</string>
 
     <!-- Profile -->
     <string name="profile_title">Profile</string>
@@ -298,6 +320,20 @@
     <plurals name="reps">
         <item quantity="one">%1$d rep</item>
         <item quantity="other">%1$d reps</item>
+    </plurals>
+
+    <!-- Plan hierarchy counts (plural) -->
+    <plurals name="plan_cycles">
+        <item quantity="one">%1$d cycle</item>
+        <item quantity="other">%1$d cycles</item>
+    </plurals>
+    <plurals name="plan_workouts">
+        <item quantity="one">%1$d workout</item>
+        <item quantity="other">%1$d workouts</item>
+    </plurals>
+    <plurals name="plan_exercises">
+        <item quantity="one">%1$d exercise</item>
+        <item quantity="other">%1$d exercises</item>
     </plurals>
 
     <!-- Spoken duration components (plural) -->
