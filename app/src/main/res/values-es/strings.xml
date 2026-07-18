@@ -12,6 +12,7 @@
     <string name="action_export">Exportar</string>
     <string name="action_import">Importar</string>
     <string name="action_resume">Reanudar</string>
+    <string name="action_add">Añadir</string>
     <string name="action_share">Compartir</string>
     <string name="action_play">Reproducir</string>
     <string name="action_replace">Reemplazar</string>
@@ -252,4 +253,35 @@
         <item>¡PERFECTO!</item>
         <item>¡BUM!</item>
     </string-array>
+    <!-- Exercise library (Phase 1) -->
+    <string name="home_exercise_library">Biblioteca de ejercicios</string>
+    <string name="library_title">Biblioteca de ejercicios</string>
+    <string name="library_manual_badge">Manual</string>
+    <string name="library_ai_badge">IA</string>
+    <string name="library_test">Probar</string>
+    <string name="library_custom_section">Personalizados</string>
+    <string name="library_add_custom">Añadir ejercicio personalizado</string>
+    <string name="library_custom_hint">Nombre del ejercicio</string>
+    <string name="library_custom_empty">Aún no hay ejercicios personalizados. Añade los tuyos para usarlos en los entrenamientos.</string>
+    <string name="library_manual_note">Solo manual — sin conteo por IA</string>
+    <string name="cat_legs">Piernas</string>
+    <string name="cat_back">Espalda</string>
+    <string name="cat_chest">Pecho</string>
+    <string name="cat_shoulders">Hombros</string>
+    <string name="cat_triceps">Tríceps</string>
+    <string name="cat_biceps">Bíceps</string>
+    <string name="cat_traps">Trapecios</string>
+    <string name="cat_abs">Abdominales</string>
+    <string name="muscle_legs">piernas</string>
+    <string name="muscle_glutes">glúteos</string>
+    <string name="muscle_adductors">aductores</string>
+    <string name="muscle_calves">gemelos</string>
+    <string name="muscle_hamstrings">isquiotibiales</string>
+    <string name="muscle_back">espalda</string>
+    <string name="muscle_chest">pecho</string>
+    <string name="muscle_shoulders">hombros</string>
+    <string name="muscle_triceps">tríceps</string>
+    <string name="muscle_biceps">bíceps</string>
+    <string name="muscle_traps">trapecios</string>
+    <string name="muscle_abs">abdominales</string>
 </resources>

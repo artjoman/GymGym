@@ -8,6 +8,7 @@ import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.gymgym.app.GymGymApp
+import com.gymgym.app.backup.BackupCustomExercise
 import com.gymgym.app.backup.BackupData
 import com.gymgym.app.backup.BackupPlan
 import com.gymgym.app.backup.BackupPlanExercise
@@ -23,6 +24,7 @@ import com.gymgym.app.counter.RepCounter
 import com.gymgym.app.counter.RepFault
 import com.gymgym.app.counter.RepQuality
 import com.gymgym.app.counter.SquatCounter
+import com.gymgym.app.data.CustomExercise
 import com.gymgym.app.data.DraftExercise
 import com.gymgym.app.data.ExerciseStat
 import com.gymgym.app.data.PlanWithExercises
@@ -84,6 +86,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         (application as GymGymApp).container.workoutRepository
     private val planRepository =
         (application as GymGymApp).container.planRepository
+    private val customExerciseRepository =
+        (application as GymGymApp).container.customExerciseRepository
 
     // Created at ViewModel construction (app launch) so the TTS engine is warm
     // and ready by the time the user reaches a countdown.
@@ -102,6 +106,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         .stateIn(viewModelScope, SharingStarted.Eagerly, Profile())
 
     val plans: StateFlow<List<PlanWithExercises>> = planRepository.plans
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val customExercises: StateFlow<List<CustomExercise>> = customExerciseRepository.all
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val _selectedExercise = MutableStateFlow<Exercise?>(null)
@@ -757,6 +764,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if (path != null) settingsRepository.setCustomBackground(path)
     }
 
+    // --- Custom exercises ---
+
+    fun addCustomExercise(name: String) {
+        val trimmed = name.trim()
+        if (trimmed.isEmpty()) return
+        viewModelScope.launch { customExerciseRepository.add(trimmed) }
+    }
+
+    fun deleteCustomExercise(id: Long) =
+        viewModelScope.launch { customExerciseRepository.delete(id) }
+
     fun setDisplayName(value: String) =
         viewModelScope.launch { profileRepository.setDisplayName(value) }
 
@@ -781,6 +799,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                             BackupPlanExercise(it.exerciseType, it.targetReps, it.targetSets, it.position)
                         },
                     )
+                },
+                customExercises = customExerciseRepository.allOnce().map {
+                    BackupCustomExercise(it.name, it.createdAt)
                 },
                 settings = soundSettings.value.let { s ->
                     BackupSettings(
@@ -832,6 +853,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     },
                 )
             }
+            customExerciseRepository.replaceAll(
+                data.customExercises.map {
+                    CustomExercise(name = it.name, createdAt = it.createdAt)
+                },
+            )
             with(data.settings) {
                 settingsRepository.setSoundsEnabled(soundsEnabled)
                 settingsRepository.setCountdownVoice(countdownVoice)

@@ -29,6 +29,7 @@ fun ExerciseSelectScreen(
     greeting: String?,
     onExerciseSelected: (Exercise) -> Unit,
     onAutoDetect: () -> Unit,
+    onOpenLibrary: () -> Unit,
     onOpenPlans: () -> Unit,
     onOpenRecordings: () -> Unit,
     onOpenHistory: () -> Unit,
@@ -80,6 +81,13 @@ fun ExerciseSelectScreen(
             }
 
             SectionLabel(stringResource(R.string.home_train_smarter), top = 26.dp)
+            GymButton(
+                text = stringResource(R.string.home_exercise_library),
+                onClick = onOpenLibrary,
+                style = GymButtonStyle.Secondary,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(12.dp))
             GymButton(
                 text = stringResource(R.string.home_workout_plans),
                 onClick = onOpenPlans,

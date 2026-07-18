@@ -96,6 +96,13 @@ android {
             isIncludeAndroidResources = true
         }
     }
+
+    lint {
+        // Exercise-library names ship English-first and rely on Android's
+        // automatic resource fallback; localizing the full ~30-name catalog is a
+        // tracked follow-up. Chrome/UI strings stay fully translated by convention.
+        disable += "MissingTranslation"
+    }
 }
 
 ksp {

@@ -12,6 +12,7 @@
     <string name="action_export">Экспорт</string>
     <string name="action_import">Импорт</string>
     <string name="action_resume">Продолжить</string>
+    <string name="action_add">Добавить</string>
     <string name="action_share">Поделиться</string>
     <string name="action_play">Воспроизвести</string>
     <string name="action_replace">Заменить</string>
@@ -258,4 +259,35 @@
         <item>ИДЕАЛЬНО!</item>
         <item>БУМ!</item>
     </string-array>
+    <!-- Exercise library (Phase 1) -->
+    <string name="home_exercise_library">Библиотека упражнений</string>
+    <string name="library_title">Библиотека упражнений</string>
+    <string name="library_manual_badge">Вручную</string>
+    <string name="library_ai_badge">ИИ</string>
+    <string name="library_test">Тест</string>
+    <string name="library_custom_section">Свои</string>
+    <string name="library_add_custom">Добавить своё упражнение</string>
+    <string name="library_custom_hint">Название упражнения</string>
+    <string name="library_custom_empty">Пользовательских упражнений пока нет. Добавьте свои, чтобы использовать в тренировках.</string>
+    <string name="library_manual_note">Только вручную — без подсчёта ИИ</string>
+    <string name="cat_legs">Ноги</string>
+    <string name="cat_back">Спина</string>
+    <string name="cat_chest">Грудь</string>
+    <string name="cat_shoulders">Плечи</string>
+    <string name="cat_triceps">Трицепс</string>
+    <string name="cat_biceps">Бицепс</string>
+    <string name="cat_traps">Трапеции</string>
+    <string name="cat_abs">Пресс</string>
+    <string name="muscle_legs">ноги</string>
+    <string name="muscle_glutes">ягодицы</string>
+    <string name="muscle_adductors">приводящие</string>
+    <string name="muscle_calves">икры</string>
+    <string name="muscle_hamstrings">бицепс бедра</string>
+    <string name="muscle_back">спина</string>
+    <string name="muscle_chest">грудь</string>
+    <string name="muscle_shoulders">плечи</string>
+    <string name="muscle_triceps">трицепс</string>
+    <string name="muscle_biceps">бицепс</string>
+    <string name="muscle_traps">трапеции</string>
+    <string name="muscle_abs">пресс</string>
 </resources>

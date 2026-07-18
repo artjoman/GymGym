@@ -12,6 +12,7 @@
     <string name="action_export">Eksportēt</string>
     <string name="action_import">Importēt</string>
     <string name="action_resume">Turpināt</string>
+    <string name="action_add">Pievienot</string>
     <string name="action_share">Kopīgot</string>
     <string name="action_play">Atskaņot</string>
     <string name="action_replace">Aizstāt</string>
@@ -255,4 +256,35 @@
         <item>PERFEKTI!</item>
         <item>BUMS!</item>
     </string-array>
+    <!-- Exercise library (Phase 1) -->
+    <string name="home_exercise_library">Vingrinājumu bibliotēka</string>
+    <string name="library_title">Vingrinājumu bibliotēka</string>
+    <string name="library_manual_badge">Manuāli</string>
+    <string name="library_ai_badge">MI</string>
+    <string name="library_test">Testēt</string>
+    <string name="library_custom_section">Pielāgotie</string>
+    <string name="library_add_custom">Pievienot pielāgotu vingrinājumu</string>
+    <string name="library_custom_hint">Vingrinājuma nosaukums</string>
+    <string name="library_custom_empty">Vēl nav pielāgotu vingrinājumu. Pievieno savus, lai izmantotu treniņos.</string>
+    <string name="library_manual_note">Tikai manuāli — bez MI skaitīšanas</string>
+    <string name="cat_legs">Kājas</string>
+    <string name="cat_back">Mugura</string>
+    <string name="cat_chest">Krūtis</string>
+    <string name="cat_shoulders">Pleci</string>
+    <string name="cat_triceps">Triceps</string>
+    <string name="cat_biceps">Biceps</string>
+    <string name="cat_traps">Trapecveida</string>
+    <string name="cat_abs">Vēders</string>
+    <string name="muscle_legs">kājas</string>
+    <string name="muscle_glutes">sēžamvieta</string>
+    <string name="muscle_adductors">adduktori</string>
+    <string name="muscle_calves">ikri</string>
+    <string name="muscle_hamstrings">augšstilba aizmugure</string>
+    <string name="muscle_back">mugura</string>
+    <string name="muscle_chest">krūtis</string>
+    <string name="muscle_shoulders">pleci</string>
+    <string name="muscle_triceps">triceps</string>
+    <string name="muscle_biceps">biceps</string>
+    <string name="muscle_traps">trapecveida</string>
+    <string name="muscle_abs">vēders</string>
 </resources>

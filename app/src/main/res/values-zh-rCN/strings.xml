@@ -12,6 +12,7 @@
     <string name="action_export">导出</string>
     <string name="action_import">导入</string>
     <string name="action_resume">继续</string>
+    <string name="action_add">添加</string>
     <string name="action_share">分享</string>
     <string name="action_play">播放</string>
     <string name="action_replace">替换</string>
@@ -249,4 +250,35 @@
         <item>完美！</item>
         <item>砰！</item>
     </string-array>
+    <!-- Exercise library (Phase 1) -->
+    <string name="home_exercise_library">动作库</string>
+    <string name="library_title">动作库</string>
+    <string name="library_manual_badge">手动</string>
+    <string name="library_ai_badge">AI</string>
+    <string name="library_test">测试</string>
+    <string name="library_custom_section">自定义</string>
+    <string name="library_add_custom">添加自定义动作</string>
+    <string name="library_custom_hint">动作名称</string>
+    <string name="library_custom_empty">还没有自定义动作。添加你自己的动作以用于训练。</string>
+    <string name="library_manual_note">仅手动 — 无 AI 计数</string>
+    <string name="cat_legs">腿部</string>
+    <string name="cat_back">背部</string>
+    <string name="cat_chest">胸部</string>
+    <string name="cat_shoulders">肩部</string>
+    <string name="cat_triceps">肱三头肌</string>
+    <string name="cat_biceps">肱二头肌</string>
+    <string name="cat_traps">斜方肌</string>
+    <string name="cat_abs">腹部</string>
+    <string name="muscle_legs">腿</string>
+    <string name="muscle_glutes">臀部</string>
+    <string name="muscle_adductors">内收肌</string>
+    <string name="muscle_calves">小腿</string>
+    <string name="muscle_hamstrings">腘绳肌</string>
+    <string name="muscle_back">背</string>
+    <string name="muscle_chest">胸</string>
+    <string name="muscle_shoulders">肩</string>
+    <string name="muscle_triceps">三头肌</string>
+    <string name="muscle_biceps">二头肌</string>
+    <string name="muscle_traps">斜方肌</string>
+    <string name="muscle_abs">腹肌</string>
 </resources>

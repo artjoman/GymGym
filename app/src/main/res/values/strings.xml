@@ -13,6 +13,7 @@
     <string name="action_import">Import</string>
     <string name="action_resume">Resume</string>
     <string name="action_share">Share</string>
+    <string name="action_add">Add</string>
     <string name="action_play">Play</string>
     <string name="action_replace">Replace</string>
 
@@ -23,6 +24,7 @@
     <string name="home_train_smarter">Train smarter</string>
     <string name="home_auto_detect">✨ Auto-detect</string>
     <string name="home_workout_plans">Workout plans</string>
+    <string name="home_exercise_library">Exercise library</string>
     <string name="home_recordings">📹 Recordings</string>
     <string name="nav_history">History</string>
     <string name="nav_stats">Stats</string>
@@ -38,6 +40,72 @@
     <string name="framing_side">Prop the phone to the side, full body in frame</string>
     <string name="framing_pullup">Prop the phone facing you, bar and full body in frame</string>
     <string name="framing_press">Prop the phone facing you, arms and torso in frame</string>
+
+    <!-- Exercise library: chrome -->
+    <string name="library_title">Exercise library</string>
+    <string name="library_manual_badge">Manual</string>
+    <string name="library_ai_badge">AI</string>
+    <string name="library_test">Test</string>
+    <string name="library_custom_section">Custom</string>
+    <string name="library_add_custom">Add custom exercise</string>
+    <string name="library_custom_hint">Exercise name</string>
+    <string name="library_custom_empty">No custom exercises yet. Add your own to use in workouts.</string>
+    <string name="library_manual_note">Manual only — no AI rep counting</string>
+
+    <!-- Exercise library: categories -->
+    <string name="cat_legs">Legs</string>
+    <string name="cat_back">Back</string>
+    <string name="cat_chest">Chest</string>
+    <string name="cat_shoulders">Shoulders</string>
+    <string name="cat_triceps">Triceps</string>
+    <string name="cat_biceps">Biceps</string>
+    <string name="cat_traps">Traps</string>
+    <string name="cat_abs">Abs</string>
+
+    <!-- Exercise library: muscles -->
+    <string name="muscle_legs">legs</string>
+    <string name="muscle_glutes">glutes</string>
+    <string name="muscle_adductors">adductors</string>
+    <string name="muscle_calves">calves</string>
+    <string name="muscle_hamstrings">hamstrings</string>
+    <string name="muscle_back">back</string>
+    <string name="muscle_chest">chest</string>
+    <string name="muscle_shoulders">shoulders</string>
+    <string name="muscle_triceps">triceps</string>
+    <string name="muscle_biceps">biceps</string>
+    <string name="muscle_traps">traps</string>
+    <string name="muscle_abs">abs</string>
+
+    <!-- Exercise library: exercise names (English base; localized names are a tracked follow-up) -->
+    <string name="ex_sumo_squat">Sumo Squat</string>
+    <string name="ex_weighted_squat">Weighted Squat</string>
+    <string name="ex_forward_lunges">Forward Lunges</string>
+    <string name="ex_standing_calf_raise">Standing Calf Raise</string>
+    <string name="ex_single_leg_calf_raise">Single-Leg Calf Raise</string>
+    <string name="ex_weighted_single_leg_calf_raise">Weighted Single-Leg Calf Raise</string>
+    <string name="ex_weighted_pullup">Weighted Pullup</string>
+    <string name="ex_close_grip_pullup">Close-Grip Pullup</string>
+    <string name="ex_wide_grip_pullup">Wide-Grip Pullup</string>
+    <string name="ex_deadlift">Deadlift</string>
+    <string name="ex_incline_pushup">Incline Pushup</string>
+    <string name="ex_dumbbell_bench_press">Dumbbell Bench Press</string>
+    <string name="ex_barbell_bench_press">Barbell Bench Press</string>
+    <string name="ex_parallel_bar_dips">Parallel Bar Dips</string>
+    <string name="ex_weighted_parallel_bar_dips">Weighted Parallel Bar Dips</string>
+    <string name="ex_dumbbell_lateral_raise">Dumbbell Lateral Raise</string>
+    <string name="ex_dumbbell_front_raise">Dumbbell Front Raise</string>
+    <string name="ex_lying_barbell_extension">Lying Barbell Extension</string>
+    <string name="ex_lying_dumbbell_extension">Lying Dumbbell Extension</string>
+    <string name="ex_barbell_curl">Barbell Curl</string>
+    <string name="ex_dumbbell_curl">Dumbbell Curl</string>
+    <string name="ex_alternating_dumbbell_curl">Alternating Dumbbell Curl</string>
+    <string name="ex_hammer_curl">Hammer Curl</string>
+    <string name="ex_concentration_curl">Concentration Dumbbell Curl</string>
+    <string name="ex_dumbbell_shrugs">Dumbbell Shrugs</string>
+    <string name="ex_barbell_shrugs">Barbell Shrugs</string>
+    <string name="ex_lying_crunch">Lying Crunch</string>
+    <string name="ex_hanging_leg_raise">Hanging Leg Raise</string>
+    <string name="ex_hanging_knee_raise">Hanging Knee Raise</string>
 
     <!-- Camera / workout -->
     <string name="camera_auto_detect">Auto-detect</string>

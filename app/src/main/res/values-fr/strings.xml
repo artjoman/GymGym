@@ -12,6 +12,7 @@
     <string name="action_export">Exporter</string>
     <string name="action_import">Importer</string>
     <string name="action_resume">Reprendre</string>
+    <string name="action_add">Ajouter</string>
     <string name="action_share">Partager</string>
     <string name="action_play">Lire</string>
     <string name="action_replace">Remplacer</string>
@@ -252,4 +253,35 @@
         <item>PARFAIT !</item>
         <item>BOUM !</item>
     </string-array>
+    <!-- Exercise library (Phase 1) -->
+    <string name="home_exercise_library">Bibliothèque d\'exercices</string>
+    <string name="library_title">Bibliothèque d\'exercices</string>
+    <string name="library_manual_badge">Manuel</string>
+    <string name="library_ai_badge">IA</string>
+    <string name="library_test">Tester</string>
+    <string name="library_custom_section">Personnalisés</string>
+    <string name="library_add_custom">Ajouter un exercice personnalisé</string>
+    <string name="library_custom_hint">Nom de l\'exercice</string>
+    <string name="library_custom_empty">Aucun exercice personnalisé pour l\'instant. Ajoutez le vôtre pour l\'utiliser dans les entraînements.</string>
+    <string name="library_manual_note">Manuel uniquement — pas de comptage IA</string>
+    <string name="cat_legs">Jambes</string>
+    <string name="cat_back">Dos</string>
+    <string name="cat_chest">Pectoraux</string>
+    <string name="cat_shoulders">Épaules</string>
+    <string name="cat_triceps">Triceps</string>
+    <string name="cat_biceps">Biceps</string>
+    <string name="cat_traps">Trapèzes</string>
+    <string name="cat_abs">Abdos</string>
+    <string name="muscle_legs">jambes</string>
+    <string name="muscle_glutes">fessiers</string>
+    <string name="muscle_adductors">adducteurs</string>
+    <string name="muscle_calves">mollets</string>
+    <string name="muscle_hamstrings">ischio-jambiers</string>
+    <string name="muscle_back">dos</string>
+    <string name="muscle_chest">pectoraux</string>
+    <string name="muscle_shoulders">épaules</string>
+    <string name="muscle_triceps">triceps</string>
+    <string name="muscle_biceps">biceps</string>
+    <string name="muscle_traps">trapèzes</string>
+    <string name="muscle_abs">abdos</string>
 </resources>

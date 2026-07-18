@@ -8,12 +8,19 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class BackupData(
-    val version: Int = 1,
+    val version: Int = 2,
     val exportedAt: Long,
     val sessions: List<BackupSession> = emptyList(),
     val plans: List<BackupPlan> = emptyList(),
+    val customExercises: List<BackupCustomExercise> = emptyList(),
     val settings: BackupSettings = BackupSettings(),
     val profile: BackupProfile = BackupProfile(),
+)
+
+@Serializable
+data class BackupCustomExercise(
+    val name: String,
+    val createdAt: Long,
 )
 
 @Serializable

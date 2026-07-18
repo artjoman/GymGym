@@ -35,6 +35,7 @@ import com.gymgym.app.data.PlanWithExercises
 import com.gymgym.app.ui.AppBackground
 import com.gymgym.app.ui.CameraScreen
 import com.gymgym.app.ui.Exercise
+import com.gymgym.app.ui.ExerciseLibraryScreen
 import com.gymgym.app.ui.ExerciseSelectScreen
 import com.gymgym.app.ui.HistoryScreen
 import com.gymgym.app.ui.MainViewModel
@@ -58,6 +59,7 @@ private object Routes {
     const val PROFILE = "profile"
     const val SETTINGS = "settings"
     const val RECORDINGS = "recordings"
+    const val LIBRARY = "library"
 }
 
 class MainActivity : ComponentActivity() {
@@ -158,6 +160,7 @@ private fun AppRoot(viewModel: MainViewModel) {
                 greeting = profile.displayName,
                 onExerciseSelected = ::startExercise,
                 onAutoDetect = ::startAuto,
+                onOpenLibrary = { navController.navigate(Routes.LIBRARY) },
                 onOpenPlans = { navController.navigate(Routes.PLANS) },
                 onOpenRecordings = { navController.navigate(Routes.RECORDINGS) },
                 onOpenHistory = { navController.navigate(Routes.HISTORY) },
@@ -180,6 +183,16 @@ private fun AppRoot(viewModel: MainViewModel) {
                     onFinished = { navController.popBackStack() },
                 )
             }
+        }
+        composable(Routes.LIBRARY) {
+            val customExercises by viewModel.customExercises.collectAsState()
+            ExerciseLibraryScreen(
+                customExercises = customExercises,
+                onTest = ::startExercise,
+                onAddCustom = viewModel::addCustomExercise,
+                onDeleteCustom = viewModel::deleteCustomExercise,
+                onBack = { navController.popBackStack() },
+            )
         }
         composable(Routes.PLANS) {
             val plans by viewModel.plans.collectAsState()

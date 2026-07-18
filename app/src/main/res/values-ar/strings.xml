@@ -12,6 +12,7 @@
     <string name="action_export">تصدير</string>
     <string name="action_import">استيراد</string>
     <string name="action_resume">استئناف</string>
+    <string name="action_add">إضافة</string>
     <string name="action_share">مشاركة</string>
     <string name="action_play">تشغيل</string>
     <string name="action_replace">استبدال</string>
@@ -264,4 +265,35 @@
         <item>مثالي!</item>
         <item>بوم!</item>
     </string-array>
+    <!-- Exercise library (Phase 1) -->
+    <string name="home_exercise_library">مكتبة التمارين</string>
+    <string name="library_title">مكتبة التمارين</string>
+    <string name="library_manual_badge">يدوي</string>
+    <string name="library_ai_badge">AI</string>
+    <string name="library_test">اختبار</string>
+    <string name="library_custom_section">مخصص</string>
+    <string name="library_add_custom">إضافة تمرين مخصص</string>
+    <string name="library_custom_hint">اسم التمرين</string>
+    <string name="library_custom_empty">لا توجد تمارين مخصصة بعد. أضف تمارينك لاستخدامها في التدريبات.</string>
+    <string name="library_manual_note">يدوي فقط — بدون عد بالذكاء الاصطناعي</string>
+    <string name="cat_legs">الأرجل</string>
+    <string name="cat_back">الظهر</string>
+    <string name="cat_chest">الصدر</string>
+    <string name="cat_shoulders">الأكتاف</string>
+    <string name="cat_triceps">العضلة ثلاثية الرؤوس</string>
+    <string name="cat_biceps">العضلة ذات الرأسين</string>
+    <string name="cat_traps">العضلة شبه المنحرفة</string>
+    <string name="cat_abs">البطن</string>
+    <string name="muscle_legs">أرجل</string>
+    <string name="muscle_glutes">ألوية</string>
+    <string name="muscle_adductors">مقربات</string>
+    <string name="muscle_calves">بطة الساق</string>
+    <string name="muscle_hamstrings">أوتار الركبة</string>
+    <string name="muscle_back">ظهر</string>
+    <string name="muscle_chest">صدر</string>
+    <string name="muscle_shoulders">أكتاف</string>
+    <string name="muscle_triceps">ثلاثية الرؤوس</string>
+    <string name="muscle_biceps">ذات رأسين</string>
+    <string name="muscle_traps">شبه منحرفة</string>
+    <string name="muscle_abs">بطن</string>
 </resources>
