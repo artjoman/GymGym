@@ -55,6 +55,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gymgym.app.R
+import com.gymgym.app.BuildConfig
 import com.gymgym.app.settings.AccentTheme
 import com.gymgym.app.settings.BackgroundStyle
 import com.gymgym.app.settings.FormSensitivity
@@ -233,7 +234,14 @@ fun SettingsScreen(
 
         GymButton("Done", onBack, Modifier.padding(top = 16.dp))
 
-        CreatorFooter(Modifier.padding(top = 16.dp))
+        Text(
+            "v${BuildConfig.VERSION_NAME}",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+        )
+        CreatorFooter(Modifier.padding(top = 2.dp))
     }
 }
 
