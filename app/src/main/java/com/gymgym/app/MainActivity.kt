@@ -289,8 +289,10 @@ private fun AppRoot(viewModel: MainViewModel) {
         }
         composable(Routes.HISTORY) {
             val sessions by viewModel.history.collectAsState()
+            val completedWorkouts by viewModel.completedWorkouts.collectAsState()
             HistoryScreen(
                 sessions = sessions,
+                completedWorkouts = completedWorkouts,
                 onOpenSession = { id -> navController.navigate("${Routes.SESSION}/$id") },
                 onBack = { navController.popBackStack() },
             )

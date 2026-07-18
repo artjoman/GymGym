@@ -360,4 +360,7 @@
     <string name="mission_skip">Izlaist</string>
     <string name="mission_swap_pick">Izvēlies treniņu</string>
     <string name="mission_no_plan">Vēl nav aktīva plāna. Izvēlies programmu vai aktivizē plānu.</string>
+    <!-- History workouts (Phase 7) -->
+    <string name="history_workouts">Treniņi</string>
+    <string name="history_exercises">Vingrinājumi</string>
 </resources>

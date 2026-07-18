@@ -20,7 +20,10 @@ enum class DateRange(val label: String, val windowMs: Long) {
     ALL("All", Long.MAX_VALUE),
     DAY("24h", 24L * 3_600_000),
     WEEK("7d", 7L * 24 * 3_600_000),
-    MONTH("30d", 30L * 24 * 3_600_000),
+    MONTH("30d", 30L * 24 * 3_600_000);
+
+    /** Earliest timestamp included by this range (0 for ALL). */
+    fun cutoff(): Long = if (this == ALL) 0L else System.currentTimeMillis() - windowMs
 }
 
 /** null exercise = all types. */

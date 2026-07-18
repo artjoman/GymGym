@@ -357,4 +357,7 @@
     <string name="mission_skip">Passer</string>
     <string name="mission_swap_pick">Choisir une séance</string>
     <string name="mission_no_plan">Aucun plan actif. Choisissez un programme ou activez un plan.</string>
+    <!-- History workouts (Phase 7) -->
+    <string name="history_workouts">Séances</string>
+    <string name="history_exercises">Exercices</string>
 </resources>

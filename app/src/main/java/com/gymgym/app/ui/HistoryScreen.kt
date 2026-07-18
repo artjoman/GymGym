@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -27,16 +28,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gymgym.app.R
+import com.gymgym.app.data.CompletedWorkoutWithExercises
 import com.gymgym.app.data.WorkoutSession
+import com.gymgym.app.exercise.ExerciseCatalog
 
 @Composable
 fun HistoryScreen(
     sessions: List<WorkoutSession>,
+    completedWorkouts: List<CompletedWorkoutWithExercises>,
     onOpenSession: (Long) -> Unit,
     onBack: () -> Unit,
 ) {
     var filter by remember { mutableStateOf(WorkoutFilter()) }
     val filtered = sessions.applyFilter(filter)
+    val cutoff = filter.range.cutoff()
+    val filteredWorkouts = completedWorkouts.filter { it.workout.startedAt >= cutoff }
+    val expanded = remember { mutableStateMapOf<Long, Boolean>() }
 
     Column(modifier = Modifier.fillMaxSize().systemBarsPadding().padding(24.dp)) {
         Text(stringResource(R.string.history_title), style = MaterialTheme.typography.headlineSmall)
@@ -45,10 +52,13 @@ fun HistoryScreen(
             FilterBar(filter = filter, onFilter = { filter = it })
         }
 
-        if (filtered.isEmpty()) {
+        if (filtered.isEmpty() && filteredWorkouts.isEmpty()) {
             Text(
-                if (sessions.isEmpty()) stringResource(R.string.history_empty)
-                else stringResource(R.string.history_empty_filtered),
+                if (sessions.isEmpty() && completedWorkouts.isEmpty()) {
+                    stringResource(R.string.history_empty)
+                } else {
+                    stringResource(R.string.history_empty_filtered)
+                },
                 modifier = Modifier.padding(vertical = 24.dp),
             )
         } else {
@@ -56,13 +66,86 @@ fun HistoryScreen(
                 modifier = Modifier.weight(1f).padding(top = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(filtered, key = { it.id }) { session ->
-                    SessionRow(session, onClick = { onOpenSession(session.id) })
+                if (filteredWorkouts.isNotEmpty()) {
+                    item { SectionHeader(stringResource(R.string.history_workouts)) }
+                    items(filteredWorkouts, key = { "w${it.workout.id}" }) { cw ->
+                        CompletedWorkoutRow(
+                            item = cw,
+                            expanded = expanded[cw.workout.id] == true,
+                            onToggle = { expanded[cw.workout.id] = expanded[cw.workout.id] != true },
+                        )
+                    }
+                }
+                if (filtered.isNotEmpty()) {
+                    item { SectionHeader(stringResource(R.string.history_exercises)) }
+                    items(filtered, key = { "s${it.id}" }) { session ->
+                        SessionRow(session, onClick = { onOpenSession(session.id) })
+                    }
                 }
             }
         }
 
         GymButton(stringResource(R.string.action_back), onBack, Modifier.padding(top = 16.dp), GymButtonStyle.Secondary)
+    }
+}
+
+@Composable
+private fun SectionHeader(text: String) {
+    Text(
+        text.uppercase(),
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.primary,
+        fontWeight = FontWeight.SemiBold,
+        modifier = Modifier.padding(top = 4.dp, bottom = 2.dp),
+    )
+}
+
+@Composable
+private fun CompletedWorkoutRow(
+    item: CompletedWorkoutWithExercises,
+    expanded: Boolean,
+    onToggle: () -> Unit,
+) {
+    val context = LocalContext.current
+    val w = item.workout
+    Card(modifier = Modifier.fillMaxWidth().clickable(onClick = onToggle)) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(w.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        stringResource(
+                            R.string.history_meta,
+                            formatDate(w.startedAt),
+                            formatDuration(context, w.durationMs),
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Text(
+                    "${w.avgPercent}%",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+            if (expanded) {
+                for (e in item.orderedExercises) {
+                    val label = ExerciseCatalog.byId(e.exerciseRef)
+                        ?.let { context.getString(it.nameRes) } ?: e.exerciseRef
+                    Text(
+                        "$label · ${e.goodReps}/${e.reps}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
+            }
+        }
     }
 }
 

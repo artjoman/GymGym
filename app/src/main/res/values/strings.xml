@@ -232,6 +232,8 @@
     <string name="history_empty">No workouts yet. Finish a set to see it here.</string>
     <string name="history_empty_filtered">No sessions match this filter.</string>
     <string name="history_meta">%1$s · %2$s</string>
+    <string name="history_workouts">Workouts</string>
+    <string name="history_exercises">Exercises</string>
 
     <!-- Session detail -->
     <string name="session_title">Session detail</string>

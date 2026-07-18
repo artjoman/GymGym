@@ -369,4 +369,7 @@
     <string name="mission_skip">تخطي</string>
     <string name="mission_swap_pick">اختر تدريبًا</string>
     <string name="mission_no_plan">لا توجد خطة نشطة بعد. اختر برنامجًا أو فعّل خطة.</string>
+    <!-- History workouts (Phase 7) -->
+    <string name="history_workouts">التدريبات</string>
+    <string name="history_exercises">التمارين</string>
 </resources>
