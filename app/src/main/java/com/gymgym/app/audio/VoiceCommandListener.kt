@@ -42,15 +42,31 @@ class VoiceCommandListener(
     /** English command words plus this language's synonyms (English always works). */
     private val vocabulary: CommandVocabulary = CommandVocabulary.forLanguageTag(languageTag)
 
+    /**
+     * Only pin the recognizer language when the app language differs from the
+     * device language. When they match (the common case) we leave it unset so
+     * the recognizer behaves exactly as before — pinning a language together
+     * with EXTRA_PREFER_OFFLINE fails outright on devices without that offline
+     * model, which silently broke recognition for everyone. Cleared to null if
+     * the pinned language turns out to be unavailable (see [onError]).
+     */
+    private var languageOverride: String? = run {
+        val appLang = languageTag.substringBefore('-').lowercase()
+        val systemLang = android.content.res.Resources.getSystem()
+            .configuration.locales.get(0).toLanguageTag().substringBefore('-').lowercase()
+        languageTag.takeIf { appLang != systemLang }
+    }
+
     val available: Boolean get() = SpeechRecognizer.isRecognitionAvailable(context)
 
-    private val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+    private fun buildIntent(): Intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
         putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
         putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, false)
         putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
-        putExtra(RecognizerIntent.EXTRA_LANGUAGE, languageTag)
-        putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, languageTag)
+        languageOverride?.let { putExtra(RecognizerIntent.EXTRA_LANGUAGE, it) }
     }
+
+    private var intent = buildIntent()
 
     fun start() {
         if (!available || active) return
@@ -103,7 +119,19 @@ class VoiceCommandListener(
             restartSoon()
         }
 
-        override fun onError(error: Int) = restartSoon()
+        override fun onError(error: Int) {
+            // If the pinned language has no (offline) model, drop it and fall
+            // back to the device default so commands keep working — English
+            // words are always in the vocabulary.
+            if (languageOverride != null &&
+                (error == SpeechRecognizer.ERROR_LANGUAGE_UNAVAILABLE ||
+                    error == SpeechRecognizer.ERROR_LANGUAGE_NOT_SUPPORTED)
+            ) {
+                languageOverride = null
+                intent = buildIntent()
+            }
+            restartSoon()
+        }
 
         override fun onReadyForSpeech(params: Bundle?) {}
         override fun onBeginningOfSpeech() {}

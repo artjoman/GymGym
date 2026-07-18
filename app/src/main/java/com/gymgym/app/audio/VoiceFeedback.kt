@@ -1,6 +1,8 @@
 package com.gymgym.app.audio
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.speech.tts.Voice
@@ -28,6 +30,15 @@ class VoiceFeedback(context: Context) {
      * them correctly (falling back to English if its voice data is missing).
      */
     private val appLocale: Locale = context.resources.configuration.locales.get(0)
+
+    /**
+     * Whether we may use higher-quality network TTS voices. True only when the
+     * build holds the INTERNET permission — the free flavor does; the paid
+     * flavor stays fully offline, so it never reaches for a network voice.
+     */
+    private val networkAllowed: Boolean =
+        context.checkSelfPermission(Manifest.permission.INTERNET) ==
+            PackageManager.PERMISSION_GRANTED
 
     /** True while an utterance is being spoken; used to mute voice recognition. */
     private val _speaking = MutableStateFlow(false)
@@ -75,9 +86,15 @@ class VoiceFeedback(context: Context) {
 
     /**
      * The engine's default voice is usually its lowest-quality (robotic) one.
-     * Upgrade to the best available voice for [locale], preferring on-device
-     * voices so the countdown still works offline (gyms have poor signal) and
-     * ticks aren't delayed by network latency.
+     * Upgrade to the best available voice for [locale].
+     *
+     * We prefer on-device voices so the countdown works offline (gyms have poor
+     * signal) without network latency, and keep them whenever a decent one
+     * exists. But many non-English languages ship only a poor offline voice
+     * while a much better one is available over the network — in that case, if
+     * the build is allowed network access, fall back to the network voice for
+     * natural-sounding cues. English is unaffected: its on-device voices are
+     * good, so it stays offline.
      */
     private fun selectNaturalVoice(engine: TextToSpeech, locale: Locale) {
         val voices = runCatching { engine.voices }.getOrNull() ?: return
@@ -87,9 +104,22 @@ class VoiceFeedback(context: Context) {
         }
         if (matching.isEmpty()) return
 
-        val onDevice = matching.filterNot { it.isNetworkConnectionRequired }
-        val pool = onDevice.ifEmpty { matching }
-        pool.maxByOrNull(Voice::getQuality)?.let { engine.voice = it }
+        val bestOnDevice = matching.filterNot { it.isNetworkConnectionRequired }
+            .maxByOrNull(Voice::getQuality)
+
+        val chosen = if (bestOnDevice != null && bestOnDevice.quality >= Voice.QUALITY_NORMAL) {
+            // A good enough offline voice — keep it offline.
+            bestOnDevice
+        } else if (networkAllowed) {
+            // Poor/absent offline voice: use the best network voice if it wins.
+            val bestNetwork = matching.filter { it.isNetworkConnectionRequired }
+                .maxByOrNull(Voice::getQuality)
+            listOfNotNull(bestNetwork, bestOnDevice).maxByOrNull(Voice::getQuality)
+        } else {
+            // Offline-only build: best available on-device voice, or any match.
+            bestOnDevice ?: matching.maxByOrNull(Voice::getQuality)
+        }
+        chosen?.let { engine.voice = it }
     }
 
     fun speak(text: String) {
