@@ -88,6 +88,14 @@ android {
         compose = true
         buildConfig = true
     }
+
+    testOptions {
+        unitTests {
+            // Let Robolectric resolve real string resources so formatting/label
+            // helpers (which now localize via Context.getString) are testable.
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 ksp {
@@ -138,4 +146,6 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
 
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.14.1")
+    testImplementation("androidx.test:core-ktx:1.6.1")
 }

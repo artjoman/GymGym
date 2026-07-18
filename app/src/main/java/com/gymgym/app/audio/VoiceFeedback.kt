@@ -22,6 +22,13 @@ class VoiceFeedback(context: Context) {
     private var ready = false
     private var tts: TextToSpeech? = null
 
+    /**
+     * The app's current UI language. Spoken cues are fetched already-localized
+     * from resources, so the engine must speak in this language to pronounce
+     * them correctly (falling back to English if its voice data is missing).
+     */
+    private val appLocale: Locale = context.resources.configuration.locales.get(0)
+
     /** True while an utterance is being spoken; used to mute voice recognition. */
     private val _speaking = MutableStateFlow(false)
     val speaking: StateFlow<Boolean> = _speaking.asStateFlow()
@@ -30,8 +37,8 @@ class VoiceFeedback(context: Context) {
         tts = TextToSpeech(context.applicationContext) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 tts?.let { engine ->
-                    engine.language = Locale.US
-                    selectNaturalVoice(engine)
+                    val spoken = selectLanguage(engine)
+                    selectNaturalVoice(engine, spoken)
                     // A touch slower than default reads as calmer, less clipped.
                     engine.setSpeechRate(0.95f)
                     engine.setPitch(1.0f)
@@ -48,21 +55,40 @@ class VoiceFeedback(context: Context) {
     }
 
     /**
-     * The engine's default voice is usually its lowest-quality (robotic) one.
-     * Upgrade to the best available English voice, preferring on-device voices
-     * so the countdown still works offline (gyms have poor signal) and ticks
-     * aren't delayed by network latency.
+     * Set the engine to the app language, falling back to English when that
+     * language's voice data isn't installed/supported so cues still speak
+     * (mispronounced) rather than going silent. Returns the language actually set.
      */
-    private fun selectNaturalVoice(engine: TextToSpeech) {
+    private fun selectLanguage(engine: TextToSpeech): Locale {
+        val result = runCatching { engine.setLanguage(appLocale) }.getOrDefault(
+            TextToSpeech.LANG_NOT_SUPPORTED,
+        )
+        return if (result == TextToSpeech.LANG_MISSING_DATA ||
+            result == TextToSpeech.LANG_NOT_SUPPORTED
+        ) {
+            engine.language = Locale.US
+            Locale.US
+        } else {
+            appLocale
+        }
+    }
+
+    /**
+     * The engine's default voice is usually its lowest-quality (robotic) one.
+     * Upgrade to the best available voice for [locale], preferring on-device
+     * voices so the countdown still works offline (gyms have poor signal) and
+     * ticks aren't delayed by network latency.
+     */
+    private fun selectNaturalVoice(engine: TextToSpeech, locale: Locale) {
         val voices = runCatching { engine.voices }.getOrNull() ?: return
-        val english = voices.filter {
-            it.locale.language == Locale.ENGLISH.language &&
+        val matching = voices.filter {
+            it.locale.language == locale.language &&
                 it.features?.contains(TextToSpeech.Engine.KEY_FEATURE_NOT_INSTALLED) != true
         }
-        if (english.isEmpty()) return
+        if (matching.isEmpty()) return
 
-        val onDevice = english.filterNot { it.isNetworkConnectionRequired }
-        val pool = onDevice.ifEmpty { english }
+        val onDevice = matching.filterNot { it.isNetworkConnectionRequired }
+        val pool = onDevice.ifEmpty { matching }
         pool.maxByOrNull(Voice::getQuality)?.let { engine.voice = it }
     }
 

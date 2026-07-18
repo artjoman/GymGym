@@ -14,9 +14,10 @@ import android.speech.SpeechRecognizer
  *
  * [SpeechRecognizer] is one-shot, so we restart it after every result/error to
  * keep listening. Recognition is forced on-device (EXTRA_PREFER_OFFLINE) to
- * honour the app's no-network privacy stance and cut latency. While TTS is
- * speaking the caller should [mute] us, otherwise the recognizer hears the
- * app's own voice.
+ * honour the app's no-network privacy stance and cut latency, and pinned to the
+ * app's current language so localized command words are transcribed correctly.
+ * While TTS is speaking the caller should [mute] us, otherwise the recognizer
+ * hears the app's own voice.
  */
 class VoiceCommandListener(
     private val context: Context,
@@ -34,12 +35,21 @@ class VoiceCommandListener(
     private var active = false
     private var muted = false
 
+    /** App language tag (e.g. "es", "zh-CN") the recognizer transcribes in. */
+    private val languageTag: String =
+        context.resources.configuration.locales.get(0).toLanguageTag()
+
+    /** English command words plus this language's synonyms (English always works). */
+    private val vocabulary: CommandVocabulary = CommandVocabulary.forLanguageTag(languageTag)
+
     val available: Boolean get() = SpeechRecognizer.isRecognitionAvailable(context)
 
     private val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
         putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
         putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, false)
         putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE, languageTag)
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, languageTag)
     }
 
     fun start() {
@@ -105,7 +115,7 @@ class VoiceCommandListener(
     }
 
     private fun parse(candidates: List<String>) {
-        commandFor(candidates.joinToString(" ").lowercase())?.let(onCommand)
+        commandFor(candidates.joinToString(" ").lowercase(), vocabulary)?.let(onCommand)
     }
 
     companion object {
@@ -116,23 +126,27 @@ class VoiceCommandListener(
          * intents ("start recording", "switch camera") and "restart" are matched
          * before the bare "start"/"stop" timer rules. Visible for testing.
          */
-        internal fun commandFor(text: String): VoiceCommand? = when {
-            text.contains("record") ->
-                if (containsAny(text, "stop", "end", "finish", "cancel")) {
+        internal fun commandFor(
+            text: String,
+            vocab: CommandVocabulary = CommandVocabulary.ENGLISH,
+        ): VoiceCommand? = when {
+            containsAny(text, vocab.record) ->
+                if (containsAny(text, vocab.stopModifiers)) {
                     VoiceCommand.STOP_RECORDING
                 } else {
                     VoiceCommand.START_RECORDING
                 }
-            containsAny(text, "switch", "flip", "camera") -> VoiceCommand.SWITCH_CAMERA
-            containsAny(text, "next", "skip") -> VoiceCommand.NEXT
-            containsAny(text, "reset", "restart", "again") -> VoiceCommand.RESET
-            containsAny(text, "resume", "continue", "unpause") -> VoiceCommand.RESUME
-            containsAny(text, "start", "begin") -> VoiceCommand.START_TIMER
-            containsAny(text, "stop", "finish", "done", "end") -> VoiceCommand.STOP_TIMER
-            containsAny(text, "pause", "wait", "hold") -> VoiceCommand.PAUSE
+            containsAny(text, vocab.switchCamera) -> VoiceCommand.SWITCH_CAMERA
+            containsAny(text, vocab.next) -> VoiceCommand.NEXT
+            containsAny(text, vocab.reset) -> VoiceCommand.RESET
+            containsAny(text, vocab.resume) -> VoiceCommand.RESUME
+            containsAny(text, vocab.start) -> VoiceCommand.START_TIMER
+            containsAny(text, vocab.stop) -> VoiceCommand.STOP_TIMER
+            containsAny(text, vocab.pause) -> VoiceCommand.PAUSE
             else -> null
         }
 
-        private fun containsAny(text: String, vararg words: String) = words.any { text.contains(it) }
+        private fun containsAny(text: String, words: List<String>) =
+            words.any { it.isNotEmpty() && text.contains(it) }
     }
 }
