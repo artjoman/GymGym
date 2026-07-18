@@ -21,7 +21,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.gymgym.app.R
 import com.gymgym.app.data.WorkoutSession
 
 @Composable
@@ -29,6 +32,7 @@ fun StatsScreen(
     sessions: List<WorkoutSession>,
     onBack: () -> Unit,
 ) {
+    val context = LocalContext.current
     var filter by remember { mutableStateOf(WorkoutFilter()) }
     val filtered = sessions.applyFilter(filter)
     val stats = aggregateStats(filtered)
@@ -37,13 +41,13 @@ fun StatsScreen(
         modifier = Modifier.fillMaxSize().systemBarsPadding().padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("Stats", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.stats_title), style = MaterialTheme.typography.headlineSmall)
 
         FilterBar(filter = filter, onFilter = { filter = it })
 
         if (stats.isEmpty()) {
             Text(
-                "No stats yet. Finish a set to start tracking.",
+                stringResource(R.string.stats_empty),
                 modifier = Modifier.padding(vertical = 24.dp),
             )
         } else {
@@ -57,20 +61,23 @@ fun StatsScreen(
                         ) {
                             Column {
                                 Text(
-                                    exerciseLabel(stat.exerciseType),
+                                    exerciseLabel(context, stat.exerciseType),
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary,
                                 )
                                 if (!isTimedExercise(stat.exerciseType) && stat.totalReps > 0) {
                                     Text(
-                                        "${stat.totalGoodReps * 100 / stat.totalReps}% good form",
+                                        stringResource(
+                                            R.string.stats_good_form,
+                                            stat.totalGoodReps * 100 / stat.totalReps,
+                                        ),
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
                                 }
                             }
                             Text(
-                                "Last: ${formatDate(stat.lastPerformedAt)}",
+                                stringResource(R.string.stats_last, formatDate(stat.lastPerformedAt)),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -80,13 +87,13 @@ fun StatsScreen(
                             modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            StatCell("Sessions", stat.sessionCount.toString(), Modifier.weight(1f))
+                            StatCell(stringResource(R.string.stats_sessions), stat.sessionCount.toString(), Modifier.weight(1f))
                             if (timed) {
-                                StatCell("Best hold", formatDurationLong(stat.bestReps * 1_000L), Modifier.weight(1f))
-                                StatCell("Avg hold", formatDurationLong((stat.avgReps * 1_000).toLong()), Modifier.weight(1f))
+                                StatCell(stringResource(R.string.stats_best_hold), formatDurationLong(context, stat.bestReps * 1_000L), Modifier.weight(1f))
+                                StatCell(stringResource(R.string.stats_avg_hold), formatDurationLong(context, (stat.avgReps * 1_000).toLong()), Modifier.weight(1f))
                             } else {
-                                StatCell("Total reps", stat.totalReps.toString(), Modifier.weight(1f))
-                                StatCell("Best set", stat.bestReps.toString(), Modifier.weight(1f))
+                                StatCell(stringResource(R.string.stats_total_reps), stat.totalReps.toString(), Modifier.weight(1f))
+                                StatCell(stringResource(R.string.stats_best_set), stat.bestReps.toString(), Modifier.weight(1f))
                             }
                         }
                         Row(
@@ -94,13 +101,13 @@ fun StatsScreen(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
                             if (timed) {
-                                StatCell("Total time", formatDurationLong(stat.totalDurationMs), Modifier.weight(1f), big = false)
-                                StatCell("Last", formatDate(stat.lastPerformedAt), Modifier.weight(1f), big = false)
+                                StatCell(stringResource(R.string.stats_total_time), formatDurationLong(context, stat.totalDurationMs), Modifier.weight(1f), big = false)
+                                StatCell(stringResource(R.string.stats_cell_last), formatDate(stat.lastPerformedAt), Modifier.weight(1f), big = false)
                             } else {
-                                StatCell("Avg reps", String.format("%.1f", stat.avgReps), Modifier.weight(1f), big = false)
-                                StatCell("Total time", formatDurationLong(stat.totalDurationMs), Modifier.weight(1f), big = false)
+                                StatCell(stringResource(R.string.stats_avg_reps), String.format("%.1f", stat.avgReps), Modifier.weight(1f), big = false)
+                                StatCell(stringResource(R.string.stats_total_time), formatDurationLong(context, stat.totalDurationMs), Modifier.weight(1f), big = false)
                             }
-                            StatCell("Since", formatDate(stat.firstPerformedAt), Modifier.weight(1f), big = false)
+                            StatCell(stringResource(R.string.stats_since), formatDate(stat.firstPerformedAt), Modifier.weight(1f), big = false)
                         }
                     }
                 }
@@ -109,7 +116,7 @@ fun StatsScreen(
             // Reps across recent (filtered) sessions, oldest -> newest.
             val trend = filtered.take(15).map { it.repCount }.reversed()
             if (trend.size >= 2) {
-                Text("Recent reps trend", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.stats_reps_trend), style = MaterialTheme.typography.titleMedium)
                 Canvas(modifier = Modifier.fillMaxWidth().height(80.dp)) {
                     val maxVal = (trend.max()).coerceAtLeast(1)
                     val stepX = if (trend.size > 1) size.width / (trend.size - 1) else 0f
@@ -139,7 +146,7 @@ fun StatsScreen(
                 .map { it.goodReps * 100 / it.repCount }
                 .reversed()
             if (formTrend.size >= 2) {
-                Text("Form quality trend", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.stats_form_trend), style = MaterialTheme.typography.titleMedium)
                 Canvas(modifier = Modifier.fillMaxWidth().height(80.dp)) {
                     val stepX = size.width / (formTrend.size - 1)
                     val path = Path()
@@ -162,7 +169,7 @@ fun StatsScreen(
             }
         }
 
-        GymButton("Back", onBack, Modifier.padding(top = 8.dp), GymButtonStyle.Secondary)
+        GymButton(stringResource(R.string.action_back), onBack, Modifier.padding(top = 8.dp), GymButtonStyle.Secondary)
     }
 }
 

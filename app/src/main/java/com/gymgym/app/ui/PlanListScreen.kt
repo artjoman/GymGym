@@ -15,10 +15,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.gymgym.app.R
 import com.gymgym.app.data.PlanWithExercises
 
 @Composable
@@ -31,17 +35,17 @@ fun PlanListScreen(
     onBack: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize().systemBarsPadding().padding(24.dp)) {
-        Text("Workout plans", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.plans_title), style = MaterialTheme.typography.headlineSmall)
 
         GymButton(
-            text = "New plan",
+            text = stringResource(R.string.plans_new),
             onClick = onNew,
             modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
         )
 
         if (plans.isEmpty()) {
             Text(
-                "No plans yet. Create one to run several exercises back to back.",
+                stringResource(R.string.plans_empty),
                 modifier = Modifier.padding(vertical = 24.dp),
             )
         } else {
@@ -60,7 +64,9 @@ fun PlanListScreen(
             }
         }
 
-        TextButton(onClick = onBack, modifier = Modifier.padding(top = 8.dp)) { Text("Back") }
+        TextButton(onClick = onBack, modifier = Modifier.padding(top = 8.dp)) {
+            Text(stringResource(R.string.action_back))
+        }
     }
 }
 
@@ -79,7 +85,7 @@ private fun PlanCard(
                 style = MaterialTheme.typography.titleMedium,
             )
             Text(
-                planSummary(plan),
+                planSummary(LocalContext.current, plan),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(top = 4.dp),
             )
@@ -87,18 +93,22 @@ private fun PlanCard(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Button(onClick = onRun) { Text("Start") }
-                OutlinedButton(onClick = onEdit) { Text("Edit") }
-                TextButton(onClick = onDelete) { Text("Delete") }
+                Button(onClick = onRun) { Text(stringResource(R.string.action_start)) }
+                OutlinedButton(onClick = onEdit) { Text(stringResource(R.string.action_edit)) }
+                TextButton(onClick = onDelete) { Text(stringResource(R.string.action_delete)) }
             }
         }
     }
 }
 
-private fun planSummary(plan: PlanWithExercises): String {
+private fun planSummary(context: Context, plan: PlanWithExercises): String {
     val parts = plan.orderedExercises.map { e ->
-        val amount = if (isTimedExercise(e.exerciseType)) "${e.targetReps}s" else "${e.targetReps}"
-        "${exerciseLabel(e.exerciseType)} $amount×${e.targetSets}"
+        val label = exerciseLabel(context, e.exerciseType)
+        if (isTimedExercise(e.exerciseType)) {
+            context.getString(R.string.plan_summary_seconds, label, e.targetReps, e.targetSets)
+        } else {
+            context.getString(R.string.plan_summary_reps, label, e.targetReps, e.targetSets)
+        }
     }
-    return if (parts.isEmpty()) "No exercises" else parts.joinToString(" · ")
+    return if (parts.isEmpty()) context.getString(R.string.plans_no_exercises) else parts.joinToString(" · ")
 }

@@ -1,3 +1,253 @@
 <resources>
     <string name="app_name">GymGym</string>
+
+    <!-- Common actions -->
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_done">Done</string>
+    <string name="action_back">Back</string>
+    <string name="action_start">Start</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_export">Export</string>
+    <string name="action_import">Import</string>
+    <string name="action_resume">Resume</string>
+    <string name="action_share">Share</string>
+    <string name="action_play">Play</string>
+    <string name="action_replace">Replace</string>
+
+    <!-- Home -->
+    <string name="home_greeting_default">Ready to train?</string>
+    <string name="home_greeting">Let\'s go, %1$s</string>
+    <string name="home_choose_exercise">Choose your exercise</string>
+    <string name="home_train_smarter">Train smarter</string>
+    <string name="home_auto_detect">✨ Auto-detect</string>
+    <string name="home_workout_plans">Workout plans</string>
+    <string name="home_recordings">📹 Recordings</string>
+    <string name="nav_history">History</string>
+    <string name="nav_stats">Stats</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Exercises -->
+    <string name="exercise_squat">Squat</string>
+    <string name="exercise_pushup">Pushup</string>
+    <string name="exercise_pullup">Pullup</string>
+    <string name="exercise_dumbbell_press">Dumbbell Press</string>
+    <string name="exercise_plank">Plank</string>
+    <string name="framing_side">Prop the phone to the side, full body in frame</string>
+    <string name="framing_pullup">Prop the phone facing you, bar and full body in frame</string>
+    <string name="framing_press">Prop the phone facing you, arms and torso in frame</string>
+
+    <!-- Camera / workout -->
+    <string name="camera_auto_detect">Auto-detect</string>
+    <string name="camera_auto_badge">AUTO</string>
+    <string name="camera_detecting">Detecting exercise…</string>
+    <string name="camera_detecting_hint">Get in frame and start your reps</string>
+    <string name="camera_move_into_frame">Move into frame</string>
+    <string name="camera_say_start">Say \"start\"</string>
+    <string name="camera_say_stop">Say \"stop\"</string>
+    <string name="camera_start_timer">Start timer</string>
+    <string name="camera_stop_timer">Stop timer</string>
+    <string name="camera_reset">Reset</string>
+    <string name="camera_pause">Pause</string>
+    <string name="camera_change_exercise">Change exercise</string>
+    <string name="camera_skip_exercise">Skip exercise</string>
+    <string name="camera_stop_plan">Stop plan</string>
+    <string name="camera_paused">Paused</string>
+    <string name="camera_say_resume">Say \"resume\" or tap</string>
+    <string name="camera_workout_complete">Workout complete!</string>
+    <string name="camera_good_count">%1$d good</string>
+    <string name="camera_plan_progress">%1$s · exercise %2$d/%3$d · set %4$d/%5$d</string>
+    <string name="cd_start_recording">Start recording</string>
+    <string name="cd_switch_camera">Switch camera</string>
+    <string name="cd_listening">Listening</string>
+    <string name="cd_voice_paused">Voice paused</string>
+    <string name="form_cue_shallow_caps">GO DEEPER</string>
+    <string name="form_cue_wobbly_caps">STEADY</string>
+    <string name="form_cue_fast_caps">SLOW DOWN</string>
+    <string name="countdown_go">GO!</string>
+
+    <!-- Settings -->
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_color_scheme">Color scheme</string>
+    <string name="settings_background">Background</string>
+    <string name="settings_sound">Sound settings</string>
+    <string name="settings_all_sounds">All sounds</string>
+    <string name="settings_countdown_voice">Countdown voice (3…2…1…GO)</string>
+    <string name="settings_out_of_frame_bell">Out-of-frame bell</string>
+    <string name="settings_back_in_frame_chime">Back-in-frame chime</string>
+    <string name="settings_combo_callout">Set-complete combo callout</string>
+    <string name="settings_spoken_rep_count">Spoken rep count</string>
+    <string name="settings_form_check">Form check</string>
+    <string name="settings_form_feedback">Form feedback</string>
+    <string name="settings_strict_counting">Strict counting (only good reps)</string>
+    <string name="settings_sensitivity">Sensitivity</string>
+    <string name="settings_form_desc">Flags shallow, wobbly or bounced reps with a cue. Strict counting makes a bad rep not count toward the set; sensitivity sets how strict.</string>
+    <string name="settings_hands_free">Hands-free control</string>
+    <string name="settings_voice_control">Voice control (beta)</string>
+    <string name="settings_voice_desc">Say \"next\", \"pause\", \"resume\", or \"reset\" during a workout; \"start\"/\"stop\" for a plank timer; \"start/stop recording\"; or \"switch camera\". Uses on-device recognition and the microphone; needs mic permission.</string>
+    <string name="settings_about">About</string>
+    <string name="settings_privacy_policy">Privacy policy</string>
+    <string name="settings_version">v%1$s</string>
+    <string name="bg_upload">Upload</string>
+
+    <!-- Spoken rep count modes -->
+    <string name="rep_off">Off</string>
+    <string name="rep_every">Every rep</string>
+    <string name="rep_every_5">Every 5 reps</string>
+    <string name="rep_every_10">Every 10 reps</string>
+
+    <!-- Form sensitivity -->
+    <string name="sensitivity_lenient">Lenient</string>
+    <string name="sensitivity_standard">Standard</string>
+    <string name="sensitivity_strict">Strict</string>
+
+    <!-- Accent color schemes -->
+    <string name="accent_emerald">Emerald</string>
+    <string name="accent_azure">Azure</string>
+    <string name="accent_violet">Violet</string>
+    <string name="accent_magenta">Magenta</string>
+    <string name="accent_amber">Amber</string>
+    <string name="accent_crimson">Crimson</string>
+    <string name="accent_lime">Lime</string>
+    <string name="accent_aqua">Aqua</string>
+    <string name="accent_tangerine">Tangerine</string>
+    <string name="accent_rose">Rose</string>
+    <string name="accent_indigo">Indigo</string>
+    <string name="accent_orchid">Orchid</string>
+    <string name="accent_cyan">Cyan</string>
+    <string name="accent_slate">Slate</string>
+
+    <!-- Background styles -->
+    <string name="bg_none">None</string>
+    <string name="bg_gym_emerald">Emerald</string>
+    <string name="bg_gym_azure">Azure</string>
+    <string name="bg_gym_violet">Violet</string>
+    <string name="bg_gym_amber">Amber</string>
+    <string name="bg_custom">Your photo</string>
+
+    <!-- Date range filters -->
+    <string name="range_all">All</string>
+    <string name="range_24h">24h</string>
+    <string name="range_7d">7d</string>
+    <string name="range_30d">30d</string>
+
+    <!-- Weight unit -->
+    <string name="unit_kg">Kilograms (kg)</string>
+    <string name="unit_lb">Pounds (lb)</string>
+
+    <!-- Stats -->
+    <string name="stats_title">Stats</string>
+    <string name="stats_empty">No stats yet. Finish a set to start tracking.</string>
+    <string name="stats_good_form">%1$d%% good form</string>
+    <string name="stats_last">Last: %1$s</string>
+    <string name="stats_cell_last">Last</string>
+    <string name="stats_sessions">Sessions</string>
+    <string name="stats_total_reps">Total reps</string>
+    <string name="stats_best_set">Best set</string>
+    <string name="stats_avg_reps">Avg reps</string>
+    <string name="stats_total_time">Total time</string>
+    <string name="stats_since">Since</string>
+    <string name="stats_best_hold">Best hold</string>
+    <string name="stats_avg_hold">Avg hold</string>
+    <string name="stats_reps_trend">Recent reps trend</string>
+    <string name="stats_form_trend">Form quality trend</string>
+
+    <!-- History -->
+    <string name="history_title">History</string>
+    <string name="history_empty">No workouts yet. Finish a set to see it here.</string>
+    <string name="history_empty_filtered">No sessions match this filter.</string>
+    <string name="history_meta">%1$s · %2$s</string>
+
+    <!-- Session detail -->
+    <string name="session_title">Session detail</string>
+    <string name="session_unavailable">This session is no longer available.</string>
+    <string name="session_reps_suffix"> reps</string>
+    <string name="session_started">Started</string>
+    <string name="session_ended">Ended</string>
+    <string name="session_duration">Duration</string>
+    <string name="session_pace">Pace</string>
+    <string name="session_good_form">Good form</string>
+    <string name="session_good_form_value">%1$d/%2$d · %3$d%%</string>
+
+    <!-- Plans -->
+    <string name="plans_title">Workout plans</string>
+    <string name="plans_new">New plan</string>
+    <string name="plans_empty">No plans yet. Create one to run several exercises back to back.</string>
+    <string name="plans_no_exercises">No exercises</string>
+    <string name="plan_edit_edit">Edit plan</string>
+    <string name="plan_name_label">Plan name</string>
+    <string name="plan_add_exercise">Add exercise</string>
+    <string name="plan_reps">Reps</string>
+    <string name="plan_seconds">Seconds</string>
+    <string name="plan_sets">Sets</string>
+    <string name="plan_summary_reps">%1$s %2$d×%3$d</string>
+    <string name="plan_summary_seconds">%1$s %2$ds×%3$d</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Profile</string>
+    <string name="profile_display_name">Display name</string>
+    <string name="profile_weight_unit">Weight unit</string>
+    <string name="profile_backup_title">Backup &amp; transfer</string>
+    <string name="profile_backup_desc">Save your workouts, plans, and settings to a file, then import it on another device. Videos are not included.</string>
+    <string name="profile_import_title">Import data?</string>
+    <string name="profile_import_warning">This replaces the workouts, plans, and settings currently on this device. This cannot be undone.</string>
+    <string name="toast_backup_saved">Backup saved</string>
+    <string name="toast_export_failed">Export failed</string>
+    <string name="toast_data_imported">Data imported</string>
+    <string name="toast_import_failed">Import failed — is this a GymGym backup?</string>
+
+    <!-- Recordings -->
+    <string name="recordings_title">Recordings</string>
+    <string name="recordings_desc">Share a workout with your trainer for feedback.</string>
+    <string name="recordings_empty">No recordings yet. Tap ● REC on the workout screen to record.</string>
+
+    <!-- Creator footer -->
+    <string name="creator_prefix">Created with </string>
+    <string name="creator_suffix"> by projectorum.com</string>
+
+    <!-- Spoken (TTS) -->
+    <string name="speak_timer_started">Timer started</string>
+    <string name="speak_time">Time, %1$s</string>
+    <string name="speak_detected">%1$s detected</string>
+    <string name="speak_workout_complete">Workout complete!</string>
+    <string name="speak_go">Go!</string>
+    <string name="cue_shallow">Go deeper</string>
+    <string name="cue_wobbly">Steady</string>
+    <string name="cue_fast">Slow down</string>
+
+    <!-- Duration formatting (letters are localizable: m/s/h) -->
+    <string name="duration_s">%1$ds</string>
+    <string name="duration_ms">%1$dm %2$ds</string>
+    <string name="duration_hms">%1$dh %2$dm %3$ds</string>
+    <string name="pace">%1$s reps/min</string>
+    <string name="pace_none">—</string>
+
+    <!-- Reps as a count (plural) -->
+    <plurals name="reps">
+        <item quantity="one">%1$d rep</item>
+        <item quantity="other">%1$d reps</item>
+    </plurals>
+
+    <!-- Spoken duration components (plural) -->
+    <plurals name="spoken_minutes">
+        <item quantity="one">%1$d minute</item>
+        <item quantity="other">%1$d minutes</item>
+    </plurals>
+    <plurals name="spoken_seconds">
+        <item quantity="one">%1$d second</item>
+        <item quantity="other">%1$d seconds</item>
+    </plurals>
+
+    <!-- Arcade set-complete callouts -->
+    <string-array name="combo_words">
+        <item>SUPER!</item>
+        <item>GREAT!</item>
+        <item>AWESOME!</item>
+        <item>COMBO!</item>
+        <item>NICE!</item>
+        <item>PERFECT!</item>
+        <item>BOOM!</item>
+    </string-array>
 </resources>
