@@ -38,6 +38,7 @@ import com.gymgym.app.data.PlanWithCycles
 import com.gymgym.app.exercise.ExerciseRef
 import com.gymgym.app.ui.ExerciseLibraryScreen
 import com.gymgym.app.ui.ExerciseSelectScreen
+import com.gymgym.app.ui.NextMissionScreen
 import com.gymgym.app.ui.ProgramsScreen
 import com.gymgym.app.ui.HistoryScreen
 import com.gymgym.app.ui.MainViewModel
@@ -63,6 +64,7 @@ private object Routes {
     const val RECORDINGS = "recordings"
     const val LIBRARY = "library"
     const val PROGRAMS = "programs"
+    const val MISSION = "mission"
 }
 
 class MainActivity : ComponentActivity() {
@@ -154,6 +156,20 @@ private fun AppRoot(viewModel: MainViewModel) {
         }
     }
 
+    /** Start a specific workout (by id) from the active plan — used by Next Mission. */
+    fun startWorkoutById(workoutId: Long) {
+        val plan = viewModel.activePlan.value ?: return
+        val workout = plan.orderedCycles
+            .flatMap { it.orderedWorkouts }
+            .firstOrNull { it.workout.id == workoutId } ?: return
+        requireCameraThen {
+            adManager.onWorkoutOpen(activity) {
+                viewModel.startWorkout(workout, plan.plan.id, plan.plan.name)
+                navController.navigate(Routes.CAMERA)
+            }
+        }
+    }
+
     val settings by viewModel.soundSettings.collectAsState()
     AppBackground(
         style = settings.backgroundStyle,
@@ -166,8 +182,11 @@ private fun AppRoot(viewModel: MainViewModel) {
     ) {
         composable(Routes.HOME) {
             val profile by viewModel.profile.collectAsState()
+            val dashboard by viewModel.dashboard.collectAsState()
             ExerciseSelectScreen(
                 greeting = profile.displayName,
+                dashboard = dashboard,
+                onOpenMission = { navController.navigate(Routes.MISSION) },
                 onExerciseSelected = ::startExercise,
                 onAutoDetect = ::startAuto,
                 onOpenLibrary = { navController.navigate(Routes.LIBRARY) },
@@ -202,6 +221,21 @@ private fun AppRoot(viewModel: MainViewModel) {
                 onTest = ::startExercise,
                 onAddCustom = viewModel::addCustomExercise,
                 onDeleteCustom = viewModel::deleteCustomExercise,
+                onBack = { navController.popBackStack() },
+            )
+        }
+        composable(Routes.MISSION) {
+            val dashboard by viewModel.dashboard.collectAsState()
+            NextMissionScreen(
+                dashboard = dashboard,
+                onStart = { id ->
+                    startWorkoutById(id)
+                },
+                onSwap = { id -> startWorkoutById(id) },
+                onSkip = { id ->
+                    viewModel.skipMission(id)
+                    navController.popBackStack()
+                },
                 onBack = { navController.popBackStack() },
             )
         }

@@ -349,4 +349,12 @@
     <string name="speak_next_exercise_10">Siguiente ejercicio en 10 segundos</string>
     <string name="speak_start_set">¡Empieza la serie!</string>
     <string name="camera_rest">Descanso</string>
+    <!-- Next Mission / dashboard (Phase 6) -->
+    <string name="home_next_mission">Próxima misión</string>
+    <string name="mission_title">Próxima misión</string>
+    <string name="mission_planned">Programado: %1$s</string>
+    <string name="mission_swap">Cambiar</string>
+    <string name="mission_skip">Saltar</string>
+    <string name="mission_swap_pick">Elige un entrenamiento</string>
+    <string name="mission_no_plan">Aún no hay plan activo. Elige un programa o activa un plan.</string>
 </resources>

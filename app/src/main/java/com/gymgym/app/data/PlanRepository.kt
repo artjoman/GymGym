@@ -100,6 +100,8 @@ class PlanRepository(private val dao: PlanDao) {
         dao.markActive(id)
     }
 
+    suspend fun activePlanOnce(): PlanWithCycles? = dao.getActiveOnce()
+
     suspend fun deletePlan(id: Long) = dao.deletePlan(id)
 
     suspend fun allOnce(): List<PlanWithCycles> = dao.getAllOnce()

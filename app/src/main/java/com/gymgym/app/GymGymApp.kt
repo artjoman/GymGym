@@ -9,6 +9,7 @@ import com.gymgym.app.data.CompletedWorkoutRepository
 import com.gymgym.app.data.CustomExerciseRepository
 import com.gymgym.app.data.GymGymDatabase
 import com.gymgym.app.data.PlanRepository
+import com.gymgym.app.data.WorkoutProgressRepository
 import com.gymgym.app.data.WorkoutRepository
 import com.gymgym.app.settings.AppLocale
 
@@ -37,6 +38,10 @@ class AppContainer(app: Application) {
 
     val completedWorkoutRepository: CompletedWorkoutRepository by lazy {
         CompletedWorkoutRepository(database.completedWorkoutDao())
+    }
+
+    val workoutProgressRepository: WorkoutProgressRepository by lazy {
+        WorkoutProgressRepository(database.workoutProgressDao())
     }
 
     // Real ads on the free flavor; a no-op on paid (see provideAdManager).

@@ -346,4 +346,12 @@
     <string name="speak_next_exercise_10">10 秒后开始下一个动作</string>
     <string name="speak_start_set">开始这一组！</string>
     <string name="camera_rest">休息</string>
+    <!-- Next Mission / dashboard (Phase 6) -->
+    <string name="home_next_mission">下一个任务</string>
+    <string name="mission_title">下一个任务</string>
+    <string name="mission_planned">计划：%1$s</string>
+    <string name="mission_swap">更换</string>
+    <string name="mission_skip">跳过</string>
+    <string name="mission_swap_pick">选择训练</string>
+    <string name="mission_no_plan">还没有当前计划。选择一个训练计划或激活一个计划。</string>
 </resources>

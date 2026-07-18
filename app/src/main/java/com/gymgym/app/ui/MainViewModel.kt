@@ -27,9 +27,12 @@ import com.gymgym.app.counter.RepCounter
 import com.gymgym.app.counter.RepFault
 import com.gymgym.app.counter.RepQuality
 import com.gymgym.app.counter.SquatCounter
+import com.gymgym.app.cycle.CycleEngine
+import com.gymgym.app.cycle.DashboardState
 import com.gymgym.app.data.BodyMeasurement
 import com.gymgym.app.data.BodyMetric
 import com.gymgym.app.data.CompletedWorkoutRepository
+import com.gymgym.app.data.CompletedWorkoutWithExercises
 import com.gymgym.app.data.CustomExercise
 import com.gymgym.app.data.DraftCycle
 import com.gymgym.app.data.DraftPlan
@@ -61,6 +64,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -106,6 +110,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         (application as GymGymApp).container.bodyMeasurementRepository
     private val completedWorkoutRepository =
         (application as GymGymApp).container.completedWorkoutRepository
+    private val workoutProgressRepository =
+        (application as GymGymApp).container.workoutProgressRepository
 
     // Created at ViewModel construction (app launch) so the TTS engine is warm
     // and ready by the time the user reaches a countdown.
@@ -128,6 +134,28 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val activePlan: StateFlow<PlanWithCycles?> = planRepository.activePlan
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    val completedWorkouts: StateFlow<List<CompletedWorkoutWithExercises>> =
+        completedWorkoutRepository.all
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    /** Home dashboard: current cycle progress, last workout, and next mission. */
+    val dashboard: StateFlow<DashboardState> = combine(
+        planRepository.activePlan,
+        workoutProgressRepository.all,
+        completedWorkoutRepository.all,
+        profileRepository.profile,
+    ) { plan, progress, completed, profile ->
+        val progMap = progress.associate {
+            it.workoutId to CycleEngine.ProgressEntry(it.status, it.percent)
+        }
+        val last = completed.maxByOrNull { it.workout.startedAt }?.workout
+        CycleEngine.compute(plan, progMap, last, profile, System.currentTimeMillis())
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        CycleEngine.compute(null, emptyMap(), null, Profile(), System.currentTimeMillis()),
+    )
 
     val customExercises: StateFlow<List<CustomExercise>> = customExerciseRepository.all
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -607,6 +635,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val workoutId = runWorkoutId
         val startedAt = runStartedAt
         val duration = results.sumOf { it.durationMs }
+        val avg = results.map { if (it.reps > 0) it.goodReps * 100 / it.reps else 0 }.average().toInt()
         viewModelScope.launch {
             completedWorkoutRepository.record(
                 planId = planId,
@@ -617,8 +646,29 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 durationMs = duration,
                 exercises = results,
             )
+            if (workoutId != null) markProgress(workoutId, done = true, percent = avg)
         }
     }
+
+    /** Record a workout's disposition in the current cycle pass; reset the pass when complete. */
+    private suspend fun markProgress(workoutId: Long, done: Boolean, percent: Int) {
+        if (done) {
+            workoutProgressRepository.markDone(workoutId, percent)
+        } else {
+            workoutProgressRepository.markSkipped(workoutId)
+        }
+        val allIds = planRepository.activePlanOnce()
+            ?.orderedCycles?.flatMap { c -> c.orderedWorkouts.map { it.workout.id } }
+            ?: emptyList()
+        val processed = workoutProgressRepository.allOnce().map { it.workoutId }.toSet()
+        if (allIds.isNotEmpty() && allIds.all { it in processed }) {
+            workoutProgressRepository.clear()
+        }
+    }
+
+    /** Skip the next-mission workout (Skip option). */
+    fun skipMission(workoutId: Long) =
+        viewModelScope.launch { markProgress(workoutId, done = false, percent = 0) }
 
     private fun updatePlanProgress() {
         val step = currentStep()

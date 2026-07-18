@@ -352,4 +352,12 @@
     <string name="speak_next_exercise_10">Nākamais vingrinājums pēc 10 sekundēm</string>
     <string name="speak_start_set">Sāc piegājienu!</string>
     <string name="camera_rest">Atpūta</string>
+    <!-- Next Mission / dashboard (Phase 6) -->
+    <string name="home_next_mission">Nākamā misija</string>
+    <string name="mission_title">Nākamā misija</string>
+    <string name="mission_planned">Plānots: %1$s</string>
+    <string name="mission_swap">Mainīt</string>
+    <string name="mission_skip">Izlaist</string>
+    <string name="mission_swap_pick">Izvēlies treniņu</string>
+    <string name="mission_no_plan">Vēl nav aktīva plāna. Izvēlies programmu vai aktivizē plānu.</string>
 </resources>

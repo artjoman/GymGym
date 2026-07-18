@@ -1,5 +1,6 @@
 package com.gymgym.app.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +28,8 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ExerciseSelectScreen(
     greeting: String?,
+    dashboard: com.gymgym.app.cycle.DashboardState,
+    onOpenMission: () -> Unit,
     onExerciseSelected: (Exercise) -> Unit,
     onAutoDetect: () -> Unit,
     onOpenLibrary: () -> Unit,
@@ -63,6 +66,31 @@ fun ExerciseSelectScreen(
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+
+            val mission = dashboard.nextMission
+            if (dashboard.hasActivePlan && mission != null) {
+                SectionLabel(stringResource(R.string.home_next_mission), top = 20.dp)
+                androidx.compose.material3.Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onOpenMission),
+                ) {
+                    Column(Modifier.padding(16.dp)) {
+                        Text(
+                            dashboard.planName.orEmpty(),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text(
+                            mission.workout.name,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Spacer(Modifier.height(10.dp))
+                        CycleProgressBar(dashboard)
+                    }
+                }
+            }
 
             SectionLabel(stringResource(R.string.home_choose_exercise), top = 20.dp)
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {

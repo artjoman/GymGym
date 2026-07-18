@@ -361,4 +361,12 @@
     <string name="speak_next_exercise_10">التمرين التالي بعد 10 ثوانٍ</string>
     <string name="speak_start_set">ابدأ المجموعة!</string>
     <string name="camera_rest">راحة</string>
+    <!-- Next Mission / dashboard (Phase 6) -->
+    <string name="home_next_mission">المهمة التالية</string>
+    <string name="mission_title">المهمة التالية</string>
+    <string name="mission_planned">مقرر: %1$s</string>
+    <string name="mission_swap">تبديل</string>
+    <string name="mission_skip">تخطي</string>
+    <string name="mission_swap_pick">اختر تدريبًا</string>
+    <string name="mission_no_plan">لا توجد خطة نشطة بعد. اختر برنامجًا أو فعّل خطة.</string>
 </resources>

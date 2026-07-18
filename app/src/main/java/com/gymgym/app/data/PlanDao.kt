@@ -26,6 +26,10 @@ interface PlanDao {
     @Query("SELECT * FROM plan WHERE isActive = 1 LIMIT 1")
     fun activePlan(): Flow<PlanWithCycles?>
 
+    @Transaction
+    @Query("SELECT * FROM plan WHERE isActive = 1 LIMIT 1")
+    suspend fun getActiveOnce(): PlanWithCycles?
+
     @Insert
     suspend fun insertPlan(plan: PlanEntity): Long
 
