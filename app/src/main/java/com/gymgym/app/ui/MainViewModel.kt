@@ -2,6 +2,8 @@ package com.gymgym.app.ui
 
 import android.app.Application
 import android.net.Uri
+import androidx.annotation.StringRes
+import com.gymgym.app.R
 import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -255,7 +257,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         timedTargetMs = 0L
         _timerRunning.value = true
         timerBaseMs = SystemClock.elapsedRealtime() - _elapsedMs.value
-        if (soundSettings.value.soundsEnabled) speak("Timer started")
+        if (soundSettings.value.soundsEnabled) speak(str(R.string.speak_timer_started))
         launchTimerJob()
     }
 
@@ -302,7 +304,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _elapsedMs.value = held
         logTimedSession(exercise, held, sessionStartedAt)
         timedLogged = true
-        if (soundSettings.value.soundsEnabled) speak("Time, ${spokenDuration(held)}")
+        if (soundSettings.value.soundsEnabled) speak(str(R.string.speak_time, spokenDuration(held)))
     }
 
     /** Persist a hold: seconds go in repCount so existing best/total/avg aggregates
@@ -327,11 +329,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val total = (ms / 1_000).toInt()
         val m = total / 60
         val s = total % 60
-        fun plural(n: Int) = if (n == 1) "" else "s"
+        val res = getApplication<Application>().resources
+        fun mins() = res.getQuantityString(R.plurals.spoken_minutes, m, m)
+        fun secs() = res.getQuantityString(R.plurals.spoken_seconds, s, s)
         return when {
-            m > 0 && s > 0 -> "$m minute${plural(m)} $s second${plural(s)}"
-            m > 0 -> "$m minute${plural(m)}"
-            else -> "$s second${plural(s)}"
+            m > 0 && s > 0 -> "${mins()} ${secs()}"
+            m > 0 -> mins()
+            else -> secs()
         }
     }
 
@@ -367,7 +371,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         counter = counterFor(exercise)
         sessionStartedAt = System.currentTimeMillis()
         _countdownValue.value = null
-        if (soundSettings.value.soundsEnabled) speak("${exercise.displayName} detected")
+        if (soundSettings.value.soundsEnabled) speak(str(R.string.speak_detected, str(exercise.labelRes())))
     }
 
     // --- Plan run ---
@@ -437,7 +441,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         // Arcade combo callout, then advance to the next set/exercise.
         countdownJob?.cancel()
         _countdownValue.value = null
-        val word = CELEBRATION_WORDS.random()
+        val word = getApplication<Application>().resources.getStringArray(R.array.combo_words).random()
         _celebration.value = word
         if (soundSettings.value.soundsEnabled) speak(word)
         transitionJob?.cancel()
@@ -476,7 +480,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _planComplete.value = true
         countdownJob?.cancel()
         _countdownValue.value = null
-        if (soundSettings.value.soundsEnabled) speak("Workout complete!")
+        if (soundSettings.value.soundsEnabled) speak(str(R.string.speak_workout_complete))
         viewModelScope.launch {
             delay(PLAN_COMPLETE_DISPLAY_MS)
             _requestExit.value = true
@@ -488,7 +492,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _planProgress.value = step?.let {
             PlanProgress(
                 planName = planName,
-                exerciseLabel = it.exercise.displayName,
+                exerciseLabel = str(it.exercise.labelRes()),
                 exerciseIndex = stepIndex,
                 exerciseCount = planSteps.size,
                 setIndex = setIndex,
@@ -575,9 +579,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun cueFor(quality: RepQuality): String = when {
-        RepFault.SHALLOW in quality.faults -> "Go deeper"
-        RepFault.WOBBLY in quality.faults -> "Steady"
-        RepFault.TOO_FAST in quality.faults -> "Slow down"
+        RepFault.SHALLOW in quality.faults -> str(R.string.cue_shallow)
+        RepFault.WOBBLY in quality.faults -> str(R.string.cue_wobbly)
+        RepFault.TOO_FAST in quality.faults -> str(R.string.cue_fast)
         else -> ""
     }
 
@@ -869,6 +873,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /** Speak via the pre-warmed TTS engine. No-op until the engine is ready. */
     fun speak(text: String) = voiceFeedback.speak(text)
 
+    /** Localized string from the app resources (for spoken/non-composable text). */
+    private fun str(@StringRes id: Int, vararg args: Any): String =
+        getApplication<Application>().getString(id, *args)
+
     override fun onCleared() {
         voiceFeedback.shutdown()
         super.onCleared()
@@ -901,9 +909,5 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         const val TRACKING_CHECK_INTERVAL_MS = 250L
         const val TRACKING_TIMEOUT_MS = 800L
         const val STABLE_FRAMES_TO_TRACK = 5
-
-        val CELEBRATION_WORDS = listOf(
-            "SUPER!", "GREAT!", "AWESOME!", "COMBO!", "NICE!", "PERFECT!", "BOOM!",
-        )
     }
 }

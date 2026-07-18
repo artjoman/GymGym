@@ -1,5 +1,7 @@
 package com.gymgym.app
 
+import com.gymgym.app.R
+
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
@@ -240,7 +242,7 @@ private fun AppRoot(viewModel: MainViewModel) {
                     viewModel.exportBackup(uri) { ok ->
                         Toast.makeText(
                             ctx,
-                            if (ok) "Backup saved" else "Export failed",
+                            ctx.getString(if (ok) R.string.toast_backup_saved else R.string.toast_export_failed),
                             Toast.LENGTH_SHORT,
                         ).show()
                     }
@@ -249,7 +251,7 @@ private fun AppRoot(viewModel: MainViewModel) {
                     viewModel.importBackup(uri) { ok ->
                         Toast.makeText(
                             ctx,
-                            if (ok) "Data imported" else "Import failed — is this a GymGym backup?",
+                            ctx.getString(if (ok) R.string.toast_data_imported else R.string.toast_import_failed),
                             Toast.LENGTH_LONG,
                         ).show()
                     }

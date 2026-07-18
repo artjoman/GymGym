@@ -49,6 +49,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.gymgym.app.audio.SoundEffects
 import com.gymgym.app.audio.VoiceCommandListener
 import com.gymgym.app.camera.CameraController
+import androidx.compose.ui.res.stringResource
+import com.gymgym.app.R
 import com.gymgym.app.camera.PoseAnalyzer
 import com.gymgym.app.counter.RepFault
 import com.gymgym.app.camera.VideoRecorder
@@ -185,7 +187,7 @@ fun CameraScreen(
         if (!settings.soundsEnabled || !settings.countdownVoice) return@LaunchedEffect
         when (val value = countdownValue) {
             null -> {}
-            0 -> viewModel.speak("Go!")
+            0 -> viewModel.speak(context.getString(R.string.speak_go))
             else -> viewModel.speak(value.toString())
         }
     }
@@ -251,7 +253,7 @@ fun CameraScreen(
                 // Standalone plank is voice/button controlled; a plan hold auto-runs.
                 if (progress == null && canListen) {
                     Text(
-                        text = if (timerRunning) "Say \"stop\"" else "Say \"start\"",
+                        text = if (timerRunning) stringResource(R.string.camera_say_stop) else stringResource(R.string.camera_say_start),
                         fontSize = 14.sp,
                         color = Color(0xFFCFD8DC),
                     )
@@ -261,9 +263,9 @@ fun CameraScreen(
             val badFault = repFeedback?.takeIf { !it.quality.isGood }?.quality
             val cue = when {
                 badFault == null -> null
-                RepFault.SHALLOW in badFault.faults -> "GO DEEPER"
-                RepFault.WOBBLY in badFault.faults -> "STEADY"
-                RepFault.TOO_FAST in badFault.faults -> "SLOW DOWN"
+                RepFault.SHALLOW in badFault.faults -> stringResource(R.string.form_cue_shallow_caps)
+                RepFault.WOBBLY in badFault.faults -> stringResource(R.string.form_cue_wobbly_caps)
+                RepFault.TOO_FAST in badFault.faults -> stringResource(R.string.form_cue_fast_caps)
                 else -> null
             }
             Column(
@@ -286,7 +288,7 @@ fun CameraScreen(
                         color = Color(0xFFFFB020),
                     )
                     settings.formFeedback && repCount > 0 -> Text(
-                        text = "$goodReps good",
+                        text = stringResource(R.string.camera_good_count, goodReps),
                         fontSize = 15.sp,
                         color = Color(0xFFCFD8DC),
                     )
@@ -302,13 +304,13 @@ fun CameraScreen(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = exercise?.displayName ?: "Auto-detect",
+                    text = exercise?.let { stringResource(it.labelRes()) } ?: stringResource(R.string.camera_auto_detect),
                     fontSize = 20.sp,
                     color = Color.White,
                 )
                 if (autoLocked) {
                     Text(
-                        text = "AUTO",
+                        text = stringResource(R.string.camera_auto_badge),
                         style = MaterialTheme.typography.labelMedium,
                         color = Color(0xFF06210F),
                         modifier = Modifier
@@ -320,8 +322,14 @@ fun CameraScreen(
             }
             if (progress != null) {
                 Text(
-                    text = "${progress.planName} · exercise ${progress.exerciseIndex + 1}/" +
-                        "${progress.exerciseCount} · set ${progress.setIndex + 1}/${progress.setCount}",
+                    text = stringResource(
+                        R.string.camera_plan_progress,
+                        progress.planName,
+                        progress.exerciseIndex + 1,
+                        progress.exerciseCount,
+                        progress.setIndex + 1,
+                        progress.setCount,
+                    ),
                     fontSize = 14.sp,
                     color = Color(0xFFCFF5DD),
                 )
@@ -334,12 +342,12 @@ fun CameraScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = "Detecting exercise…",
+                    text = stringResource(R.string.camera_detecting),
                     style = MaterialTheme.typography.headlineSmall,
                     color = Color.White,
                 )
                 Text(
-                    text = "Get in frame and start your reps",
+                    text = stringResource(R.string.camera_detecting_hint),
                     fontSize = 15.sp,
                     color = Color(0xFFCFD8DC),
                     modifier = Modifier.padding(top = 6.dp),
@@ -349,7 +357,7 @@ fun CameraScreen(
 
         if (countdownValue == null && !isTracking && !planComplete && celebration == null && !paused && !timed) {
             Text(
-                text = "Move into frame",
+                text = stringResource(R.string.camera_move_into_frame),
                 fontSize = 18.sp,
                 color = Color.White,
                 modifier = Modifier
@@ -370,22 +378,22 @@ fun CameraScreen(
         ) {
             if (timed && progress != null) {
                 // Plan hold runs automatically to its target; just skip or stop.
-                GymButton("Skip exercise", { viewModel.skipToNextExercise() }, style = GymButtonStyle.Secondary)
-                GymButton("Stop plan", onExit, style = GymButtonStyle.Secondary)
+                GymButton(stringResource(R.string.camera_skip_exercise), { viewModel.skipToNextExercise() }, style = GymButtonStyle.Secondary)
+                GymButton(stringResource(R.string.camera_stop_plan), onExit, style = GymButtonStyle.Secondary)
             } else if (timed) {
                 GymButton(
-                    if (timerRunning) "Stop timer" else "Start timer",
+                    if (timerRunning) stringResource(R.string.camera_stop_timer) else stringResource(R.string.camera_start_timer),
                     { if (timerRunning) viewModel.stopTimer() else viewModel.startTimer() },
                 )
-                GymButton("Change exercise", onExit, style = GymButtonStyle.Secondary)
+                GymButton(stringResource(R.string.camera_change_exercise), onExit, style = GymButtonStyle.Secondary)
             } else if (progress != null) {
-                GymButton("Skip exercise", { viewModel.skipToNextExercise() }, style = GymButtonStyle.Secondary)
-                GymButton("Pause", { viewModel.pause() }, style = GymButtonStyle.Secondary)
-                GymButton("Stop plan", onExit, style = GymButtonStyle.Secondary)
+                GymButton(stringResource(R.string.camera_skip_exercise), { viewModel.skipToNextExercise() }, style = GymButtonStyle.Secondary)
+                GymButton(stringResource(R.string.camera_pause), { viewModel.pause() }, style = GymButtonStyle.Secondary)
+                GymButton(stringResource(R.string.camera_stop_plan), onExit, style = GymButtonStyle.Secondary)
             } else {
-                GymButton("Reset", { viewModel.resetSession() }, style = GymButtonStyle.Secondary)
-                GymButton("Pause", { viewModel.pause() }, style = GymButtonStyle.Secondary)
-                GymButton("Change exercise", onExit, style = GymButtonStyle.Secondary)
+                GymButton(stringResource(R.string.camera_reset), { viewModel.resetSession() }, style = GymButtonStyle.Secondary)
+                GymButton(stringResource(R.string.camera_pause), { viewModel.pause() }, style = GymButtonStyle.Secondary)
+                GymButton(stringResource(R.string.camera_change_exercise), onExit, style = GymButtonStyle.Secondary)
             }
         }
 
@@ -420,7 +428,7 @@ fun CameraScreen(
                 } else {
                     CircleIconButton(
                         icon = Icons.Rounded.FiberManualRecord,
-                        contentDescription = "Start recording",
+                        contentDescription = stringResource(R.string.cd_start_recording),
                         tint = Color(0xFFFF5A5A),
                         onClick = { videoRecorder.start(RecordingStore.newFile(context)) },
                     )
@@ -428,7 +436,7 @@ fun CameraScreen(
             }
             CircleIconButton(
                 icon = Icons.Rounded.Cameraswitch,
-                contentDescription = "Switch camera",
+                contentDescription = stringResource(R.string.cd_switch_camera),
                 onClick = {
                     viewModel.setCameraFacing(
                         if (useFrontCamera) CameraFacing.BACK else CameraFacing.FRONT,
@@ -438,7 +446,7 @@ fun CameraScreen(
             if (canListen) {
                 CircleIconButton(
                     icon = if (isSpeaking) Icons.Rounded.MicOff else Icons.Rounded.Mic,
-                    contentDescription = if (isSpeaking) "Voice paused" else "Listening",
+                    contentDescription = if (isSpeaking) stringResource(R.string.cd_voice_paused) else stringResource(R.string.cd_listening),
                     tint = if (isSpeaking) Color(0xFF9AA5AD) else Color.White,
                 )
             }
@@ -459,11 +467,11 @@ fun CameraScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    Text(text = "Paused", fontSize = 40.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    Text(text = stringResource(R.string.camera_paused), fontSize = 40.sp, fontWeight = FontWeight.Bold, color = Color.White)
                     if (canListen) {
-                        Text(text = "Say \"resume\" or tap", fontSize = 16.sp, color = Color(0xFFCFD8DC))
+                        Text(text = stringResource(R.string.camera_say_resume), fontSize = 16.sp, color = Color(0xFFCFD8DC))
                     }
-                    GymButton("Resume", { viewModel.resume() })
+                    GymButton(stringResource(R.string.action_resume), { viewModel.resume() })
                 }
             }
         }
@@ -476,7 +484,7 @@ fun CameraScreen(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "Workout complete!",
+                    text = stringResource(R.string.camera_workout_complete),
                     fontSize = 40.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
