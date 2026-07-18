@@ -350,6 +350,10 @@
     <string name="speak_detected">%1$s detected</string>
     <string name="speak_workout_complete">Workout complete!</string>
     <string name="speak_go">Go!</string>
+    <string name="speak_next_set_10">Next set in 10 seconds</string>
+    <string name="speak_next_exercise_10">Next exercise in 10 seconds</string>
+    <string name="speak_start_set">Start the set!</string>
+    <string name="camera_rest">Rest</string>
     <string name="cue_shallow">Go deeper</string>
     <string name="cue_wobbly">Steady</string>
     <string name="cue_fast">Slow down</string>

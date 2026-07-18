@@ -34,6 +34,8 @@ import androidx.navigation.navArgument
 import com.gymgym.app.ui.AppBackground
 import com.gymgym.app.ui.CameraScreen
 import com.gymgym.app.ui.Exercise
+import com.gymgym.app.data.PlanWithCycles
+import com.gymgym.app.exercise.ExerciseRef
 import com.gymgym.app.ui.ExerciseLibraryScreen
 import com.gymgym.app.ui.ExerciseSelectScreen
 import com.gymgym.app.ui.ProgramsScreen
@@ -138,6 +140,20 @@ private fun AppRoot(viewModel: MainViewModel) {
         }
     }
 
+    fun startPlan(plan: PlanWithCycles) {
+        // Run the first workout that has an AI-counted/timed exercise.
+        val workout = plan.orderedCycles
+            .flatMap { it.orderedWorkouts }
+            .firstOrNull { w -> w.exercises.any { ExerciseRef.counter(it.exerciseRef) != null } }
+            ?: return
+        requireCameraThen {
+            adManager.onWorkoutOpen(activity) {
+                viewModel.startWorkout(workout, plan.plan.id, plan.plan.name)
+                navController.navigate(Routes.CAMERA)
+            }
+        }
+    }
+
     val settings by viewModel.soundSettings.collectAsState()
     AppBackground(
         style = settings.backgroundStyle,
@@ -212,6 +228,7 @@ private fun AppRoot(viewModel: MainViewModel) {
                 onNew = { navController.navigate("${Routes.PLAN_EDIT}/0") },
                 onDelete = viewModel::deletePlan,
                 onSetActive = viewModel::setActivePlan,
+                onStart = ::startPlan,
                 onBack = { navController.popBackStack() },
             )
         }

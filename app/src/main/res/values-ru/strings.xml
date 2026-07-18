@@ -350,4 +350,9 @@
     <string name="profile_hours">%1$d ч</string>
     <string name="profile_seconds">%1$d с</string>
     <string name="profile_minutes">%1$d мин</string>
+    <!-- Execution rest cues (Phase 5) -->
+    <string name="speak_next_set_10">Следующий подход через 10 секунд</string>
+    <string name="speak_next_exercise_10">Следующее упражнение через 10 секунд</string>
+    <string name="speak_start_set">Начинайте подход!</string>
+    <string name="camera_rest">Отдых</string>
 </resources>

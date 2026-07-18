@@ -341,4 +341,9 @@
     <string name="profile_hours">%1$d 时</string>
     <string name="profile_seconds">%1$d 秒</string>
     <string name="profile_minutes">%1$d 分</string>
+    <!-- Execution rest cues (Phase 5) -->
+    <string name="speak_next_set_10">10 秒后开始下一组</string>
+    <string name="speak_next_exercise_10">10 秒后开始下一个动作</string>
+    <string name="speak_start_set">开始这一组！</string>
+    <string name="camera_rest">休息</string>
 </resources>

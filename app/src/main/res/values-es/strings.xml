@@ -344,4 +344,9 @@
     <string name="profile_hours">%1$d h</string>
     <string name="profile_seconds">%1$d s</string>
     <string name="profile_minutes">%1$d min</string>
+    <!-- Execution rest cues (Phase 5) -->
+    <string name="speak_next_set_10">Siguiente serie en 10 segundos</string>
+    <string name="speak_next_exercise_10">Siguiente ejercicio en 10 segundos</string>
+    <string name="speak_start_set">¡Empieza la serie!</string>
+    <string name="camera_rest">Descanso</string>
 </resources>

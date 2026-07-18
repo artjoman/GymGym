@@ -29,6 +29,7 @@ import com.gymgym.app.counter.RepQuality
 import com.gymgym.app.counter.SquatCounter
 import com.gymgym.app.data.BodyMeasurement
 import com.gymgym.app.data.BodyMetric
+import com.gymgym.app.data.CompletedWorkoutRepository
 import com.gymgym.app.data.CustomExercise
 import com.gymgym.app.data.DraftCycle
 import com.gymgym.app.data.DraftPlan
@@ -103,6 +104,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         (application as GymGymApp).container.customExerciseRepository
     private val bodyMeasurementRepository =
         (application as GymGymApp).container.bodyMeasurementRepository
+    private val completedWorkoutRepository =
+        (application as GymGymApp).container.completedWorkoutRepository
 
     // Created at ViewModel construction (app launch) so the TTS engine is warm
     // and ready by the time the user reaches a countdown.
@@ -214,7 +217,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var sessionStartedAt = 0L
 
     // Plan-run engine state.
-    private data class PlanStep(val exercise: Exercise, val targetReps: Int, val targetSets: Int)
+    private data class PlanStep(
+        val exercise: Exercise,
+        val exerciseRef: String,
+        val targetReps: Int,
+        val targetSets: Int,
+    )
 
     private var planName = ""
     private var planSteps: List<PlanStep> = emptyList()
@@ -223,8 +231,27 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var exerciseRepsAccum = 0
     private var exerciseGoodAccum = 0
 
+    // Completed-workout recording + paused-time tracking for the active run.
+    private var runPlanId: Long? = null
+    private var runCycleId: Long? = null
+    private var runWorkoutId: Long? = null
+    private var runStartedAt = 0L
+    private val runResults = mutableListOf<CompletedWorkoutRepository.ExerciseResult>()
+    private var restJob: Job? = null
+    /** Paused ms within the current exercise; reset when a new exercise begins. */
+    private var pausedAccumMs = 0L
+    private var pauseStartedAt = 0L
+
+    /** Seconds left in an inter-set/inter-exercise rest; null when not resting. */
+    private val _restRemaining = MutableStateFlow<Int?>(null)
+    val restRemaining: StateFlow<Int?> = _restRemaining.asStateFlow()
+
     private val isPlanRun get() = planSteps.isNotEmpty()
     private fun currentStep(): PlanStep? = planSteps.getOrNull(stepIndex)
+
+    /** Active (non-paused) elapsed ms since [startedAt] within the current exercise. */
+    private fun activeDuration(startedAt: Long): Long =
+        (System.currentTimeMillis() - startedAt - pausedAccumMs).coerceAtLeast(0)
 
     init {
         viewModelScope.launch {
@@ -409,17 +436,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * exercises run for now; manual/custom exercises are skipped until Phase 5
      * adds a manual-execution path.
      */
-    fun startWorkout(workout: WorkoutWithExercises, planLabel: String) {
+    fun startWorkout(workout: WorkoutWithExercises, planId: Long?, planLabel: String) {
         val steps = workout.orderedExercises.mapNotNull { we ->
             val ex = ExerciseRef.counter(we.exerciseRef) ?: return@mapNotNull null
             val reps = if (ex.timed) (we.targetSeconds ?: we.targetReps) else we.targetReps
-            PlanStep(ex, reps.coerceAtLeast(1), we.targetSets.coerceAtLeast(1))
+            PlanStep(ex, we.exerciseRef, reps.coerceAtLeast(1), we.targetSets.coerceAtLeast(1))
         }
         if (steps.isEmpty()) return
-        planName = planLabel
+        planName = if (workout.workout.name.isNotBlank()) workout.workout.name else planLabel
         planSteps = steps
         stepIndex = 0
         setIndex = 0
+        runPlanId = planId
+        runCycleId = workout.workout.cycleId
+        runWorkoutId = workout.workout.id
+        runStartedAt = System.currentTimeMillis()
+        runResults.clear()
         _planComplete.value = false
         _requestExit.value = false
         beginCurrentStep(isNewExercise = true)
@@ -443,6 +475,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             exerciseRepsAccum = 0
             exerciseGoodAccum = 0
             sessionStartedAt = System.currentTimeMillis()
+            pausedAccumMs = 0L
         }
         _selectedExercise.value = step.exercise
         _repCount.value = 0
@@ -492,13 +525,49 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun advanceAfterSet(moreSets: Boolean, step: PlanStep) {
         if (moreSets) {
-            setIndex++
-            beginCurrentStep(isNewExercise = false)
+            // Rest between sets, then start the next set.
+            startRest(
+                seconds = profile.value.setTimeoutSeconds,
+                cue10 = R.string.speak_next_set_10,
+            ) {
+                setIndex++
+                beginCurrentStep(isNewExercise = false)
+            }
         } else {
             logSession(step.exercise, exerciseRepsAccum, exerciseGoodAccum, sessionStartedAt)
-            stepIndex++
-            setIndex = 0
-            beginCurrentStep(isNewExercise = true)
+            // Rest between exercises, then start the next exercise.
+            startRest(
+                seconds = profile.value.exerciseTimeoutMinutes * 60,
+                cue10 = R.string.speak_next_exercise_10,
+            ) {
+                stepIndex++
+                setIndex = 0
+                beginCurrentStep(isNewExercise = true)
+            }
+        }
+    }
+
+    /**
+     * Rest countdown between sets/exercises. Speaks [cue10] at 10s remaining and
+     * "Start the set!" at 0, then runs [then]. Uses the Profile recovery timeouts.
+     */
+    private fun startRest(seconds: Int, @StringRes cue10: Int, then: () -> Unit) {
+        val total = seconds.coerceAtLeast(1)
+        restJob?.cancel()
+        _countdownValue.value = null
+        restJob = viewModelScope.launch {
+            var remaining = total
+            _restRemaining.value = remaining
+            if (soundSettings.value.soundsEnabled && total in 2..10) speak(str(cue10))
+            while (remaining > 0) {
+                if (remaining == 10 && total > 10 && soundSettings.value.soundsEnabled) speak(str(cue10))
+                delay(1_000)
+                remaining--
+                _restRemaining.value = remaining
+            }
+            _restRemaining.value = null
+            if (soundSettings.value.soundsEnabled) speak(str(R.string.speak_start_set))
+            then()
         }
     }
 
@@ -517,11 +586,37 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun onPlanComplete() {
         _planComplete.value = true
         countdownJob?.cancel()
+        restJob?.cancel()
+        _restRemaining.value = null
         _countdownValue.value = null
+        recordCompletedWorkout()
         if (soundSettings.value.soundsEnabled) speak(str(R.string.speak_workout_complete))
         viewModelScope.launch {
             delay(PLAN_COMPLETE_DISPLAY_MS)
             _requestExit.value = true
+        }
+    }
+
+    /** Persist a completed_workout summary (+ per-exercise results) for a finished run. */
+    private fun recordCompletedWorkout() {
+        if (runResults.isEmpty()) return
+        val results = runResults.toList()
+        val name = planName
+        val planId = runPlanId
+        val cycleId = runCycleId
+        val workoutId = runWorkoutId
+        val startedAt = runStartedAt
+        val duration = results.sumOf { it.durationMs }
+        viewModelScope.launch {
+            completedWorkoutRepository.record(
+                planId = planId,
+                cycleId = cycleId,
+                workoutId = workoutId,
+                name = name,
+                startedAt = startedAt,
+                durationMs = duration,
+                exercises = results,
+            )
         }
     }
 
@@ -553,8 +648,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun pause() {
         // Timed exercises are governed by start/stop, not the pause overlay.
         if (_selectedExercise.value?.timed == true) return
+        // Don't pause during a rest interval (it is already a rest).
+        if (_restRemaining.value != null) return
         if (_paused.value || _selectedExercise.value == null || _planComplete.value) return
         _paused.value = true
+        pauseStartedAt = System.currentTimeMillis()
         countdownJob?.cancel()
         _countdownValue.value = null
         counter?.reset()
@@ -563,6 +661,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun resume() {
         if (!_paused.value) return
         _paused.value = false
+        // Exclude the paused span from this exercise's active duration.
+        if (pauseStartedAt > 0) {
+            pausedAccumMs += (System.currentTimeMillis() - pauseStartedAt).coerceAtLeast(0)
+            pauseStartedAt = 0L
+        }
         startCountdown()
     }
 
@@ -668,6 +771,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         transitionJob?.cancel()
         feedbackJob?.cancel()
         timerJob?.cancel()
+        restJob?.cancel()
+        _restRemaining.value = null
+        runResults.clear()
+        runPlanId = null
+        runCycleId = null
+        runWorkoutId = null
+        pausedAccumMs = 0L
+        pauseStartedAt = 0L
         _timerRunning.value = false
         _elapsedMs.value = 0L
         timedLogged = false
@@ -698,16 +809,26 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /** Persist a finished exercise, but only if reps were actually counted. */
     private fun logSession(exercise: Exercise?, reps: Int, goodReps: Int, startedAt: Long) {
         if (exercise == null || reps < 1) return
+        val good = goodReps.coerceIn(0, reps)
+        val duration = activeDuration(startedAt)
         viewModelScope.launch {
             workoutRepository.log(
                 WorkoutSession(
                     exerciseType = exercise.name,
                     repCount = reps,
-                    goodReps = goodReps.coerceIn(0, reps),
+                    goodReps = good,
                     startedAt = startedAt,
-                    durationMs = (System.currentTimeMillis() - startedAt).coerceAtLeast(0),
+                    durationMs = duration,
                 ),
             )
+        }
+        // Collect per-exercise results for the completed_workout summary.
+        if (isPlanRun) {
+            currentStep()?.let {
+                runResults.add(
+                    CompletedWorkoutRepository.ExerciseResult(it.exerciseRef, reps, good, duration),
+                )
+            }
         }
     }
 

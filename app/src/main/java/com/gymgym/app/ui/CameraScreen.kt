@@ -83,6 +83,7 @@ fun CameraScreen(
     val timerRunning by viewModel.timerRunning.collectAsState()
     val goodReps by viewModel.goodReps.collectAsState()
     val repFeedback by viewModel.repFeedback.collectAsState()
+    val restRemaining by viewModel.restRemaining.collectAsState()
     val timed = exercise?.timed == true
 
     val previewView = remember { PreviewView(context) }
@@ -455,6 +456,32 @@ fun CameraScreen(
         countdownValue?.let { CountdownOverlay(value = it) }
 
         celebration?.let { ComboOverlay(word = it) }
+
+        restRemaining?.let { secs ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xCC000000)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.camera_rest),
+                        fontSize = 26.sp,
+                        color = Color(0xFFCFD8DC),
+                    )
+                    Text(
+                        text = "$secs",
+                        fontSize = 72.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                    )
+                }
+            }
+        }
 
         if (paused && !planComplete) {
             Box(
