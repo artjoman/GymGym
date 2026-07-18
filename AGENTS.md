@@ -58,6 +58,22 @@ Rules:
 A "major milestone" means a self-contained feature or phase is complete and
 verified, not every small edit.
 
+## Workflow: release notes on every version bump
+
+`CHANGELOG.md` holds user-facing release notes, newest first. **Whenever you
+bump the version** (`versionCode` / `versionName` in `app/build.gradle.kts`),
+add a new section for that version listing everything that changed since the
+previous release — in the **same commit** as the bump, so the notes never fall
+behind.
+
+Rules:
+- Keep entries **user-facing** (what a Play Store reader cares about), not
+  internal refactors, test-only changes, or version bumps themselves.
+- One section per released version, headed `## <versionName> (versionCode <n>)`.
+- The changes for a version are everything committed since the previous bump; a
+  quick `git log <prev-bump>..HEAD` is the source of truth.
+- This doubles as the Play Console "What's new" copy.
+
 ## Architecture notes
 
 - Single `MainViewModel` (`ui/MainViewModel.kt`) holds session, settings,
