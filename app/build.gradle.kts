@@ -25,8 +25,8 @@ android {
         applicationId = "com.projectorum.gymgym"
         minSdk = 26
         targetSdk = 35
-        versionCode = 7
-        versionName = "1.2.3"
+        versionCode = 8
+        versionName = "1.2.4"
 
         // --- Ad tuning knobs (see AGENTS.md) ---
         // Minimum time between interstitials, gated at "open a workout". 5 min.
@@ -66,7 +66,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             if (keystorePropertiesFile.exists()) {
                 signingConfig = signingConfigs.getByName("release")

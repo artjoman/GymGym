@@ -3,6 +3,11 @@
 User-facing release notes for GymGym, newest first. Updated on every version
 bump with the changes made since the previous release (see AGENTS.md).
 
+## 1.2.4 (versionCode 8)
+
+- Smaller download and a leaner on-device footprint (enabled R8 code shrinking,
+  obfuscation and resource shrinking for release builds).
+
 ## 1.2.3 (versionCode 7)
 
 - Redesigned the on-camera pose skeleton as a soft neon overlay that follows the
