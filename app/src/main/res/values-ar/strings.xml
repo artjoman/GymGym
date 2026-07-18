@@ -69,6 +69,8 @@
     <string name="countdown_go">انطلق!</string>
 
     <!-- Settings -->
+    <string name="settings_language">اللغة</string>
+    <string name="settings_language_system">افتراضي النظام</string>
     <string name="settings_appearance">المظهر</string>
     <string name="settings_color_scheme">نظام الألوان</string>
     <string name="settings_background">الخلفية</string>

@@ -69,6 +69,8 @@
     <string name="countdown_go">开始！</string>
 
     <!-- Settings -->
+    <string name="settings_language">语言</string>
+    <string name="settings_language_system">跟随系统</string>
     <string name="settings_appearance">外观</string>
     <string name="settings_color_scheme">配色方案</string>
     <string name="settings_background">背景</string>

@@ -69,6 +69,8 @@
     <string name="countdown_go">SĀC!</string>
 
     <!-- Settings -->
+    <string name="settings_language">Valoda</string>
+    <string name="settings_language_system">Sistēmas noklusējums</string>
     <string name="settings_appearance">Izskats</string>
     <string name="settings_color_scheme">Krāsu shēma</string>
     <string name="settings_background">Fons</string>

@@ -1,11 +1,13 @@
 package com.gymgym.app
 
 import android.app.Application
+import android.content.Context
 import com.gymgym.app.ads.AdManager
 import com.gymgym.app.ads.provideAdManager
 import com.gymgym.app.data.GymGymDatabase
 import com.gymgym.app.data.PlanRepository
 import com.gymgym.app.data.WorkoutRepository
+import com.gymgym.app.settings.AppLocale
 
 /**
  * Application-scoped service locator. Deliberately hand-rolled instead of a DI
@@ -29,6 +31,10 @@ class AppContainer(app: Application) {
 class GymGymApp : Application() {
     lateinit var container: AppContainer
         private set
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(AppLocale.attach(base))
+    }
 
     override fun onCreate() {
         super.onCreate()

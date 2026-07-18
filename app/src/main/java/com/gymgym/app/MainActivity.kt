@@ -1,9 +1,11 @@
 package com.gymgym.app
 
 import com.gymgym.app.R
+import com.gymgym.app.settings.AppLocale
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -61,6 +63,10 @@ private object Routes {
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AppLocale.attach(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()

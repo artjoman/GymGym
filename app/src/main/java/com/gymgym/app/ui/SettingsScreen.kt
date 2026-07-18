@@ -1,5 +1,6 @@
 package com.gymgym.app.ui
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -31,6 +32,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -40,7 +43,10 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,6 +64,7 @@ import androidx.compose.ui.res.stringResource
 import com.gymgym.app.R
 import com.gymgym.app.BuildConfig
 import com.gymgym.app.settings.AccentTheme
+import com.gymgym.app.settings.AppLocale
 import com.gymgym.app.settings.BackgroundStyle
 import com.gymgym.app.settings.FormSensitivity
 import com.gymgym.app.settings.RepAnnouncementMode
@@ -89,6 +96,9 @@ fun SettingsScreen(
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+        LanguageRow()
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
         Text(stringResource(R.string.settings_appearance), style = MaterialTheme.typography.headlineSmall)
 
         Text(stringResource(R.string.settings_color_scheme), style = MaterialTheme.typography.titleMedium)
@@ -243,6 +253,100 @@ fun SettingsScreen(
 }
 
 private const val PRIVACY_POLICY_URL = "https://projectorum.com/gymgym-privacy-policy"
+
+// --- Language ---
+
+@Composable
+private fun LanguageRow() {
+    val context = LocalContext.current
+    var showDialog by remember { mutableStateOf(false) }
+    // Re-read on each composition so the label reflects the current choice
+    // (on API 33+ the framework recreates the activity when it changes).
+    val currentTag = AppLocale.currentTag(context)
+    val currentLabel = if (currentTag.isEmpty()) {
+        stringResource(R.string.settings_language_system)
+    } else {
+        AppLocale.displayName(currentTag)
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { showDialog = true }
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                stringResource(R.string.settings_language),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                currentLabel,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Icon(Icons.Rounded.KeyboardArrowDown, contentDescription = null)
+    }
+
+    if (showDialog) {
+        LanguageDialog(
+            current = currentTag,
+            onDismiss = { showDialog = false },
+            onSelect = { tag ->
+                showDialog = false
+                if (tag != currentTag) {
+                    AppLocale.setTag(context, tag)
+                    // Pre-33 the framework won't recreate for us.
+                    if (AppLocale.needsManualRestart()) {
+                        (context as? Activity)?.recreate()
+                    }
+                }
+            },
+        )
+    }
+}
+
+@Composable
+private fun LanguageDialog(
+    current: String,
+    onDismiss: () -> Unit,
+    onSelect: (String) -> Unit,
+) {
+    // "" (system default) first, then the shipped languages in their autonyms.
+    val options = remember { listOf("") + AppLocale.SUPPORTED }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+        },
+        title = { Text(stringResource(R.string.settings_language)) },
+        text = {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                for (tag in options) {
+                    val label = if (tag.isEmpty()) {
+                        stringResource(R.string.settings_language_system)
+                    } else {
+                        AppLocale.displayName(tag)
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(selected = tag == current, onClick = { onSelect(tag) })
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(selected = tag == current, onClick = { onSelect(tag) })
+                        Text(label)
+                    }
+                }
+            }
+        },
+    )
+}
 
 // --- Appearance pickers ---
 
