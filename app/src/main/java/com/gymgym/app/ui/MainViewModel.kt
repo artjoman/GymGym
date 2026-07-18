@@ -8,6 +8,7 @@ import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.gymgym.app.GymGymApp
+import com.gymgym.app.backup.BackupBodyMeasurement
 import com.gymgym.app.backup.BackupCustomExercise
 import com.gymgym.app.backup.BackupCycle
 import com.gymgym.app.backup.BackupData
@@ -26,6 +27,8 @@ import com.gymgym.app.counter.RepCounter
 import com.gymgym.app.counter.RepFault
 import com.gymgym.app.counter.RepQuality
 import com.gymgym.app.counter.SquatCounter
+import com.gymgym.app.data.BodyMeasurement
+import com.gymgym.app.data.BodyMetric
 import com.gymgym.app.data.CustomExercise
 import com.gymgym.app.data.DraftCycle
 import com.gymgym.app.data.DraftPlan
@@ -39,8 +42,10 @@ import com.gymgym.app.exercise.ExerciseRef
 import com.gymgym.app.program.Program
 import com.gymgym.app.pose.PoseSnapshot
 import com.gymgym.app.pose.isPlausiblePerson
+import com.gymgym.app.profile.LengthUnit
 import com.gymgym.app.profile.Profile
 import com.gymgym.app.profile.ProfileRepository
+import com.gymgym.app.profile.TrainingMode
 import com.gymgym.app.profile.WeightUnit
 import com.gymgym.app.settings.AccentTheme
 import com.gymgym.app.settings.BackgroundStyle
@@ -96,6 +101,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         (application as GymGymApp).container.planRepository
     private val customExerciseRepository =
         (application as GymGymApp).container.customExerciseRepository
+    private val bodyMeasurementRepository =
+        (application as GymGymApp).container.bodyMeasurementRepository
 
     // Created at ViewModel construction (app launch) so the TTS engine is warm
     // and ready by the time the user reaches a countdown.
@@ -120,6 +127,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     val customExercises: StateFlow<List<CustomExercise>> = customExerciseRepository.all
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val bodyMeasurements: StateFlow<List<BodyMeasurement>> = bodyMeasurementRepository.all
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val _selectedExercise = MutableStateFlow<Exercise?>(null)
@@ -832,6 +842,29 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setWeightUnit(unit: WeightUnit) =
         viewModelScope.launch { profileRepository.setWeightUnit(unit) }
 
+    fun setLengthUnit(unit: LengthUnit) =
+        viewModelScope.launch { profileRepository.setLengthUnit(unit) }
+
+    fun setTrainingMode(mode: TrainingMode) =
+        viewModelScope.launch { profileRepository.setTrainingMode(mode) }
+
+    fun setWorkoutDays(days: Set<Int>) =
+        viewModelScope.launch { profileRepository.setWorkoutDays(days) }
+
+    fun setWorkoutTimeoutHours(hours: Int) =
+        viewModelScope.launch { profileRepository.setWorkoutTimeoutHours(hours.coerceIn(24, 168)) }
+
+    fun setSetTimeoutSeconds(seconds: Int) =
+        viewModelScope.launch { profileRepository.setSetTimeoutSeconds(seconds.coerceIn(5, 600)) }
+
+    fun setExerciseTimeoutMinutes(minutes: Int) =
+        viewModelScope.launch { profileRepository.setExerciseTimeoutMinutes(minutes.coerceIn(1, 30)) }
+
+    fun logMeasurement(type: BodyMetric, value: Double, unit: String) {
+        if (value <= 0) return
+        viewModelScope.launch { bodyMeasurementRepository.log(type, value, unit) }
+    }
+
     // --- Backup: export / import (history, plans, settings, profile; no videos) ---
 
     private val backupJson = Json { prettyPrint = true; ignoreUnknownKeys = true }
@@ -870,6 +903,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 customExercises = customExerciseRepository.allOnce().map {
                     BackupCustomExercise(it.name, it.createdAt)
                 },
+                bodyMeasurements = bodyMeasurementRepository.allOnce().map {
+                    BackupBodyMeasurement(it.type, it.value, it.unit, it.loggedAt)
+                },
                 settings = soundSettings.value.let { s ->
                     BackupSettings(
                         s.soundsEnabled, s.countdownVoice, s.repAnnouncement.name,
@@ -879,7 +915,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         s.formFeedback, s.strictForm, s.formSensitivity.name,
                     )
                 },
-                profile = profile.value.let { p -> BackupProfile(p.displayName, p.weightUnit.name) },
+                profile = profile.value.let { p ->
+                    BackupProfile(
+                        displayName = p.displayName,
+                        weightUnit = p.weightUnit.name,
+                        lengthUnit = p.lengthUnit.name,
+                        trainingMode = p.trainingMode.name,
+                        workoutDays = p.workoutDays.sorted().joinToString(","),
+                        workoutTimeoutHours = p.workoutTimeoutHours,
+                        setTimeoutSeconds = p.setTimeoutSeconds,
+                        exerciseTimeoutMinutes = p.exerciseTimeoutMinutes,
+                    )
+                },
             )
             val text = backupJson.encodeToString(data)
             withContext(Dispatchers.IO) {
@@ -942,6 +989,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     CustomExercise(name = it.name, createdAt = it.createdAt)
                 },
             )
+            bodyMeasurementRepository.replaceAll(
+                data.bodyMeasurements.map {
+                    BodyMeasurement(type = it.type, value = it.value, unit = it.unit, loggedAt = it.loggedAt)
+                },
+            )
             with(data.settings) {
                 settingsRepository.setSoundsEnabled(soundsEnabled)
                 settingsRepository.setCountdownVoice(countdownVoice)
@@ -972,10 +1024,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         ?: FormSensitivity.STANDARD,
                 )
             }
-            profileRepository.setDisplayName(data.profile.displayName)
-            profileRepository.setWeightUnit(
-                WeightUnit.entries.find { it.name == data.profile.weightUnit } ?: WeightUnit.KG,
-            )
+            with(data.profile) {
+                profileRepository.setDisplayName(displayName)
+                profileRepository.setWeightUnit(
+                    WeightUnit.entries.find { it.name == weightUnit } ?: WeightUnit.KG,
+                )
+                profileRepository.setLengthUnit(
+                    LengthUnit.entries.find { it.name == lengthUnit } ?: LengthUnit.CM,
+                )
+                profileRepository.setTrainingMode(
+                    TrainingMode.entries.find { it.name == trainingMode } ?: TrainingMode.SMART_CYCLE,
+                )
+                profileRepository.setWorkoutDays(
+                    workoutDays.split(",").mapNotNull { it.trim().toIntOrNull() }.toSet()
+                        .ifEmpty { setOf(2, 3, 4, 5, 6, 7) },
+                )
+                profileRepository.setWorkoutTimeoutHours(workoutTimeoutHours)
+                profileRepository.setSetTimeoutSeconds(setTimeoutSeconds)
+                profileRepository.setExerciseTimeoutMinutes(exerciseTimeoutMinutes)
+            }
         }.isSuccess
         onResult(ok)
     }

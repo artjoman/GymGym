@@ -318,4 +318,30 @@
     <string name="prog_street">Street workout</string>
     <string name="prog_weighted">Base con peso</string>
     <string name="prog_ppl">Empuje / Tirón / Pierna</string>
+    <!-- Profile expansion (Phase 4) -->
+    <string name="unit_cm">Centímetros (cm)</string>
+    <string name="unit_in">Pulgadas (in)</string>
+    <string name="profile_length_unit">Unidad de longitud</string>
+    <string name="profile_training_mode">Modo de entrenamiento</string>
+    <string name="profile_mode_smart">Ciclo inteligente (recomendado)</string>
+    <string name="profile_mode_weekly">Horario semanal</string>
+    <string name="profile_recovery">Recuperación</string>
+    <string name="profile_workout_timeout">Entre entrenamientos</string>
+    <string name="profile_set_timeout">Entre series</string>
+    <string name="profile_exercise_timeout">Entre ejercicios</string>
+    <string name="recovery_beginner">Principiante</string>
+    <string name="recovery_intermediate">Intermedio</string>
+    <string name="recovery_advanced">Avanzado</string>
+    <string name="profile_body_params">Parámetros corporales</string>
+    <string name="profile_last_value">Último: %1$s %2$s</string>
+    <string name="metric_weight">Peso</string>
+    <string name="metric_arm">Brazo</string>
+    <string name="metric_leg">Pierna</string>
+    <string name="metric_chest">Pecho</string>
+    <string name="metric_shoulders">Hombros</string>
+    <string name="metric_calves">Gemelos</string>
+    <string name="metric_waist">Cintura</string>
+    <string name="profile_hours">%1$d h</string>
+    <string name="profile_seconds">%1$d s</string>
+    <string name="profile_minutes">%1$d min</string>
 </resources>

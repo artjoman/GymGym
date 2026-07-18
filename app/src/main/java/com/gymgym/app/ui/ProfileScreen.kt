@@ -5,17 +5,23 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -28,17 +34,34 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.gymgym.app.profile.Profile
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.gymgym.app.R
+import com.gymgym.app.data.BodyMeasurement
+import com.gymgym.app.data.BodyMetric
+import com.gymgym.app.profile.LengthUnit
+import com.gymgym.app.profile.Profile
+import com.gymgym.app.profile.TrainingMode
 import com.gymgym.app.profile.WeightUnit
+import java.text.DateFormatSymbols
+import java.util.Calendar
 
 @Composable
 fun ProfileScreen(
     profile: Profile,
+    bodyMeasurements: List<BodyMeasurement>,
     onDisplayName: (String) -> Unit,
     onWeightUnit: (WeightUnit) -> Unit,
+    onLengthUnit: (LengthUnit) -> Unit,
+    onTrainingMode: (TrainingMode) -> Unit,
+    onWorkoutDays: (Set<Int>) -> Unit,
+    onWorkoutTimeoutHours: (Int) -> Unit,
+    onSetTimeoutSeconds: (Int) -> Unit,
+    onExerciseTimeoutMinutes: (Int) -> Unit,
+    onLogMeasurement: (BodyMetric, Double, String) -> Unit,
     onExport: (Uri) -> Unit,
     onImport: (Uri) -> Unit,
     onBack: () -> Unit,
@@ -62,9 +85,6 @@ fun ProfileScreen(
     ) {
         Text(stringResource(R.string.profile_title), style = MaterialTheme.typography.headlineSmall)
 
-        // Local edit state so keystrokes are immediate; persistence to DataStore
-        // happens in the background. Binding the field straight to the async
-        // DataStore value bounced the cursor to the start after every keystroke.
         var name by rememberSaveable { mutableStateOf(profile.displayName) }
         OutlinedTextField(
             value = name,
@@ -74,27 +94,93 @@ fun ProfileScreen(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        Text(stringResource(R.string.profile_weight_unit), style = MaterialTheme.typography.titleMedium)
-        for (unit in WeightUnit.entries) {
+        // --- Training mode ---
+        HorizontalDivider()
+        Text(stringResource(R.string.profile_training_mode), style = MaterialTheme.typography.titleMedium)
+        for (mode in TrainingMode.entries) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .selectable(
-                        selected = profile.weightUnit == unit,
-                        onClick = { onWeightUnit(unit) },
-                    ),
+                modifier = Modifier.fillMaxWidth().selectable(
+                    selected = profile.trainingMode == mode,
+                    onClick = { onTrainingMode(mode) },
+                ),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                RadioButton(
-                    selected = profile.weightUnit == unit,
-                    onClick = { onWeightUnit(unit) },
-                )
-                Text(stringResource(unit.labelRes()))
+                RadioButton(selected = profile.trainingMode == mode, onClick = { onTrainingMode(mode) })
+                Text(stringResource(mode.labelRes()))
             }
         }
+        if (profile.trainingMode == TrainingMode.WEEKLY_SCHEDULE) {
+            WeekdayPicker(selected = profile.workoutDays, onToggle = { day ->
+                val next = if (day in profile.workoutDays) profile.workoutDays - day else profile.workoutDays + day
+                onWorkoutDays(next)
+            })
+        }
 
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+        // --- Recovery ---
+        HorizontalDivider()
+        Text(stringResource(R.string.profile_recovery), style = MaterialTheme.typography.titleMedium)
+        RecoveryRow(
+            label = stringResource(R.string.profile_workout_timeout),
+            valueText = stringResource(R.string.profile_hours, profile.workoutTimeoutHours),
+            presets = listOf(
+                stringResource(R.string.recovery_beginner) to 72,
+                stringResource(R.string.recovery_intermediate) to 48,
+                stringResource(R.string.recovery_advanced) to 30,
+            ),
+            current = profile.workoutTimeoutHours,
+            step = 6,
+            onSet = onWorkoutTimeoutHours,
+        )
+        RecoveryRow(
+            label = stringResource(R.string.profile_set_timeout),
+            valueText = stringResource(R.string.profile_seconds, profile.setTimeoutSeconds),
+            presets = listOf(
+                stringResource(R.string.recovery_beginner) to 300,
+                stringResource(R.string.recovery_intermediate) to 180,
+                stringResource(R.string.recovery_advanced) to 120,
+            ),
+            current = profile.setTimeoutSeconds,
+            step = 15,
+            onSet = onSetTimeoutSeconds,
+        )
+        RecoveryRow(
+            label = stringResource(R.string.profile_exercise_timeout),
+            valueText = stringResource(R.string.profile_minutes, profile.exerciseTimeoutMinutes),
+            presets = emptyList(),
+            current = profile.exerciseTimeoutMinutes,
+            step = 1,
+            onSet = onExerciseTimeoutMinutes,
+        )
 
+        // --- Units ---
+        HorizontalDivider()
+        Text(stringResource(R.string.profile_weight_unit), style = MaterialTheme.typography.titleMedium)
+        for (unit in WeightUnit.entries) {
+            UnitRadio(unit == profile.weightUnit, stringResource(unit.labelRes())) { onWeightUnit(unit) }
+        }
+        Text(stringResource(R.string.profile_length_unit), style = MaterialTheme.typography.titleMedium)
+        for (unit in LengthUnit.entries) {
+            UnitRadio(unit == profile.lengthUnit, stringResource(unit.labelRes())) { onLengthUnit(unit) }
+        }
+
+        // --- Body parameters ---
+        HorizontalDivider()
+        Text(stringResource(R.string.profile_body_params), style = MaterialTheme.typography.titleMedium)
+        val weightCode = if (profile.weightUnit == WeightUnit.KG) "kg" else "lb"
+        val lengthCode = if (profile.lengthUnit == LengthUnit.CM) "cm" else "in"
+        for (metric in BodyMetric.entries) {
+            val unitCode = if (metric == BodyMetric.WEIGHT) weightCode else lengthCode
+            val last = bodyMeasurements.firstOrNull { it.type == metric.name }
+            BodyMetricRow(
+                label = stringResource(metric.labelRes()),
+                unitCode = unitCode,
+                last = last,
+                onSave = { value -> onLogMeasurement(metric, value, unitCode) },
+            )
+        }
+
+        // --- Backup ---
+        HorizontalDivider()
         Text(stringResource(R.string.profile_backup_title), style = MaterialTheme.typography.titleMedium)
         Text(
             stringResource(R.string.profile_backup_desc),
@@ -114,9 +200,7 @@ fun ProfileScreen(
             GymButton(
                 text = stringResource(R.string.action_import),
                 onClick = {
-                    importLauncher.launch(
-                        arrayOf("application/json", "application/octet-stream", "text/*"),
-                    )
+                    importLauncher.launch(arrayOf("application/json", "application/octet-stream", "text/*"))
                 },
                 modifier = Modifier.weight(1f),
                 style = GymButtonStyle.Secondary,
@@ -144,3 +228,114 @@ fun ProfileScreen(
         )
     }
 }
+
+@Composable
+private fun UnitRadio(selected: Boolean, label: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth().selectable(selected = selected, onClick = onClick),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        RadioButton(selected = selected, onClick = onClick)
+        Text(label)
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun WeekdayPicker(selected: Set<Int>, onToggle: (Int) -> Unit) {
+    val symbols = remember { DateFormatSymbols.getInstance().shortWeekdays }
+    // Our encoding: 1=Mon..7=Sun. Map to Calendar day for the localized label.
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        for (day in 1..7) {
+            val calDay = if (day == 7) Calendar.SUNDAY else day + 1
+            FilterChip(
+                selected = day in selected,
+                onClick = { onToggle(day) },
+                label = { Text(symbols[calDay]) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun RecoveryRow(
+    label: String,
+    valueText: String,
+    presets: List<Pair<String, Int>>,
+    current: Int,
+    step: Int,
+    onSet: (Int) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(label, modifier = Modifier.weight(1f))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                OutlinedButton(onClick = { onSet(current - step) }) { Text("−") }
+                Text(
+                    valueText,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                )
+                OutlinedButton(onClick = { onSet(current + step) }) { Text("+") }
+            }
+        }
+        if (presets.isNotEmpty()) {
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                for ((name, value) in presets) {
+                    FilterChip(
+                        selected = current == value,
+                        onClick = { onSet(value) },
+                        label = { Text(name) },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun BodyMetricRow(
+    label: String,
+    unitCode: String,
+    last: BodyMeasurement?,
+    onSave: (Double) -> Unit,
+) {
+    var input by remember { mutableStateOf("") }
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(label, style = MaterialTheme.typography.bodyLarge)
+            if (last != null) {
+                Text(
+                    stringResource(R.string.profile_last_value, formatMeasure(last.value), last.unit),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        OutlinedTextField(
+            value = input,
+            onValueChange = { input = it.filter { c -> c.isDigit() || c == '.' } },
+            singleLine = true,
+            suffix = { Text(unitCode) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            modifier = Modifier.width(120.dp),
+        )
+        TextButton(
+            onClick = {
+                input.toDoubleOrNull()?.let { onSave(it); input = "" }
+            },
+            enabled = input.toDoubleOrNull() != null,
+        ) { Text(stringResource(R.string.action_save)) }
+    }
+}
+
+private fun formatMeasure(v: Double): String =
+    if (v == v.toLong().toDouble()) v.toLong().toString() else "%.1f".format(v)

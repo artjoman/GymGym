@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.gymgym.app.ads.AdManager
 import com.gymgym.app.ads.provideAdManager
+import com.gymgym.app.data.BodyMeasurementRepository
 import com.gymgym.app.data.CustomExerciseRepository
 import com.gymgym.app.data.GymGymDatabase
 import com.gymgym.app.data.PlanRepository
@@ -27,6 +28,10 @@ class AppContainer(app: Application) {
 
     val customExerciseRepository: CustomExerciseRepository by lazy {
         CustomExerciseRepository(database.customExerciseDao())
+    }
+
+    val bodyMeasurementRepository: BodyMeasurementRepository by lazy {
+        BodyMeasurementRepository(database.bodyMeasurementDao())
     }
 
     // Real ads on the free flavor; a no-op on paid (see provideAdManager).

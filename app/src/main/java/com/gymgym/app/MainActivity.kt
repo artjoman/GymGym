@@ -264,11 +264,20 @@ private fun AppRoot(viewModel: MainViewModel) {
         }
         composable(Routes.PROFILE) {
             val profile by viewModel.profile.collectAsState()
+            val bodyMeasurements by viewModel.bodyMeasurements.collectAsState()
             val ctx = LocalContext.current
             ProfileScreen(
                 profile = profile,
+                bodyMeasurements = bodyMeasurements,
                 onDisplayName = viewModel::setDisplayName,
                 onWeightUnit = viewModel::setWeightUnit,
+                onLengthUnit = viewModel::setLengthUnit,
+                onTrainingMode = viewModel::setTrainingMode,
+                onWorkoutDays = viewModel::setWorkoutDays,
+                onWorkoutTimeoutHours = viewModel::setWorkoutTimeoutHours,
+                onSetTimeoutSeconds = viewModel::setSetTimeoutSeconds,
+                onExerciseTimeoutMinutes = viewModel::setExerciseTimeoutMinutes,
+                onLogMeasurement = viewModel::logMeasurement,
                 onExport = { uri ->
                     viewModel.exportBackup(uri) { ok ->
                         Toast.makeText(

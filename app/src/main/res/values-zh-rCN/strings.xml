@@ -315,4 +315,30 @@
     <string name="prog_street">街头健身</string>
     <string name="prog_weighted">负重基础</string>
     <string name="prog_ppl">推 / 拉 / 腿</string>
+    <!-- Profile expansion (Phase 4) -->
+    <string name="unit_cm">厘米 (cm)</string>
+    <string name="unit_in">英寸 (in)</string>
+    <string name="profile_length_unit">长度单位</string>
+    <string name="profile_training_mode">训练模式</string>
+    <string name="profile_mode_smart">智能周期（推荐）</string>
+    <string name="profile_mode_weekly">每周计划</string>
+    <string name="profile_recovery">恢复</string>
+    <string name="profile_workout_timeout">训练之间</string>
+    <string name="profile_set_timeout">组间</string>
+    <string name="profile_exercise_timeout">动作之间</string>
+    <string name="recovery_beginner">初级</string>
+    <string name="recovery_intermediate">中级</string>
+    <string name="recovery_advanced">高级</string>
+    <string name="profile_body_params">身体参数</string>
+    <string name="profile_last_value">最近：%1$s %2$s</string>
+    <string name="metric_weight">体重</string>
+    <string name="metric_arm">手臂</string>
+    <string name="metric_leg">腿</string>
+    <string name="metric_chest">胸围</string>
+    <string name="metric_shoulders">肩</string>
+    <string name="metric_calves">小腿</string>
+    <string name="metric_waist">腰围</string>
+    <string name="profile_hours">%1$d 时</string>
+    <string name="profile_seconds">%1$d 秒</string>
+    <string name="profile_minutes">%1$d 分</string>
 </resources>

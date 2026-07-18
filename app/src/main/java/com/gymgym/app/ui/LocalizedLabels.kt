@@ -2,6 +2,9 @@ package com.gymgym.app.ui
 
 import androidx.annotation.StringRes
 import com.gymgym.app.R
+import com.gymgym.app.data.BodyMetric
+import com.gymgym.app.profile.LengthUnit
+import com.gymgym.app.profile.TrainingMode
 import com.gymgym.app.profile.WeightUnit
 import com.gymgym.app.settings.AccentTheme
 import com.gymgym.app.settings.BackgroundStyle
@@ -76,6 +79,29 @@ fun BackgroundStyle.labelRes(): Int = when (this) {
 fun WeightUnit.labelRes(): Int = when (this) {
     WeightUnit.KG -> R.string.unit_kg
     WeightUnit.LB -> R.string.unit_lb
+}
+
+@StringRes
+fun LengthUnit.labelRes(): Int = when (this) {
+    LengthUnit.CM -> R.string.unit_cm
+    LengthUnit.IN -> R.string.unit_in
+}
+
+@StringRes
+fun TrainingMode.labelRes(): Int = when (this) {
+    TrainingMode.SMART_CYCLE -> R.string.profile_mode_smart
+    TrainingMode.WEEKLY_SCHEDULE -> R.string.profile_mode_weekly
+}
+
+@StringRes
+fun BodyMetric.labelRes(): Int = when (this) {
+    BodyMetric.WEIGHT -> R.string.metric_weight
+    BodyMetric.ARM -> R.string.metric_arm
+    BodyMetric.LEG -> R.string.metric_leg
+    BodyMetric.CHEST -> R.string.metric_chest
+    BodyMetric.SHOULDERS -> R.string.metric_shoulders
+    BodyMetric.CALVES -> R.string.metric_calves
+    BodyMetric.WAIST -> R.string.metric_waist
 }
 
 @StringRes

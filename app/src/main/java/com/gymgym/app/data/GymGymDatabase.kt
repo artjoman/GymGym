@@ -14,19 +14,22 @@ import androidx.room.RoomDatabase
         WorkoutEntity::class,
         WorkoutExerciseEntity::class,
         CustomExercise::class,
+        BodyMeasurement::class,
     ],
-    version = 5,
+    version = 6,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3), // adds workout_session.goodReps (default 0)
         AutoMigration(from = 3, to = 4), // adds custom_exercise table
+        AutoMigration(from = 5, to = 6), // adds body_measurement table
     ],
 )
 abstract class GymGymDatabase : RoomDatabase() {
     abstract fun workoutDao(): WorkoutDao
     abstract fun planDao(): PlanDao
     abstract fun customExerciseDao(): CustomExerciseDao
+    abstract fun bodyMeasurementDao(): BodyMeasurementDao
 
     companion object {
         @Volatile private var instance: GymGymDatabase? = null

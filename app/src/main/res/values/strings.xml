@@ -207,6 +207,8 @@
     <!-- Weight unit -->
     <string name="unit_kg">Kilograms (kg)</string>
     <string name="unit_lb">Pounds (lb)</string>
+    <string name="unit_cm">Centimeters (cm)</string>
+    <string name="unit_in">Inches (in)</string>
 
     <!-- Stats -->
     <string name="stats_title">Stats</string>
@@ -300,6 +302,30 @@
     <string name="profile_title">Profile</string>
     <string name="profile_display_name">Display name</string>
     <string name="profile_weight_unit">Weight unit</string>
+    <string name="profile_length_unit">Length unit</string>
+    <!-- Profile: training mode + recovery + body metrics (Phase 4) -->
+    <string name="profile_training_mode">Training mode</string>
+    <string name="profile_mode_smart">Smart cycle (recommended)</string>
+    <string name="profile_mode_weekly">Weekly schedule</string>
+    <string name="profile_recovery">Recovery</string>
+    <string name="profile_workout_timeout">Between workouts</string>
+    <string name="profile_set_timeout">Between sets</string>
+    <string name="profile_exercise_timeout">Between exercises</string>
+    <string name="recovery_beginner">Beginner</string>
+    <string name="recovery_intermediate">Intermediate</string>
+    <string name="recovery_advanced">Advanced</string>
+    <string name="profile_hours">%1$d h</string>
+    <string name="profile_seconds">%1$d s</string>
+    <string name="profile_minutes">%1$d min</string>
+    <string name="profile_body_params">Body parameters</string>
+    <string name="profile_last_value">Last: %1$s %2$s</string>
+    <string name="metric_weight">Weight</string>
+    <string name="metric_arm">Arm</string>
+    <string name="metric_leg">Leg</string>
+    <string name="metric_chest">Chest</string>
+    <string name="metric_shoulders">Shoulders</string>
+    <string name="metric_calves">Calves</string>
+    <string name="metric_waist">Waist</string>
     <string name="profile_backup_title">Backup &amp; transfer</string>
     <string name="profile_backup_desc">Save your workouts, plans, and settings to a file, then import it on another device. Videos are not included.</string>
     <string name="profile_import_title">Import data?</string>

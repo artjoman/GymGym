@@ -321,4 +321,30 @@
     <string name="prog_street">Ielu treniņš</string>
     <string name="prog_weighted">Bāze ar svariem</string>
     <string name="prog_ppl">Grūšana / Vilkšana / Kājas</string>
+    <!-- Profile expansion (Phase 4) -->
+    <string name="unit_cm">Centimetri (cm)</string>
+    <string name="unit_in">Collas (in)</string>
+    <string name="profile_length_unit">Garuma vienība</string>
+    <string name="profile_training_mode">Treniņu režīms</string>
+    <string name="profile_mode_smart">Viedais cikls (ieteicams)</string>
+    <string name="profile_mode_weekly">Nedēļas grafiks</string>
+    <string name="profile_recovery">Atjaunošanās</string>
+    <string name="profile_workout_timeout">Starp treniņiem</string>
+    <string name="profile_set_timeout">Starp piegājieniem</string>
+    <string name="profile_exercise_timeout">Starp vingrinājumiem</string>
+    <string name="recovery_beginner">Iesācējs</string>
+    <string name="recovery_intermediate">Vidējs</string>
+    <string name="recovery_advanced">Pieredzējis</string>
+    <string name="profile_body_params">Ķermeņa parametri</string>
+    <string name="profile_last_value">Pēdējais: %1$s %2$s</string>
+    <string name="metric_weight">Svars</string>
+    <string name="metric_arm">Roka</string>
+    <string name="metric_leg">Kāja</string>
+    <string name="metric_chest">Krūtis</string>
+    <string name="metric_shoulders">Pleci</string>
+    <string name="metric_calves">Ikri</string>
+    <string name="metric_waist">Viduklis</string>
+    <string name="profile_hours">%1$d h</string>
+    <string name="profile_seconds">%1$d s</string>
+    <string name="profile_minutes">%1$d min</string>
 </resources>

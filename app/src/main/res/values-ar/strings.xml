@@ -330,4 +330,30 @@
     <string name="prog_street">تمارين الشارع</string>
     <string name="prog_weighted">الأساس بالأوزان</string>
     <string name="prog_ppl">دفع / سحب / أرجل</string>
+    <!-- Profile expansion (Phase 4) -->
+    <string name="unit_cm">سنتيمترات (cm)</string>
+    <string name="unit_in">بوصات (in)</string>
+    <string name="profile_length_unit">وحدة الطول</string>
+    <string name="profile_training_mode">وضع التدريب</string>
+    <string name="profile_mode_smart">الدورة الذكية (موصى بها)</string>
+    <string name="profile_mode_weekly">الجدول الأسبوعي</string>
+    <string name="profile_recovery">الاستشفاء</string>
+    <string name="profile_workout_timeout">بين التدريبات</string>
+    <string name="profile_set_timeout">بين المجموعات</string>
+    <string name="profile_exercise_timeout">بين التمارين</string>
+    <string name="recovery_beginner">مبتدئ</string>
+    <string name="recovery_intermediate">متوسط</string>
+    <string name="recovery_advanced">متقدم</string>
+    <string name="profile_body_params">قياسات الجسم</string>
+    <string name="profile_last_value">الأخير: %1$s %2$s</string>
+    <string name="metric_weight">الوزن</string>
+    <string name="metric_arm">الذراع</string>
+    <string name="metric_leg">الساق</string>
+    <string name="metric_chest">الصدر</string>
+    <string name="metric_shoulders">الأكتاف</string>
+    <string name="metric_calves">بطة الساق</string>
+    <string name="metric_waist">الخصر</string>
+    <string name="profile_hours">%1$d س</string>
+    <string name="profile_seconds">%1$d ث</string>
+    <string name="profile_minutes">%1$d د</string>
 </resources>
