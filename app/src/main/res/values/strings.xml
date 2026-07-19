@@ -307,6 +307,7 @@
     <!-- Programs (Phase 3) -->
     <string name="home_programs">Programs</string>
     <string name="home_next_mission">Next mission</string>
+    <string name="home_last_workout">Last workout</string>
     <string name="home_expert">Expert support</string>
     <string name="expert_title">Expert Support</string>
     <string name="expert_coming_soon">Coming soon</string>

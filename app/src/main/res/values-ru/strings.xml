@@ -358,6 +358,7 @@
     <string name="camera_rest">Отдых</string>
     <!-- Next Mission / dashboard (Phase 6) -->
     <string name="home_next_mission">Следующая миссия</string>
+    <string name="home_last_workout">Последняя тренировка</string>
     <string name="mission_title">Следующая миссия</string>
     <string name="mission_planned">Запланировано: %1$s</string>
     <string name="mission_swap">Заменить</string>

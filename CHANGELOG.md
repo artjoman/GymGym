@@ -14,6 +14,8 @@ bump with the changes made since the previous release (see AGENTS.md).
   AI-counted moves are labelled **AI Count**.
 - History now shows each exercise's **reps done vs. planned** (e.g. 4/4), so it
   lines up with the workout percentage.
+- The home screen now shows a **Last workout** card — name, date, completion %
+  and duration at a glance (tap it to open Statistics).
 - Fixed a crash that could occur right after finishing a set.
 
 ## 2.0.3 (versionCode 12)

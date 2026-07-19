@@ -90,6 +90,43 @@ fun ExerciseSelectScreen(
                 }
             }
 
+            dashboard.lastWorkout?.let { last ->
+                SectionLabel(stringResource(R.string.home_last_workout), top = 20.dp)
+                val context = androidx.compose.ui.platform.LocalContext.current
+                androidx.compose.material3.Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onOpenStatistics),
+                ) {
+                    Column(Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                            Text(
+                                last.name,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.weight(1f),
+                            )
+                            Text(
+                                "${last.avgPercent}%",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            stringResource(
+                                R.string.history_meta,
+                                formatDate(last.startedAt),
+                                formatDuration(context, last.durationMs),
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
+
             SectionLabel(stringResource(R.string.home_train_smarter), top = 26.dp)
             GymButton(
                 text = stringResource(R.string.home_exercise_library),

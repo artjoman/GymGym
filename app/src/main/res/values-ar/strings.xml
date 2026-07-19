@@ -364,6 +364,7 @@
     <string name="camera_rest">راحة</string>
     <!-- Next Mission / dashboard (Phase 6) -->
     <string name="home_next_mission">المهمة التالية</string>
+    <string name="home_last_workout">آخر تمرين</string>
     <string name="mission_title">المهمة التالية</string>
     <string name="mission_planned">مقرر: %1$s</string>
     <string name="mission_swap">تبديل</string>
