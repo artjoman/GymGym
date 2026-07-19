@@ -366,6 +366,9 @@
     <string name="home_no_cycles">Aucun cycle terminé pour l\'instant.</string>
     <string name="home_no_plan">Choisissez un programme ou créez un plan d\'entraînement.</string>
     <string name="cycle_skipped">Ignoré</string>
+    <string name="cycle_status_active">Actif</string>
+    <string name="cycle_status_completed">Terminé</string>
+    <string name="cycle_status_pending">En attente</string>
     <string name="stats_cycles_tab">Cycles</string>
     <string name="mission_title">Prochaine mission</string>
     <string name="mission_planned">Prévu : %1$s</string>

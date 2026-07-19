@@ -69,7 +69,12 @@ fun ExerciseSelectScreen(
             SectionLabel(stringResource(R.string.home_last_cycle), top = 20.dp)
             val lastCycle = homeCycles.lastCycle
             if (lastCycle != null) {
-                CycleCard(summary = lastCycle, onClick = onOpenLastCycle, customNames = customNames)
+                CycleCard(
+                    summary = lastCycle,
+                    onClick = onOpenLastCycle,
+                    customNames = customNames,
+                    onStatistics = onOpenLastCycle,
+                )
             } else {
                 EmptyCycleCard(stringResource(R.string.home_no_cycles))
             }
@@ -78,7 +83,12 @@ fun ExerciseSelectScreen(
             SectionLabel(stringResource(R.string.home_current_mission), top = 20.dp)
             val currentCycle = homeCycles.currentCycle
             if (currentCycle != null) {
-                CycleCard(summary = currentCycle, onClick = onOpenMission, customNames = customNames)
+                CycleCard(
+                    summary = currentCycle,
+                    onClick = onOpenMission,
+                    customNames = customNames,
+                    onStatistics = onOpenLastCycle,
+                )
             } else {
                 EmptyCycleCard(stringResource(R.string.home_no_plan))
             }
@@ -145,6 +155,7 @@ internal fun CycleCard(
     summary: com.gymgym.app.cycle.CycleSummary,
     onClick: (() -> Unit)? = null,
     customNames: Map<String, String> = emptyMap(),
+    onStatistics: (() -> Unit)? = null,
 ) {
     val cardModifier = Modifier.fillMaxWidth()
         .let { if (onClick != null) it.clickable(onClick = onClick) else it }
@@ -205,6 +216,14 @@ internal fun CycleCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 2.dp),
                     )
+                }
+            }
+            if (onStatistics != null) {
+                androidx.compose.material3.TextButton(
+                    onClick = onStatistics,
+                    modifier = Modifier.padding(top = 4.dp),
+                ) {
+                    Text(stringResource(R.string.statistics_title))
                 }
             }
         }

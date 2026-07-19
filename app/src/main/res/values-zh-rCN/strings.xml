@@ -363,6 +363,9 @@
     <string name="home_no_cycles">尚无已完成的周期。</string>
     <string name="home_no_plan">选择一个程序或创建训练计划。</string>
     <string name="cycle_skipped">已跳过</string>
+    <string name="cycle_status_active">进行中</string>
+    <string name="cycle_status_completed">已完成</string>
+    <string name="cycle_status_pending">待完成</string>
     <string name="stats_cycles_tab">周期</string>
     <string name="mission_title">下一个任务</string>
     <string name="mission_planned">计划：%1$s</string>

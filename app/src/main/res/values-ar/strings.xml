@@ -378,6 +378,9 @@
     <string name="home_no_cycles">لا توجد دورات مكتملة بعد.</string>
     <string name="home_no_plan">اختر برنامجًا أو أنشئ خطة تمرين.</string>
     <string name="cycle_skipped">تم التخطي</string>
+    <string name="cycle_status_active">نشط</string>
+    <string name="cycle_status_completed">مكتمل</string>
+    <string name="cycle_status_pending">قيد الانتظار</string>
     <string name="stats_cycles_tab">الدورات</string>
     <string name="mission_title">المهمة التالية</string>
     <string name="mission_planned">مقرر: %1$s</string>

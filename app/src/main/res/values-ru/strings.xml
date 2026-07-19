@@ -372,6 +372,9 @@
     <string name="home_no_cycles">Пока нет завершённых циклов.</string>
     <string name="home_no_plan">Выберите программу или создайте план тренировок.</string>
     <string name="cycle_skipped">Пропущено</string>
+    <string name="cycle_status_active">Активный</string>
+    <string name="cycle_status_completed">Завершён</string>
+    <string name="cycle_status_pending">Ожидает</string>
     <string name="stats_cycles_tab">Циклы</string>
     <string name="mission_title">Следующая миссия</string>
     <string name="mission_planned">Запланировано: %1$s</string>

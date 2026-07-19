@@ -369,6 +369,9 @@
     <string name="home_no_cycles">Vēl nav pabeigtu ciklu.</string>
     <string name="home_no_plan">Izvēlieties programmu vai izveidojiet treniņu plānu.</string>
     <string name="cycle_skipped">Izlaists</string>
+    <string name="cycle_status_active">Aktīvs</string>
+    <string name="cycle_status_completed">Pabeigts</string>
+    <string name="cycle_status_pending">Gaida</string>
     <string name="stats_cycles_tab">Cikli</string>
     <string name="mission_title">Nākamā misija</string>
     <string name="mission_planned">Plānots: %1$s</string>

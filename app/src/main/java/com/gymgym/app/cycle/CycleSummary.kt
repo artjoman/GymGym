@@ -11,6 +11,9 @@ import com.gymgym.app.profile.TrainingMode
 /** How a single workout fared within a cycle. */
 enum class CycleLineStatus { DONE, SKIPPED, PENDING }
 
+/** Whether a cycle is the in-progress one or a finished pass. */
+enum class CycleStatus { ACTIVE, COMPLETED }
+
 /** One workout's line within a cycle summary. */
 data class CycleWorkoutLine(
     val workoutId: Long,
@@ -19,6 +22,8 @@ data class CycleWorkoutLine(
     val status: CycleLineStatus,
     /** Weekday (1=Mon..7=Sun) in Weekly Schedule mode, else null. */
     val weekday: Int?,
+    /** This workout's exercises (results when executed, planned otherwise). */
+    val exercises: List<CycleExerciseLine> = emptyList(),
 )
 
 /** One exercise within a featured workout, in the shared History display format. */
@@ -47,6 +52,11 @@ data class CycleSummary(
     val planName: String,
     val cycleName: String,
     val percent: Int,
+    val status: CycleStatus = CycleStatus.COMPLETED,
+    /** First executed workout time in the cycle, if any. */
+    val startedAt: Long? = null,
+    /** Last executed workout end time (completed cycles only). */
+    val completedAt: Long? = null,
     val workouts: List<CycleWorkoutLine>,
     /**
      * The featured workout's exercise breakdown: the upcoming workout (planned
@@ -88,22 +98,29 @@ object CycleSummaries {
         return HomeCycles(hasActivePlan = activePlan != null, lastCycle = last, currentCycle = current)
     }
 
-    /** Every cycle that has at least one completed workout, most-recent first (for the Cycles tab). */
-    fun allCycles(
+    /**
+     * All cycle records for the Statistics → Cycles tab: the active cycle first
+     * (latest), then every completed cycle by recency (excluding the active one).
+     */
+    fun cycleRecords(
         plans: List<PlanWithCycles>,
+        activePlan: PlanWithCycles?,
+        progress: Map<Long, CycleEngine.ProgressEntry>,
         completed: List<CompletedWorkoutWithExercises>,
         profile: Profile,
     ): List<CycleSummary> {
         val weekly = profile.trainingMode == TrainingMode.WEEKLY_SCHEDULE
-        val cycleIdsByRecency = completed
-            .filter { it.workout.cycleId != null }
+        val active = currentCycleSummary(activePlan, progress, completed, weekly)
+        val completedCycles = completed
+            .filter { it.workout.cycleId != null && it.workout.cycleId != active?.cycleId }
             .sortedByDescending { it.workout.startedAt }
             .map { it.workout.cycleId!! }
             .distinct()
-        return cycleIdsByRecency.mapNotNull { cycleId ->
-            val (plan, cyc) = findCycle(plans, cycleId) ?: return@mapNotNull null
-            summarize(plan, cyc, completed.forCycle(cycleId), weekly, progress = null)
-        }
+            .mapNotNull { cycleId ->
+                val (plan, cyc) = findCycle(plans, cycleId) ?: return@mapNotNull null
+                summarize(plan, cyc, completed.forCycle(cycleId), weekly, progress = null)
+            }
+        return listOfNotNull(active) + completedCycles
     }
 
     // --- internals ---
@@ -121,7 +138,10 @@ object CycleSummaries {
         val effectiveProgress = if (allProcessed) emptyMap() else progress
         val nextPair = sequence.firstOrNull { it.second.workout.id !in effectiveProgress } ?: sequence.first()
         val cyc = nextPair.first
-        val summary = summarize(activePlan, cyc, completed.forCycle(cyc.cycle.id), weekly, effectiveProgress)
+        val summary = summarize(
+            activePlan, cyc, completed.forCycle(cyc.cycle.id), weekly, effectiveProgress,
+            status = CycleStatus.ACTIVE,
+        )
         // Featured detail = the upcoming workout, planned only (not executed yet).
         return summary.copy(detail = workoutDetail(nextPair.second, completedRow = null))
     }
@@ -172,6 +192,7 @@ object CycleSummaries {
         completedForCycle: List<CompletedWorkoutWithExercises>,
         weekly: Boolean,
         progress: Map<Long, CycleEngine.ProgressEntry>?,
+        status: CycleStatus = CycleStatus.COMPLETED,
     ): CycleSummary {
         var totalCompleted = 0
         var totalPlanned = 0
@@ -183,7 +204,7 @@ object CycleSummaries {
             val done = row?.let { r -> r.orderedExercises.sumOf { it.reps } } ?: 0
             totalCompleted += done
             totalPlanned += planned
-            val status = when {
+            val lineStatus = when {
                 progress != null -> when (progress[w.workout.id]?.status) {
                     "DONE" -> CycleLineStatus.DONE
                     "SKIPPED" -> CycleLineStatus.SKIPPED
@@ -196,16 +217,25 @@ object CycleSummaries {
                 workoutId = w.workout.id,
                 name = w.workout.name,
                 percent = CompletedWorkoutRepository.workoutPercent(done, planned),
-                status = status,
+                status = lineStatus,
                 weekday = if (weekly) w.workout.weekday else null,
+                exercises = workoutDetail(w, if (lineStatus == CycleLineStatus.PENDING) null else row).exercises,
             )
         }
+        val rows = completedForCycle
         return CycleSummary(
             planId = plan.plan.id,
             cycleId = cyc.cycle.id,
             planName = plan.plan.name,
             cycleName = cyc.cycle.name,
             percent = CompletedWorkoutRepository.workoutPercent(totalCompleted, totalPlanned),
+            status = status,
+            startedAt = rows.minOfOrNull { it.workout.startedAt },
+            completedAt = if (status == CycleStatus.COMPLETED) {
+                rows.maxOfOrNull { it.workout.startedAt + it.workout.durationMs }
+            } else {
+                null
+            },
             workouts = lines,
         )
     }

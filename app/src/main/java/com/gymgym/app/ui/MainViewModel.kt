@@ -186,13 +186,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         HomeCycles(hasActivePlan = false, lastCycle = null, currentCycle = null),
     )
 
-    /** All cycles that have any completed workout — for the Statistics → Cycles tab. */
+    /** Active cycle (latest) + completed cycles — for the Statistics → Cycles tab. */
     val cycleSummaries: StateFlow<List<CycleSummary>> = combine(
         planRepository.plans,
+        planRepository.activePlan,
+        workoutProgressRepository.all,
         completedWorkoutRepository.all,
         profileRepository.profile,
-    ) { plans, completed, profile ->
-        CycleSummaries.allCycles(plans, completed, profile)
+    ) { plans, active, progress, completed, profile ->
+        val progMap = progress.associate {
+            it.workoutId to CycleEngine.ProgressEntry(it.status, it.percent)
+        }
+        CycleSummaries.cycleRecords(plans, active, progMap, completed, profile)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val customExercises: StateFlow<List<CustomExercise>> = customExerciseRepository.all

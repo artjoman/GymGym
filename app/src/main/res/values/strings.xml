@@ -321,6 +321,9 @@
     <string name="home_no_cycles">No completed cycles yet.</string>
     <string name="home_no_plan">Choose a program or create a workout plan.</string>
     <string name="cycle_skipped">Skipped</string>
+    <string name="cycle_status_active">Active</string>
+    <string name="cycle_status_completed">Completed</string>
+    <string name="cycle_status_pending">Pending</string>
     <string name="stats_cycles_tab">Cycles</string>
     <string name="home_expert">Expert support</string>
     <string name="expert_title">Expert Support</string>

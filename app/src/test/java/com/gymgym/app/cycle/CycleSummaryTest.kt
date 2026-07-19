@@ -58,7 +58,13 @@ class CycleSummaryTest {
             completed(2, 11, 43, 200),
         )
         // No active plan → the completed cycle is the "last" one (not excluded as current).
-        val summary = CycleSummaries.allCycles(listOf(plan), done, Profile()).first()
+        val summary = CycleSummaries.cycleRecords(
+            plans = listOf(plan),
+            activePlan = null,
+            progress = emptyMap(),
+            completed = done,
+            profile = Profile(),
+        ).first()
 
         assertEquals("Full Body Cycle", summary.cycleName)
         assertEquals("Custom Plan", summary.planName)

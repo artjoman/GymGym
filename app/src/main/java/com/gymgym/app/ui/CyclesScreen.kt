@@ -2,18 +2,27 @@ package com.gymgym.app.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gymgym.app.R
+import com.gymgym.app.cycle.CycleLineStatus
+import com.gymgym.app.cycle.CycleStatus
 import com.gymgym.app.cycle.CycleSummary
+import com.gymgym.app.cycle.CycleWorkoutLine
 import com.gymgym.app.exercise.ExerciseCatalog
 import androidx.compose.ui.platform.LocalContext
 
@@ -50,9 +59,17 @@ internal fun exerciseRefName(ref: String, customNames: Map<String, String>): Str
         ?: ref
 }
 
-/** History-style list of completed cycles (Statistics → Cycles tab). */
+/**
+ * Statistics → Cycles tab: the active cycle (top) then completed cycles, each as
+ * a full record — status, dates, overall %, and every workout in order with its
+ * status, % and exercise breakdown.
+ */
 @Composable
-fun CyclesContent(cycles: List<CycleSummary>, modifier: Modifier = Modifier) {
+fun CyclesContent(
+    cycles: List<CycleSummary>,
+    modifier: Modifier = Modifier,
+    customNames: Map<String, String> = emptyMap(),
+) {
     Column(modifier = modifier.fillMaxWidth()) {
         if (cycles.isEmpty()) {
             Text(
@@ -65,10 +82,95 @@ fun CyclesContent(cycles: List<CycleSummary>, modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(cycles, key = { "${it.cycleId}" }) { cycle ->
-                    CycleCard(summary = cycle)
+                items(cycles, key = { "${it.cycleId}-${it.status}" }) { cycle ->
+                    CycleRecordCard(cycle, customNames)
                 }
             }
         }
     }
+}
+
+@Composable
+private fun CycleRecordCard(summary: CycleSummary, customNames: Map<String, String>) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.Top) {
+                Text(
+                    "${summary.cycleName} (${summary.percent}%)",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f),
+                )
+                Text(
+                    summary.planName,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 8.dp),
+                )
+            }
+            Text(
+                cycleStatusLine(summary),
+                style = MaterialTheme.typography.labelMedium,
+                color = if (summary.status == CycleStatus.ACTIVE) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                modifier = Modifier.padding(top = 2.dp),
+            )
+            for (w in summary.workouts) {
+                Spacer(Modifier.height(10.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        w.name,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Text(
+                        workoutStatusLabel(w),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = when (w.status) {
+                            CycleLineStatus.SKIPPED -> MaterialTheme.colorScheme.error
+                            CycleLineStatus.DONE -> MaterialTheme.colorScheme.primary
+                            CycleLineStatus.PENDING -> MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                    )
+                }
+                for (ex in w.exercises) {
+                    Text(
+                        exerciseLineText(
+                            name = exerciseRefName(ex.exerciseRef, customNames),
+                            targetReps = ex.targetReps,
+                            targetSets = ex.targetSets,
+                            completedReps = ex.completedReps,
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 2.dp),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun cycleStatusLine(s: CycleSummary): String {
+    val status = stringResource(
+        if (s.status == CycleStatus.ACTIVE) R.string.cycle_status_active else R.string.cycle_status_completed,
+    )
+    val dates = when {
+        s.startedAt != null && s.completedAt != null -> "${formatDate(s.startedAt)} – ${formatDate(s.completedAt)}"
+        s.startedAt != null -> formatDate(s.startedAt)
+        else -> null
+    }
+    return if (dates != null) "$status · $dates" else status
+}
+
+@Composable
+private fun workoutStatusLabel(w: CycleWorkoutLine): String = when (w.status) {
+    CycleLineStatus.DONE -> "${w.percent}%"
+    CycleLineStatus.SKIPPED -> stringResource(R.string.cycle_skipped)
+    CycleLineStatus.PENDING -> stringResource(R.string.cycle_status_pending)
 }

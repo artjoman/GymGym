@@ -3,8 +3,11 @@ package com.gymgym.app.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -12,9 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,6 +25,7 @@ import com.gymgym.app.cycle.CycleSummary
 import com.gymgym.app.data.BodyMeasurement
 import com.gymgym.app.data.CompletedWorkoutWithExercises
 import com.gymgym.app.data.WorkoutSession
+import kotlinx.coroutines.launch
 
 /** Statistics + History unified under one screen with tabs. */
 @Composable
@@ -37,7 +39,9 @@ fun StatisticsScreen(
     cycles: List<CycleSummary> = emptyList(),
     initialTab: Int = 0,
 ) {
-    var tab by remember { mutableIntStateOf(initialTab.coerceIn(0, 2)) }
+    // Three tabs (Stats → Workouts → Cycles), switchable by tap or horizontal swipe.
+    val pagerState = rememberPagerState(initialPage = initialTab.coerceIn(0, 2), pageCount = { 3 })
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier.fillMaxSize().systemBarsPadding().padding(horizontal = 24.dp, vertical = 16.dp),
@@ -51,17 +55,30 @@ fun StatisticsScreen(
             )
         }
 
-        TabRow(selectedTabIndex = tab, modifier = Modifier.padding(top = 8.dp)) {
-            Tab(selected = tab == 0, onClick = { tab = 0 }, text = { Text(stringResource(R.string.stats_title)) })
-            Tab(selected = tab == 1, onClick = { tab = 1 }, text = { Text(stringResource(R.string.history_title)) })
-            Tab(selected = tab == 2, onClick = { tab = 2 }, text = { Text(stringResource(R.string.stats_cycles_tab)) })
+        val tabLabels = listOf(
+            stringResource(R.string.stats_title),
+            stringResource(R.string.history_workouts),
+            stringResource(R.string.stats_cycles_tab),
+        )
+        TabRow(selectedTabIndex = pagerState.currentPage, modifier = Modifier.padding(top = 8.dp)) {
+            tabLabels.forEachIndexed { i, label ->
+                Tab(
+                    selected = pagerState.currentPage == i,
+                    onClick = { scope.launch { pagerState.animateScrollToPage(i) } },
+                    text = { Text(label) },
+                )
+            }
         }
 
-        val contentModifier = Modifier.weight(1f).padding(top = 12.dp)
-        when (tab) {
-            0 -> StatsContent(sessions, bodyMeasurements, contentModifier)
-            1 -> HistoryContent(sessions, completedWorkouts, onOpenSession, contentModifier, customNames)
-            else -> CyclesContent(cycles, contentModifier)
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.weight(1f).fillMaxWidth().padding(top = 12.dp),
+        ) { page ->
+            when (page) {
+                0 -> StatsContent(sessions, bodyMeasurements, Modifier.fillMaxSize())
+                1 -> HistoryContent(sessions, completedWorkouts, onOpenSession, Modifier.fillMaxSize(), customNames)
+                else -> CyclesContent(cycles, Modifier.fillMaxSize(), customNames)
+            }
         }
     }
 }

@@ -32,8 +32,12 @@ bump with the changes made since the previous release (see AGENTS.md).
   workout's **exercise breakdown**: Current mission shows the planned setup
   (`Squat: 10×3 sets`) while Last cycle shows what you did
   (`Squat: 10×3 sets • 27/30 reps`, or *Skipped*) — the same format as History.
-  Cycle % is total reps done ÷ total reps planned. Tapping Last cycle opens the
-  new **Statistics → Cycles** tab.
+  Cycle % is total reps done ÷ total reps planned. Both cards have a **Statistics**
+  button that opens the new **Statistics → Cycles** tab.
+- Statistics now has three tabs — **Stats → Workouts → Cycles** — that you can
+  swipe between. The old History tab is renamed **Workouts**. The **Cycles** tab
+  lists the active cycle (on top) plus every completed cycle, each showing its
+  status, dates, overall %, and every workout with its status, % and exercises.
 - Fixed a crash that could occur right after finishing a set.
 
 ## 2.0.3 (versionCode 12)
