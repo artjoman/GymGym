@@ -113,9 +113,6 @@ fun NextMissionScreen(
     }
 
     if (showSwap) {
-        val options = dashboard.blocks.filter {
-            it.status == BlockStatus.PENDING || it.status == BlockStatus.NEXT
-        }
         AlertDialog(
             onDismissRequest = { showSwap = false },
             confirmButton = {},
@@ -124,12 +121,26 @@ fun NextMissionScreen(
             },
             title = { Text(stringResource(R.string.mission_swap_pick)) },
             text = {
-                Column {
-                    options.forEach { block ->
-                        TextButton(onClick = {
-                            showSwap = false
-                            onSwap(block.workout.id)
-                        }) { Text(block.workout.name) }
+                // Every workout in the cycle — completed ones can be repeated; the
+                // current one is shown but disabled (can't swap with itself).
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    dashboard.blocks.forEach { block ->
+                        val label = when (block.status) {
+                            BlockStatus.NEXT ->
+                                "${block.workout.name} — ${stringResource(R.string.mission_swap_current)}"
+                            BlockStatus.DONE ->
+                                "${block.workout.name} — ${stringResource(R.string.mission_swap_completed, block.percent)}"
+                            BlockStatus.SKIPPED ->
+                                "${block.workout.name} — ${stringResource(R.string.cycle_skipped)}"
+                            BlockStatus.PENDING -> block.workout.name
+                        }
+                        TextButton(
+                            enabled = block.status != BlockStatus.NEXT,
+                            onClick = {
+                                showSwap = false
+                                onSwap(block.workout.id)
+                            },
+                        ) { Text(label) }
                     }
                 }
             },

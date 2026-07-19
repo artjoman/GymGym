@@ -18,6 +18,11 @@ bump with the changes made since the previous release (see AGENTS.md).
   yourself. During a manual test, a note explains that AI counting is still in
   development and invites you to contribute recordings.
 - The workout screen's exit button now reads **Stop exercise** (was "Stop plan").
+- The **Swap** dialog on Next Mission now lists **every** workout in the cycle,
+  not just the unfinished ones — completed workouts are marked (e.g. *Completed
+  100%*) and can be repeated, and the current workout is shown as *Current* but
+  disabled. Repeating a workout records a new instance without touching its
+  previous history.
 - Finishing (or stopping) a workout now returns you to the **Home** screen — the
   same as skipping — so you always land on the refreshed dashboard (updated
   Current mission, cycle progress and Last workout) instead of the Next Mission

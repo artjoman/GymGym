@@ -348,6 +348,8 @@
     <string name="mission_swap">Swap</string>
     <string name="mission_skip">Skip</string>
     <string name="mission_swap_pick">Choose a workout</string>
+    <string name="mission_swap_current">Current</string>
+    <string name="mission_swap_completed">Completed %1$d%%</string>
     <string name="mission_no_plan">No active plan yet. Choose a program or set a plan active.</string>
     <string name="programs_title">Programs</string>
     <string name="programs_use">Use this program</string>

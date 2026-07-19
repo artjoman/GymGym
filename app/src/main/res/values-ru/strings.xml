@@ -381,6 +381,8 @@
     <string name="mission_swap">Заменить</string>
     <string name="mission_skip">Пропустить</string>
     <string name="mission_swap_pick">Выберите тренировку</string>
+    <string name="mission_swap_current">Текущая</string>
+    <string name="mission_swap_completed">Завершено %1$d%%</string>
     <string name="mission_no_plan">Нет активного плана. Выберите программу или активируйте план.</string>
     <!-- History workouts (Phase 7) -->
     <string name="history_workouts">Тренировки</string>

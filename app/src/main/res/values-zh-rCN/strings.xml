@@ -372,6 +372,8 @@
     <string name="mission_swap">更换</string>
     <string name="mission_skip">跳过</string>
     <string name="mission_swap_pick">选择训练</string>
+    <string name="mission_swap_current">当前</string>
+    <string name="mission_swap_completed">已完成 %1$d%%</string>
     <string name="mission_no_plan">还没有当前计划。选择一个训练计划或激活一个计划。</string>
     <!-- History workouts (Phase 7) -->
     <string name="history_workouts">训练</string>
