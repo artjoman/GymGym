@@ -259,6 +259,7 @@
     <string name="library_manual_badge">Manuel</string>
     <string name="library_ai_badge">IA</string>
     <string name="library_test">Tester</string>
+    <string name="library_ai_count">Comptage IA</string>
     <string name="library_custom_section">Personnalisés</string>
     <string name="library_add_custom">Ajouter un exercice personnalisé</string>
     <string name="library_custom_hint">Nom de l\'exercice</string>

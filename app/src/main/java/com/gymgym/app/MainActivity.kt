@@ -35,7 +35,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.gymgym.app.ui.AppBackground
 import com.gymgym.app.ui.CameraScreen
-import com.gymgym.app.ui.Exercise
 import com.gymgym.app.data.PlanWithCycles
 import com.gymgym.app.exercise.ExerciseRef
 import com.gymgym.app.ui.ExerciseLibraryScreen
@@ -174,9 +173,11 @@ private fun AppRoot(
         viewModel.rescheduleReminders()
     }
 
-    fun startExercise(exercise: Exercise) = requireCameraThen {
+    // Library "Test": AI-counted moves run their counter, everything else runs a
+    // one-set manual session — resolved inside the ViewModel from the ref.
+    fun startTest(ref: String) = requireCameraThen {
         adManager.onWorkoutOpen(activity) {
-            viewModel.selectExercise(exercise)
+            viewModel.startExerciseTest(ref)
             navController.navigate(Routes.CAMERA)
         }
     }
@@ -264,7 +265,7 @@ private fun AppRoot(
             val customExercises by viewModel.customExercises.collectAsState()
             ExerciseLibraryScreen(
                 customExercises = customExercises,
-                onTest = ::startExercise,
+                onTest = ::startTest,
                 onAutoDetect = ::startAuto,
                 onAddCustom = viewModel::addCustomExercise,
                 onDeleteCustom = viewModel::deleteCustomExercise,

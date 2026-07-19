@@ -326,6 +326,41 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // --- Single ad-hoc exercise ---
 
+    /**
+     * "Test" an exercise from the library. AI-counted moves run their live counter
+     * ([selectExercise]); every other move (non-AI catalog entry or a custom
+     * exercise) runs as a one-set manual session — the user does the set, taps
+     * Finish, and edits the rep count, exactly like a manual step inside a workout.
+     */
+    fun startExerciseTest(ref: String) {
+        val counter = ExerciseRef.counter(ref)
+        if (counter != null) {
+            selectExercise(counter)
+            return
+        }
+        planName = labelForRef(ref)
+        planSteps = listOf(
+            PlanStep(
+                exercise = null,
+                exerciseRef = ref,
+                label = planName,
+                targetReps = TEST_TARGET_REPS,
+                targetSets = 1,
+            ),
+        )
+        stepIndex = 0
+        setIndex = 0
+        runPlanId = null
+        runCycleId = null
+        runWorkoutId = null
+        runStartedAt = System.currentTimeMillis()
+        runPausedTotalMs = 0L
+        runResults.clear()
+        _planComplete.value = false
+        _requestExit.value = false
+        beginCurrentStep(isNewExercise = true)
+    }
+
     fun selectExercise(exercise: Exercise) {
         planSteps = emptyList()
         _planProgress.value = null
@@ -1393,5 +1428,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         const val TRACKING_CHECK_INTERVAL_MS = 250L
         const val TRACKING_TIMEOUT_MS = 800L
         const val STABLE_FRAMES_TO_TRACK = 5
+        /** Default rep target when testing a manual exercise from the library. */
+        const val TEST_TARGET_REPS = 10
     }
 }

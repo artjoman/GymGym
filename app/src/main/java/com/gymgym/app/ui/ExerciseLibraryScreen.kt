@@ -39,11 +39,12 @@ import com.gymgym.app.R
 import com.gymgym.app.data.CustomExercise
 import com.gymgym.app.exercise.CatalogExercise
 import com.gymgym.app.exercise.ExerciseCatalog
+import com.gymgym.app.exercise.ExerciseRef
 
 @Composable
 fun ExerciseLibraryScreen(
     customExercises: List<CustomExercise>,
-    onTest: (Exercise) -> Unit,
+    onTest: (String) -> Unit,
     onAutoDetect: () -> Unit,
     onAddCustom: (String) -> Unit,
     onDeleteCustom: (Long) -> Unit,
@@ -72,7 +73,7 @@ fun ExerciseLibraryScreen(
             if (exercises.isEmpty()) continue
             LibrarySectionLabel(stringResource(category.labelRes))
             for (exercise in exercises) {
-                CatalogRow(exercise = exercise, onTest = { onTest(exercise.counter!!) })
+                CatalogRow(exercise = exercise, onTest = { onTest(exercise.id) })
             }
         }
 
@@ -85,7 +86,11 @@ fun ExerciseLibraryScreen(
             )
         } else {
             for (custom in customExercises) {
-                CustomRow(name = custom.name, onDelete = { onDeleteCustom(custom.id) })
+                CustomRow(
+                    name = custom.name,
+                    onTest = { onTest(ExerciseRef.forCustom(custom.id)) },
+                    onDelete = { onDeleteCustom(custom.id) },
+                )
             }
         }
         GymButton(
@@ -133,10 +138,12 @@ private fun LibrarySectionLabel(text: String) {
 private fun CatalogRow(exercise: CatalogExercise, onTest: () -> Unit) {
     val ctx = LocalContext.current
     val muscles = exercise.muscles.joinToString(", ") { ctx.getString(it.labelRes) }
+    // Every move is testable now: AI-counted moves run their live counter, the
+    // rest run a manual session. AI moves are badged so the capability is clear.
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .then(if (exercise.isAiCounted) Modifier.clickable(onClick = onTest) else Modifier),
+            .clickable(onClick = onTest),
         colors = CardDefaults.cardColors(),
     ) {
         Row(
@@ -156,39 +163,34 @@ private fun CatalogRow(exercise: CatalogExercise, onTest: () -> Unit) {
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-            }
-            if (exercise.isAiCounted) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        Icons.Rounded.PlayArrow,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
+                if (exercise.isAiCounted) {
                     Text(
-                        stringResource(R.string.library_test),
-                        style = MaterialTheme.typography.labelLarge,
+                        stringResource(R.string.library_ai_count),
+                        style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
-            } else {
-                ManualBadge()
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Rounded.PlayArrow,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    stringResource(R.string.library_test),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                )
             }
         }
     }
 }
 
 @Composable
-private fun ManualBadge() {
-    Text(
-        stringResource(R.string.library_manual_badge),
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-}
-
-@Composable
-private fun CustomRow(name: String, onDelete: () -> Unit) {
+private fun CustomRow(name: String, onTest: () -> Unit, onDelete: () -> Unit) {
     var confirmDelete by remember { mutableStateOf(false) }
     if (confirmDelete) {
         ConfirmDialog(
@@ -198,7 +200,7 @@ private fun CustomRow(name: String, onDelete: () -> Unit) {
             onDismiss = { confirmDelete = false },
         )
     }
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(modifier = Modifier.fillMaxWidth().clickable(onClick = onTest)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -215,6 +217,19 @@ private fun CustomRow(name: String, onDelete: () -> Unit) {
                     stringResource(R.string.library_manual_note),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Rounded.PlayArrow,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    stringResource(R.string.library_test),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
                 )
             }
             IconButton(onClick = { confirmDelete = true }) {

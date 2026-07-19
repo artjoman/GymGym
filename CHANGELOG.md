@@ -9,6 +9,11 @@ bump with the changes made since the previous release (see AGENTS.md).
   screen so you can log your measurements right away.
 - Added a **mic mute** button during a workout: tap it to stop listening for
   voice commands. The choice sticks between exercises and sessions.
+- **Every exercise is now testable from the library** — non-AI moves and your
+  own custom exercises open a manual session where you enter the reps yourself.
+  AI-counted moves are labelled **AI Count**.
+- History now shows each exercise's **reps done vs. planned** (e.g. 4/4), so it
+  lines up with the workout percentage.
 - Fixed a crash that could occur right after finishing a set.
 
 ## 2.0.3 (versionCode 12)

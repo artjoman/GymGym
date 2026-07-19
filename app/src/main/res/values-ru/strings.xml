@@ -265,6 +265,7 @@
     <string name="library_manual_badge">Вручную</string>
     <string name="library_ai_badge">ИИ</string>
     <string name="library_test">Тест</string>
+    <string name="library_ai_count">ИИ-подсчёт</string>
     <string name="library_custom_section">Свои</string>
     <string name="library_add_custom">Добавить своё упражнение</string>
     <string name="library_custom_hint">Название упражнения</string>

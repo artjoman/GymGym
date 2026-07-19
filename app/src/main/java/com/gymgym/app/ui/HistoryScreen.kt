@@ -132,8 +132,13 @@ private fun CompletedWorkoutRow(
                 for (e in item.orderedExercises) {
                     val label = ExerciseCatalog.byId(e.exerciseRef)
                         ?.let { context.getString(it.nameRes) } ?: e.exerciseRef
+                    // Reps done vs the planned total (targetReps × targetSets) — this
+                    // is what the workout % is based on. Older rows without a target
+                    // fall back to just the rep count.
+                    val target = e.targetReps * e.targetSets
+                    val repsText = if (target > 0) "${e.reps}/$target" else "${e.reps}"
                     Text(
-                        "$label · ${e.goodReps}/${e.reps}",
+                        "$label · $repsText",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 4.dp),

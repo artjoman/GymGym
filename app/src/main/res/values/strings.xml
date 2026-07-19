@@ -49,6 +49,7 @@
     <string name="library_manual_badge">Manual</string>
     <string name="library_ai_badge">AI</string>
     <string name="library_test">Test</string>
+    <string name="library_ai_count">AI Count</string>
     <string name="library_custom_section">Custom</string>
     <string name="library_add_custom">Add custom exercise</string>
     <string name="library_custom_hint">Exercise name</string>
