@@ -69,7 +69,7 @@ class ProfileRepository(context: Context) {
         dataStore.edit { it[WORKOUT_DAYS] = days.sorted().joinToString(",") }
 
     suspend fun setWorkoutTimeoutSeconds(seconds: Int) =
-        dataStore.edit { it[WORKOUT_TIMEOUT_S] = seconds }
+        dataStore.edit { it[WORKOUT_TIMEOUT_S] = normalizeWorkoutTimeoutSeconds(seconds) }
 
     suspend fun setSetTimeoutSeconds(seconds: Int) =
         dataStore.edit { it[SET_TIMEOUT_S] = seconds }
@@ -77,7 +77,22 @@ class ProfileRepository(context: Context) {
     suspend fun setExerciseTimeoutSeconds(seconds: Int) =
         dataStore.edit { it[EXERCISE_TIMEOUT_S] = seconds }
 
-    private companion object {
+    companion object {
+        // Between-workouts recovery is chosen in whole hours, in 8-hour steps.
+        const val WORKOUT_HOUR_STEP = 8
+        const val WORKOUT_MIN_HOURS = 8
+        const val WORKOUT_MAX_HOURS = 168
+
+        /** The stored between-workouts value (seconds) as a valid 8-hour step in [8h, 168h]. */
+        fun workoutTimeoutHours(seconds: Int): Int {
+            val hours = Math.round(seconds / 3600.0).toInt()
+            val stepped = Math.round(hours / WORKOUT_HOUR_STEP.toDouble()).toInt() * WORKOUT_HOUR_STEP
+            return stepped.coerceIn(WORKOUT_MIN_HOURS, WORKOUT_MAX_HOURS)
+        }
+
+        /** Normalize any between-workouts value (seconds) onto a valid 8-hour step. */
+        fun normalizeWorkoutTimeoutSeconds(seconds: Int): Int = workoutTimeoutHours(seconds) * 3600
+
         val DISPLAY_NAME = stringPreferencesKey("display_name")
         val WEIGHT_UNIT = stringPreferencesKey("weight_unit")
         val LENGTH_UNIT = stringPreferencesKey("length_unit")

@@ -35,8 +35,10 @@ bump with the changes made since the previous release (see AGENTS.md).
   pauses), so manual-only workouts get a duration too.
 - **Weekly Schedule** lets you assign a **weekday** to each workout; the next
   mission follows the weekday order and the progress bar shows each day.
-- All recovery timers (between workouts, sets, and exercises) are now set in
-  **seconds, in steps of 10**.
+- Recovery timers: **Between workouts** is now set in **hours** (8-hour steps,
+  8–168 h, default 48 h) with Beginner/Intermediate/Advanced presets of
+  72/48/24 h — no more confusing raw-second values. Between sets and Between
+  exercises stay in seconds (10-second steps).
 - **Deleting** a plan, workout, exercise, custom exercise, or recording now asks
   for confirmation first.
 

@@ -44,6 +44,7 @@ import com.gymgym.app.data.BodyMeasurement
 import com.gymgym.app.data.BodyMetric
 import com.gymgym.app.profile.LengthUnit
 import com.gymgym.app.profile.Profile
+import com.gymgym.app.profile.ProfileRepository
 import com.gymgym.app.profile.TrainingMode
 import com.gymgym.app.profile.WeightUnit
 import java.text.DateFormatSymbols
@@ -119,17 +120,15 @@ fun ProfileScreen(
         // --- Recovery ---
         HorizontalDivider()
         Text(stringResource(R.string.profile_recovery), style = MaterialTheme.typography.titleMedium)
-        RecoveryRow(
+        WorkoutRecoveryRow(
             label = stringResource(R.string.profile_workout_timeout),
-            valueText = stringResource(R.string.profile_seconds, profile.workoutTimeoutSeconds),
-            presets = listOf(
-                stringResource(R.string.recovery_beginner) to 259_200,
-                stringResource(R.string.recovery_intermediate) to 172_800,
-                stringResource(R.string.recovery_advanced) to 108_000,
+            seconds = profile.workoutTimeoutSeconds,
+            onSetSeconds = onWorkoutTimeoutSeconds,
+            presetsHours = listOf(
+                stringResource(R.string.recovery_beginner) to 72,
+                stringResource(R.string.recovery_intermediate) to 48,
+                stringResource(R.string.recovery_advanced) to 24,
             ),
-            current = profile.workoutTimeoutSeconds,
-            step = 10,
-            onSet = onWorkoutTimeoutSeconds,
         )
         RecoveryRow(
             label = stringResource(R.string.profile_set_timeout),
@@ -296,6 +295,56 @@ private fun RecoveryRow(
                         label = { Text(name) },
                     )
                 }
+            }
+        }
+    }
+}
+
+/**
+ * Between-workouts recovery: chosen in whole hours (8-hour step, 8–168h) but
+ * stored in seconds. The value is normalized for display so a stray stored value
+ * (e.g. an old 172690 s) still shows a clean hour figure, and ± move by 8h.
+ */
+@Composable
+private fun WorkoutRecoveryRow(
+    label: String,
+    seconds: Int,
+    onSetSeconds: (Int) -> Unit,
+    presetsHours: List<Pair<String, Int>>,
+) {
+    val hours = ProfileRepository.workoutTimeoutHours(seconds)
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(label, modifier = Modifier.weight(1f))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                OutlinedButton(onClick = {
+                    val next = (hours - ProfileRepository.WORKOUT_HOUR_STEP)
+                        .coerceAtLeast(ProfileRepository.WORKOUT_MIN_HOURS)
+                    onSetSeconds(next * 3600)
+                }) { Text("−") }
+                Text(
+                    stringResource(R.string.profile_hours, hours),
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                )
+                OutlinedButton(onClick = {
+                    val next = (hours + ProfileRepository.WORKOUT_HOUR_STEP)
+                        .coerceAtMost(ProfileRepository.WORKOUT_MAX_HOURS)
+                    onSetSeconds(next * 3600)
+                }) { Text("+") }
+            }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            for ((name, presetHours) in presetsHours) {
+                FilterChip(
+                    selected = hours == presetHours,
+                    onClick = { onSetSeconds(presetHours * 3600) },
+                    label = { Text(name) },
+                )
             }
         }
     }
