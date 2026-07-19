@@ -162,6 +162,9 @@
     <string name="history_empty">Pas encore d\'entraînements. Terminez une série pour la voir ici.</string>
     <string name="history_empty_filtered">Aucune séance ne correspond à ce filtre.</string>
     <string name="history_meta">%1$s · %2$s</string>
+    <string name="history_exercise_line">%1$s : %2$d×%3$d séries • %4$d/%5$d reps</string>
+    <string name="history_exercise_skipped">%1$s : Ignoré</string>
+    <string name="history_exercise_legacy">%1$s · %2$d reps</string>
 
     <!-- Session detail -->
     <string name="session_title">Détail de la séance</string>

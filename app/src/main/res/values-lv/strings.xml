@@ -162,6 +162,9 @@
     <string name="history_empty">Vēl nav treniņu. Pabeidz piegājienu, lai to redzētu šeit.</string>
     <string name="history_empty_filtered">Neviena sesija neatbilst šim filtram.</string>
     <string name="history_meta">%1$s · %2$s</string>
+    <string name="history_exercise_line">%1$s: %2$d×%3$d piegāj. • %4$d/%5$d atk.</string>
+    <string name="history_exercise_skipped">%1$s: Izlaists</string>
+    <string name="history_exercise_legacy">%1$s · %2$d atk.</string>
 
     <!-- Session detail -->
     <string name="session_title">Sesijas informācija</string>

@@ -15,8 +15,10 @@ bump with the changes made since the previous release (see AGENTS.md).
 - **Every exercise is now testable from the library** — non-AI moves and your
   own custom exercises open a manual session where you enter the reps yourself.
   AI-counted moves are labelled **AI Count**.
-- History now shows each exercise's **reps done vs. planned** (e.g. 4/4), so it
-  lines up with the workout percentage.
+- History workout cards are clearer: each exercise reads
+  **`Name: 10×3 sets • 27/30 reps`** (skipped exercises show **Skipped**), custom
+  exercises show their real name, and the workout **completion %** is now total
+  reps done ÷ total reps planned across the workout, rounded (e.g. 75/80 → 94%).
 - The home screen now shows a **Last workout** card — name, date, completion %
   and duration at a glance (tap it to open Statistics).
 - Fixed a crash that could occur right after finishing a set.

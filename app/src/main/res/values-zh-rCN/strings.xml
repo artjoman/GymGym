@@ -162,6 +162,9 @@
     <string name="history_empty">还没有训练记录。完成一组后会显示在这里。</string>
     <string name="history_empty_filtered">没有符合此筛选的记录。</string>
     <string name="history_meta">%1$s · %2$s</string>
+    <string name="history_exercise_line">%1$s：%2$d×%3$d 组 • %4$d/%5$d 次</string>
+    <string name="history_exercise_skipped">%1$s：已跳过</string>
+    <string name="history_exercise_legacy">%1$s · %2$d 次</string>
 
     <!-- Session detail -->
     <string name="session_title">训练详情</string>

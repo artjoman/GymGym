@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gymgym.app.R
+import com.gymgym.app.data.CompletedWorkoutRepository
 import com.gymgym.app.data.CompletedWorkoutWithExercises
 import com.gymgym.app.data.WorkoutSession
 import com.gymgym.app.exercise.ExerciseCatalog
@@ -39,6 +40,7 @@ fun HistoryContent(
     completedWorkouts: List<CompletedWorkoutWithExercises>,
     onOpenSession: (Long) -> Unit,
     modifier: Modifier = Modifier,
+    customNames: Map<String, String> = emptyMap(),
 ) {
     var filter by remember { mutableStateOf(WorkoutFilter()) }
     val filtered = sessions.applyFilter(filter)
@@ -70,6 +72,7 @@ fun HistoryContent(
                             item = cw,
                             expanded = expanded[cw.workout.id] == true,
                             onToggle = { expanded[cw.workout.id] = expanded[cw.workout.id] != true },
+                            customNames = customNames,
                         )
                     }
                 }
@@ -100,6 +103,7 @@ private fun CompletedWorkoutRow(
     item: CompletedWorkoutWithExercises,
     expanded: Boolean,
     onToggle: () -> Unit,
+    customNames: Map<String, String> = emptyMap(),
 ) {
     val context = LocalContext.current
     val w = item.workout
@@ -122,8 +126,19 @@ private fun CompletedWorkoutRow(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
+                // Workout % = total completed reps ÷ total planned reps across all
+                // exercises, computed live so it always matches the rows below (and
+                // is correct for rows saved before the formula changed). Legacy rows
+                // without stored targets fall back to the value recorded at the time.
+                val totalPlanned = item.orderedExercises.sumOf { it.targetReps * it.targetSets }
+                val totalCompleted = item.orderedExercises.sumOf { it.reps }
+                val pct = if (totalPlanned > 0) {
+                    CompletedWorkoutRepository.workoutPercent(totalCompleted, totalPlanned)
+                } else {
+                    w.avgPercent
+                }
                 Text(
-                    "${w.avgPercent}%",
+                    "$pct%",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                 )
@@ -131,14 +146,23 @@ private fun CompletedWorkoutRow(
             if (expanded) {
                 for (e in item.orderedExercises) {
                     val label = ExerciseCatalog.byId(e.exerciseRef)
-                        ?.let { context.getString(it.nameRes) } ?: e.exerciseRef
-                    // Reps done vs the planned total (targetReps × targetSets) — this
-                    // is what the workout % is based on. Older rows without a target
-                    // fall back to just the rep count.
-                    val target = e.targetReps * e.targetSets
-                    val repsText = if (target > 0) "${e.reps}/$target" else "${e.reps}"
+                        ?.let { context.getString(it.nameRes) }
+                        ?: customNames[e.exerciseRef]
+                        ?: e.exerciseRef
+                    val planned = e.targetReps * e.targetSets
+                    val line = when {
+                        // Legacy rows saved before targets were stored.
+                        planned <= 0 -> stringResource(R.string.history_exercise_legacy, label, e.reps)
+                        // No reps completed → the exercise was skipped.
+                        e.reps == 0 -> stringResource(R.string.history_exercise_skipped, label)
+                        // <Name>: <TargetReps>×<Sets> sets • <Completed>/<Planned> reps
+                        else -> stringResource(
+                            R.string.history_exercise_line,
+                            label, e.targetReps, e.targetSets, e.reps, planned,
+                        )
+                    }
                     Text(
-                        "$label · $repsText",
+                        line,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 4.dp),

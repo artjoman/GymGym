@@ -12,6 +12,7 @@ import androidx.room.Query
 import androidx.room.Relation
 import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
+import kotlin.math.roundToInt
 
 /**
  * A finished workout run (a whole [WorkoutEntity] executed end-to-end), plus its
@@ -85,6 +86,16 @@ class CompletedWorkoutRepository(private val dao: CompletedWorkoutDao) {
 
     val all: Flow<List<CompletedWorkoutWithExercises>> = dao.allWithExercises()
 
+    companion object {
+        /**
+         * Workout completion % = total completed reps ÷ total planned reps,
+         * rounded to the nearest whole percent (e.g. 75/80 → 94). Returns 0 when
+         * nothing was planned (e.g. legacy rows without stored targets).
+         */
+        fun workoutPercent(totalCompleted: Int, totalPlanned: Int): Int =
+            if (totalPlanned <= 0) 0 else (totalCompleted * 100f / totalPlanned).roundToInt().coerceIn(0, 100)
+    }
+
     /** Draft of one exercise's result, before the parent workout has a row id. */
     data class ExerciseResult(
         val exerciseRef: String,
@@ -111,7 +122,10 @@ class CompletedWorkoutRepository(private val dao: CompletedWorkoutDao) {
         durationMs: Long,
         exercises: List<ExerciseResult>,
     ) {
-        val avg = if (exercises.isEmpty()) 0 else exercises.map { it.completionPercent() }.average().toInt()
+        val avg = workoutPercent(
+            totalCompleted = exercises.sumOf { it.reps },
+            totalPlanned = exercises.sumOf { it.targetReps * it.targetSets },
+        )
         val id = dao.insertWorkout(
             CompletedWorkout(
                 planId = planId,

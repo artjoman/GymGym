@@ -253,6 +253,9 @@
     <string name="history_empty">No workouts yet. Finish a set to see it here.</string>
     <string name="history_empty_filtered">No sessions match this filter.</string>
     <string name="history_meta">%1$s · %2$s</string>
+    <string name="history_exercise_line">%1$s: %2$d×%3$d sets • %4$d/%5$d reps</string>
+    <string name="history_exercise_skipped">%1$s: Skipped</string>
+    <string name="history_exercise_legacy">%1$s · %2$d reps</string>
     <string name="history_workouts">Workouts</string>
     <string name="history_exercises">Exercises</string>
 

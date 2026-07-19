@@ -352,12 +352,15 @@ private fun AppRoot(
             val sessions by viewModel.history.collectAsState()
             val completedWorkouts by viewModel.completedWorkouts.collectAsState()
             val bodyMeasurements by viewModel.bodyMeasurements.collectAsState()
+            val customExercises by viewModel.customExercises.collectAsState()
+            val customNames = customExercises.associate { ExerciseRef.forCustom(it.id) to it.name }
             StatisticsScreen(
                 sessions = sessions,
                 completedWorkouts = completedWorkouts,
                 bodyMeasurements = bodyMeasurements,
                 onOpenSession = { id -> navController.navigate("${Routes.SESSION}/$id") },
                 onBack = { navController.popBackStack() },
+                customNames = customNames,
             )
         }
         composable(

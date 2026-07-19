@@ -162,6 +162,9 @@
     <string name="history_empty">Пока нет тренировок. Завершите подход, чтобы увидеть его здесь.</string>
     <string name="history_empty_filtered">Нет сессий по этому фильтру.</string>
     <string name="history_meta">%1$s · %2$s</string>
+    <string name="history_exercise_line">%1$s: %2$d×%3$d подх. • %4$d/%5$d повт.</string>
+    <string name="history_exercise_skipped">%1$s: Пропущено</string>
+    <string name="history_exercise_legacy">%1$s · %2$d повт.</string>
 
     <!-- Session detail -->
     <string name="session_title">Детали сессии</string>

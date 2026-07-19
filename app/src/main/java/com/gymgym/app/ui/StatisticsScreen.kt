@@ -32,6 +32,7 @@ fun StatisticsScreen(
     bodyMeasurements: List<BodyMeasurement>,
     onOpenSession: (Long) -> Unit,
     onBack: () -> Unit,
+    customNames: Map<String, String> = emptyMap(),
 ) {
     var tab by remember { mutableIntStateOf(0) }
 
@@ -56,7 +57,7 @@ fun StatisticsScreen(
         if (tab == 0) {
             StatsContent(sessions, bodyMeasurements, contentModifier)
         } else {
-            HistoryContent(sessions, completedWorkouts, onOpenSession, contentModifier)
+            HistoryContent(sessions, completedWorkouts, onOpenSession, contentModifier, customNames)
         }
     }
 }
