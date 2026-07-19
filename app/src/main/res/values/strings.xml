@@ -226,6 +226,8 @@
 
     <!-- Stats -->
     <string name="stats_title">Stats</string>
+    <string name="statistics_title">Statistics</string>
+    <string name="stats_data_title">Data</string>
     <string name="stats_empty">No stats yet. Finish a set to start tracking.</string>
     <string name="stats_good_form">%1$d%% good form</string>
     <string name="stats_last">Last: %1$s</string>
@@ -396,6 +398,8 @@
     <string name="speak_next_exercise_10">Next exercise in 10 seconds</string>
     <string name="speak_start_set">Start the set!</string>
     <string name="camera_rest">Rest</string>
+    <string name="camera_skip_rest">Skip rest</string>
+    <string name="plan_save">Save plan</string>
     <string name="cue_shallow">Go deeper</string>
     <string name="cue_wobbly">Steady</string>
     <string name="cue_fast">Slow down</string>

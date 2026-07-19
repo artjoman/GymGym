@@ -392,4 +392,9 @@
     <string name="expert_l3_f3">每周和每月回顾</string>
     <string name="expert_l3_f4">个性化计划</string>
     <string name="stats_body_trends">身体参数趋势</string>
+    <!-- Feedback fixes (2.0.2) -->
+    <string name="camera_skip_rest">跳过休息</string>
+    <string name="plan_save">保存计划</string>
+    <string name="statistics_title">统计</string>
+    <string name="stats_data_title">数据</string>
 </resources>

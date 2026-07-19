@@ -273,6 +273,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var runStartedAt = 0L
     private val runResults = mutableListOf<CompletedWorkoutRepository.ExerciseResult>()
     private var restJob: Job? = null
+    private var pendingRestAction: (() -> Unit)? = null
     /** Paused ms within the current exercise; reset when a new exercise begins. */
     private var pausedAccumMs = 0L
     private var pauseStartedAt = 0L
@@ -590,6 +591,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val total = seconds.coerceAtLeast(1)
         restJob?.cancel()
         _countdownValue.value = null
+        pendingRestAction = then
         restJob = viewModelScope.launch {
             var remaining = total
             _restRemaining.value = remaining
@@ -601,9 +603,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 _restRemaining.value = remaining
             }
             _restRemaining.value = null
+            pendingRestAction = null
             if (soundSettings.value.soundsEnabled) speak(str(R.string.speak_start_set))
             then()
         }
+    }
+
+    /** End the current rest immediately and start the next set/exercise. */
+    fun skipRest() {
+        if (_restRemaining.value == null) return
+        restJob?.cancel()
+        _restRemaining.value = null
+        val action = pendingRestAction
+        pendingRestAction = null
+        action?.invoke()
     }
 
     private fun finishCurrentExercise() {

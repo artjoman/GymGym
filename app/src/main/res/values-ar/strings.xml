@@ -407,4 +407,9 @@
     <string name="expert_l3_f3">مراجعات أسبوعية وشهرية</string>
     <string name="expert_l3_f4">خطط مخصصة</string>
     <string name="stats_body_trends">اتجاهات قياسات الجسم</string>
+    <!-- Feedback fixes (2.0.2) -->
+    <string name="camera_skip_rest">تخطي الراحة</string>
+    <string name="plan_save">حفظ الخطة</string>
+    <string name="statistics_title">الإحصائيات</string>
+    <string name="stats_data_title">البيانات</string>
 </resources>

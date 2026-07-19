@@ -398,4 +398,9 @@
     <string name="expert_l3_f3">Nedēļas un mēneša pārskati</string>
     <string name="expert_l3_f4">Personalizēti plāni</string>
     <string name="stats_body_trends">Ķermeņa parametru tendences</string>
+    <!-- Feedback fixes (2.0.2) -->
+    <string name="camera_skip_rest">Izlaist atpūtu</string>
+    <string name="plan_save">Saglabāt plānu</string>
+    <string name="statistics_title">Statistika</string>
+    <string name="stats_data_title">Dati</string>
 </resources>

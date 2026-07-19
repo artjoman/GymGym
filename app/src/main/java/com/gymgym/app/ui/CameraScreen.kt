@@ -479,6 +479,11 @@ fun CameraScreen(
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
                     )
+                    GymButton(
+                        text = stringResource(R.string.camera_skip_rest),
+                        onClick = { viewModel.skipRest() },
+                        modifier = Modifier.padding(top = 12.dp),
+                    )
                 }
             }
         }

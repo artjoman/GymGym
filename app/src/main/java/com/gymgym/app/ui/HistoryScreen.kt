@@ -32,12 +32,13 @@ import com.gymgym.app.data.CompletedWorkoutWithExercises
 import com.gymgym.app.data.WorkoutSession
 import com.gymgym.app.exercise.ExerciseCatalog
 
+/** Scrollable History content (no title/back) — embedded in [StatisticsScreen]. */
 @Composable
-fun HistoryScreen(
+fun HistoryContent(
     sessions: List<WorkoutSession>,
     completedWorkouts: List<CompletedWorkoutWithExercises>,
     onOpenSession: (Long) -> Unit,
-    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var filter by remember { mutableStateOf(WorkoutFilter()) }
     val filtered = sessions.applyFilter(filter)
@@ -45,12 +46,8 @@ fun HistoryScreen(
     val filteredWorkouts = completedWorkouts.filter { it.workout.startedAt >= cutoff }
     val expanded = remember { mutableStateMapOf<Long, Boolean>() }
 
-    Column(modifier = Modifier.fillMaxSize().systemBarsPadding().padding(24.dp)) {
-        Text(stringResource(R.string.history_title), style = MaterialTheme.typography.headlineSmall)
-
-        Column(modifier = Modifier.padding(top = 12.dp)) {
-            FilterBar(filter = filter, onFilter = { filter = it })
-        }
+    Column(modifier = modifier.fillMaxWidth()) {
+        FilterBar(filter = filter, onFilter = { filter = it })
 
         if (filtered.isEmpty() && filteredWorkouts.isEmpty()) {
             Text(
@@ -84,8 +81,6 @@ fun HistoryScreen(
                 }
             }
         }
-
-        GymButton(stringResource(R.string.action_back), onBack, Modifier.padding(top = 16.dp), GymButtonStyle.Secondary)
     }
 }
 

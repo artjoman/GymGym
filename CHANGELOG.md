@@ -3,6 +3,16 @@
 User-facing release notes for GymGym, newest first. Updated on every version
 bump with the changes made since the previous release (see AGENTS.md).
 
+## 2.0.2 (versionCode 11)
+
+- Added a **Skip rest** button so you can jump to the next set/exercise without
+  waiting out the rest timer.
+- The plan editor now has an explicit **Save plan** button at every level (cycle
+  and workout), so edits aren't lost by tapping Back.
+- **History** and **Statistics** are now one screen with tabs.
+- Charts show **min/max values** on the axis and the date range, and are
+  **tappable** to view the raw data as a table.
+
 ## 2.0.1 (versionCode 10)
 
 - Fixed: **Start** and **Swap** on the Next Mission screen now actually launch the

@@ -42,7 +42,6 @@ import com.gymgym.app.ui.ExerciseSelectScreen
 import com.gymgym.app.ui.ExpertSupportScreen
 import com.gymgym.app.ui.NextMissionScreen
 import com.gymgym.app.ui.ProgramsScreen
-import com.gymgym.app.ui.HistoryScreen
 import com.gymgym.app.ui.MainViewModel
 import com.gymgym.app.ui.PlanEditScreen
 import com.gymgym.app.ui.PlanListScreen
@@ -50,7 +49,7 @@ import com.gymgym.app.ui.ProfileScreen
 import com.gymgym.app.ui.RecordingsScreen
 import com.gymgym.app.ui.SessionDetailScreen
 import com.gymgym.app.ui.SettingsScreen
-import com.gymgym.app.ui.StatsScreen
+import com.gymgym.app.ui.StatisticsScreen
 import com.gymgym.app.ui.theme.GymGymTheme
 
 private object Routes {
@@ -58,9 +57,8 @@ private object Routes {
     const val CAMERA = "camera"
     const val PLANS = "plans"
     const val PLAN_EDIT = "plan_edit"
-    const val HISTORY = "history"
+    const val STATISTICS = "statistics"
     const val SESSION = "session"
-    const val STATS = "stats"
     const val PROFILE = "profile"
     const val SETTINGS = "settings"
     const val RECORDINGS = "recordings"
@@ -209,8 +207,7 @@ private fun AppRoot(viewModel: MainViewModel) {
                 onOpenPrograms = { navController.navigate(Routes.PROGRAMS) },
                 onOpenPlans = { navController.navigate(Routes.PLANS) },
                 onOpenRecordings = { navController.navigate(Routes.RECORDINGS) },
-                onOpenHistory = { navController.navigate(Routes.HISTORY) },
-                onOpenStats = { navController.navigate(Routes.STATS) },
+                onOpenStatistics = { navController.navigate(Routes.STATISTICS) },
                 onOpenProfile = { navController.navigate(Routes.PROFILE) },
                 onOpenSettings = { navController.navigate(Routes.SETTINGS) },
                 onOpenExpert = { navController.navigate(Routes.EXPERT) },
@@ -305,12 +302,14 @@ private fun AppRoot(viewModel: MainViewModel) {
                 )
             }
         }
-        composable(Routes.HISTORY) {
+        composable(Routes.STATISTICS) {
             val sessions by viewModel.history.collectAsState()
             val completedWorkouts by viewModel.completedWorkouts.collectAsState()
-            HistoryScreen(
+            val bodyMeasurements by viewModel.bodyMeasurements.collectAsState()
+            StatisticsScreen(
                 sessions = sessions,
                 completedWorkouts = completedWorkouts,
+                bodyMeasurements = bodyMeasurements,
                 onOpenSession = { id -> navController.navigate("${Routes.SESSION}/$id") },
                 onBack = { navController.popBackStack() },
             )
@@ -323,15 +322,6 @@ private fun AppRoot(viewModel: MainViewModel) {
             val sessions by viewModel.history.collectAsState()
             SessionDetailScreen(
                 session = sessions.find { it.id == sessionId },
-                onBack = { navController.popBackStack() },
-            )
-        }
-        composable(Routes.STATS) {
-            val sessions by viewModel.history.collectAsState()
-            val bodyMeasurements by viewModel.bodyMeasurements.collectAsState()
-            StatsScreen(
-                sessions = sessions,
-                bodyMeasurements = bodyMeasurements,
                 onBack = { navController.popBackStack() },
             )
         }

@@ -34,8 +34,7 @@ fun ExerciseSelectScreen(
     onOpenPrograms: () -> Unit,
     onOpenPlans: () -> Unit,
     onOpenRecordings: () -> Unit,
-    onOpenHistory: () -> Unit,
-    onOpenStats: () -> Unit,
+    onOpenStatistics: () -> Unit,
     onOpenProfile: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenExpert: () -> Unit,
@@ -120,10 +119,12 @@ fun ExerciseSelectScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(12.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                GymButton(stringResource(R.string.nav_history), onOpenHistory, Modifier.weight(1f), GymButtonStyle.Secondary)
-                GymButton(stringResource(R.string.nav_stats), onOpenStats, Modifier.weight(1f), GymButtonStyle.Secondary)
-            }
+            GymButton(
+                text = stringResource(R.string.statistics_title),
+                onClick = onOpenStatistics,
+                style = GymButtonStyle.Secondary,
+                modifier = Modifier.fillMaxWidth(),
+            )
             Spacer(Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 GymButton(stringResource(R.string.nav_profile), onOpenProfile, Modifier.weight(1f), GymButtonStyle.Secondary)

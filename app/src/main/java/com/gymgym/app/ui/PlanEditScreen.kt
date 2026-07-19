@@ -108,15 +108,24 @@ fun PlanEditScreen(
     var openCycle by remember { mutableStateOf<CyRow?>(null) }
     var openWorkout by remember { mutableStateOf<WoRow?>(null) }
 
+    val saveEnabled = planName.isNotBlank() && cycles.isNotEmpty()
+    val saveAll: () -> Unit = {
+        onSave(existing?.plan?.id ?: 0L, buildDraft(planName.trim(), endDate, cycles))
+    }
+
     when {
         openWorkout != null -> WorkoutEditor(
             workout = openWorkout!!,
             customExercises = customExercises,
+            onSaveAll = saveAll,
+            saveEnabled = saveEnabled,
             onBack = { openWorkout = null },
         )
         openCycle != null -> CycleEditor(
             cycle = openCycle!!,
             onOpenWorkout = { openWorkout = it },
+            onSaveAll = saveAll,
+            saveEnabled = saveEnabled,
             onBack = { openCycle = null },
         )
         else -> PlanEditor(
@@ -266,6 +275,8 @@ private fun PlanEditor(
 private fun CycleEditor(
     cycle: CyRow,
     onOpenWorkout: (WoRow) -> Unit,
+    onSaveAll: () -> Unit,
+    saveEnabled: Boolean,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -320,6 +331,12 @@ private fun CycleEditor(
         ) {
             Text(stringResource(R.string.plan_add_workout))
         }
+        GymButton(
+            text = stringResource(R.string.plan_save),
+            onClick = onSaveAll,
+            enabled = saveEnabled,
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+        )
     }
 }
 
@@ -327,6 +344,8 @@ private fun CycleEditor(
 private fun WorkoutEditor(
     workout: WoRow,
     customExercises: List<CustomExercise>,
+    onSaveAll: () -> Unit,
+    saveEnabled: Boolean,
     onBack: () -> Unit,
 ) {
     var showPicker by remember { mutableStateOf(false) }
@@ -373,6 +392,12 @@ private fun WorkoutEditor(
         OutlinedButton(onClick = { showPicker = true }, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.plan_add_exercise))
         }
+        GymButton(
+            text = stringResource(R.string.plan_save),
+            onClick = onSaveAll,
+            enabled = saveEnabled,
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+        )
     }
 
     if (showPicker) {

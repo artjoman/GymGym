@@ -395,4 +395,9 @@
     <string name="expert_l3_f3">Bilans hebdomadaires et mensuels</string>
     <string name="expert_l3_f4">Programmes personnalisés</string>
     <string name="stats_body_trends">Tendances des mensurations</string>
+    <!-- Feedback fixes (2.0.2) -->
+    <string name="camera_skip_rest">Passer le repos</string>
+    <string name="plan_save">Enregistrer le programme</string>
+    <string name="statistics_title">Statistiques</string>
+    <string name="stats_data_title">Données</string>
 </resources>
