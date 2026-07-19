@@ -35,8 +35,15 @@ object Reminders {
 
     /** Intent extra naming the in-app screen a tapped notification should open. */
     const val EXTRA_DESTINATION = "gymgym.destination"
-    /** Destination value: the Profile screen (where body measurements are entered). */
+    // Destination values a tapped notification can request. Unknown/invalid values
+    // fall back to Home (see AppRoot). Kept as plain strings so the notify layer
+    // doesn't depend on the navigation routes.
+    /** Profile screen (body measurements / parameters). */
     const val DEST_PROFILE = "profile"
+    /** Next Mission — the upcoming/current workout. */
+    const val DEST_MISSION = "mission"
+    /** Workout Plans list (active plan). */
+    const val DEST_PLANS = "plans"
 
     private const val WORK_UPCOMING = "reminder_upcoming"
     private const val WORK_MISSED = "reminder_missed"
@@ -103,6 +110,7 @@ object Reminders {
             notifId = NOTIF_UPCOMING,
             titleRes = R.string.reminder_upcoming_title,
             textRes = R.string.reminder_upcoming_text,
+            destination = DEST_MISSION,
             context = context,
         )
         scheduleOneShot(
@@ -113,6 +121,7 @@ object Reminders {
             notifId = NOTIF_MISSED,
             titleRes = R.string.reminder_missed_title,
             textRes = R.string.reminder_missed_text,
+            destination = DEST_MISSION,
             context = context,
         )
 
@@ -139,6 +148,7 @@ object Reminders {
         notifId: Int,
         titleRes: Int,
         textRes: Int,
+        destination: String?,
         context: Context,
     ) {
         if (!enabled || fireAt == null) {
@@ -152,7 +162,7 @@ object Reminders {
         }
         val work = OneTimeWorkRequestBuilder<ReminderWorker>()
             .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-            .setInputData(notifData(context, notifId, titleRes, textRes))
+            .setInputData(notifData(context, notifId, titleRes, textRes, destination))
             .build()
         wm.enqueueUniqueWork(name, ExistingWorkPolicy.REPLACE, work)
     }

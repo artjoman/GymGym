@@ -120,13 +120,26 @@ private fun AppRoot(
     val context = LocalContext.current
     val navController = rememberNavController()
 
-    // A tapped reminder can ask us to jump straight to a screen (e.g. Profile to
-    // log measurements). Consume it once so returning Back doesn't re-trigger.
+    // A tapped notification can ask us to jump straight to a screen. Map the
+    // requested destination to a route (unknown/invalid → stay on Home), then
+    // consume it once so a Back press or recomposition doesn't re-trigger. This
+    // runs whether the app was cold-started (onCreate) or resumed (onNewIntent).
     LaunchedEffect(launchDestination) {
-        when (launchDestination) {
-            Reminders.DEST_PROFILE -> navController.navigate(Routes.PROFILE)
+        val dest = launchDestination ?: return@LaunchedEffect
+        val route = when (dest) {
+            Reminders.DEST_PROFILE -> Routes.PROFILE
+            Reminders.DEST_MISSION -> Routes.MISSION
+            Reminders.DEST_PLANS -> Routes.PLANS
+            else -> null // unknown/invalid → fall back to Home (already the root)
         }
-        if (launchDestination != null) onDestinationHandled()
+        if (route != null) {
+            navController.navigate(route) {
+                // Keep Home as the single root; don't stack duplicate destinations.
+                popUpTo(Routes.HOME)
+                launchSingleTop = true
+            }
+        }
+        onDestinationHandled()
     }
 
     var hasCameraPermission by remember {

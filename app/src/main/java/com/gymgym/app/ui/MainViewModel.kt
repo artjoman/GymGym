@@ -785,6 +785,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     Reminders.NOTIF_CYCLE,
                     str(R.string.reminder_cycle_title),
                     str(R.string.reminder_cycle_text, avg),
+                    destination = Reminders.DEST_PLANS,
                 )
             }
             workoutProgressRepository.clear()

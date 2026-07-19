@@ -5,8 +5,11 @@ bump with the changes made since the previous release (see AGENTS.md).
 
 ## 2.0.4 (versionCode 13)
 
-- Tapping the **body-measurement reminder** now opens straight to the Profile
-  screen so you can log your measurements right away.
+- **Notifications now open the right screen.** Tapping a reminder deep-links to
+  where it's about — body-measurement → Profile, workout reminder → Next
+  Mission, cycle-progress → Workout Plans — whether the app was closed, in the
+  background, or already open. Unknown links fall back to Home, and no duplicate
+  screens are stacked.
 - Added a **mic mute** button during a workout: tap it to stop listening for
   voice commands. The choice sticks between exercises and sessions.
 - **Every exercise is now testable from the library** — non-AI moves and your
