@@ -368,6 +368,12 @@
     <!-- Next Mission / dashboard (Phase 6) -->
     <string name="home_next_mission">المهمة التالية</string>
     <string name="home_last_workout">آخر تمرين</string>
+    <string name="home_last_cycle">آخر دورة</string>
+    <string name="home_current_mission">المهمة الحالية</string>
+    <string name="home_no_cycles">لا توجد دورات مكتملة بعد.</string>
+    <string name="home_no_plan">اختر برنامجًا أو أنشئ خطة تمرين.</string>
+    <string name="cycle_skipped">تم التخطي</string>
+    <string name="stats_cycles_tab">الدورات</string>
     <string name="mission_title">المهمة التالية</string>
     <string name="mission_planned">مقرر: %1$s</string>
     <string name="mission_swap">تبديل</string>

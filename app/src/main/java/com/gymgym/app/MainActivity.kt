@@ -242,11 +242,12 @@ private fun AppRoot(
     ) {
         composable(Routes.HOME) {
             val profile by viewModel.profile.collectAsState()
-            val dashboard by viewModel.dashboard.collectAsState()
+            val homeCycles by viewModel.homeCycles.collectAsState()
             ExerciseSelectScreen(
                 greeting = profile.displayName,
-                dashboard = dashboard,
+                homeCycles = homeCycles,
                 onOpenMission = { navController.navigate(Routes.MISSION) },
+                onOpenLastCycle = { navController.navigate("${Routes.STATISTICS}?tab=2") },
                 onOpenLibrary = { navController.navigate(Routes.LIBRARY) },
                 onOpenPrograms = { navController.navigate(Routes.PROGRAMS) },
                 onOpenPlans = { navController.navigate(Routes.PLANS) },
@@ -348,11 +349,16 @@ private fun AppRoot(
                 )
             }
         }
-        composable(Routes.STATISTICS) {
+        composable(
+            "${Routes.STATISTICS}?tab={tab}",
+            arguments = listOf(navArgument("tab") { type = NavType.IntType; defaultValue = 0 }),
+        ) { entry ->
+            val initialTab = entry.arguments?.getInt("tab") ?: 0
             val sessions by viewModel.history.collectAsState()
             val completedWorkouts by viewModel.completedWorkouts.collectAsState()
             val bodyMeasurements by viewModel.bodyMeasurements.collectAsState()
             val customExercises by viewModel.customExercises.collectAsState()
+            val cycles by viewModel.cycleSummaries.collectAsState()
             val customNames = customExercises.associate { ExerciseRef.forCustom(it.id) to it.name }
             StatisticsScreen(
                 sessions = sessions,
@@ -361,6 +367,8 @@ private fun AppRoot(
                 onOpenSession = { id -> navController.navigate("${Routes.SESSION}/$id") },
                 onBack = { navController.popBackStack() },
                 customNames = customNames,
+                cycles = cycles,
+                initialTab = initialTab,
             )
         }
         composable(

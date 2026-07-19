@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.gymgym.app.R
+import com.gymgym.app.cycle.CycleSummary
 import com.gymgym.app.data.BodyMeasurement
 import com.gymgym.app.data.CompletedWorkoutWithExercises
 import com.gymgym.app.data.WorkoutSession
@@ -33,8 +34,10 @@ fun StatisticsScreen(
     onOpenSession: (Long) -> Unit,
     onBack: () -> Unit,
     customNames: Map<String, String> = emptyMap(),
+    cycles: List<CycleSummary> = emptyList(),
+    initialTab: Int = 0,
 ) {
-    var tab by remember { mutableIntStateOf(0) }
+    var tab by remember { mutableIntStateOf(initialTab.coerceIn(0, 2)) }
 
     Column(
         modifier = Modifier.fillMaxSize().systemBarsPadding().padding(horizontal = 24.dp, vertical = 16.dp),
@@ -51,13 +54,14 @@ fun StatisticsScreen(
         TabRow(selectedTabIndex = tab, modifier = Modifier.padding(top = 8.dp)) {
             Tab(selected = tab == 0, onClick = { tab = 0 }, text = { Text(stringResource(R.string.stats_title)) })
             Tab(selected = tab == 1, onClick = { tab = 1 }, text = { Text(stringResource(R.string.history_title)) })
+            Tab(selected = tab == 2, onClick = { tab = 2 }, text = { Text(stringResource(R.string.stats_cycles_tab)) })
         }
 
         val contentModifier = Modifier.weight(1f).padding(top = 12.dp)
-        if (tab == 0) {
-            StatsContent(sessions, bodyMeasurements, contentModifier)
-        } else {
-            HistoryContent(sessions, completedWorkouts, onOpenSession, contentModifier, customNames)
+        when (tab) {
+            0 -> StatsContent(sessions, bodyMeasurements, contentModifier)
+            1 -> HistoryContent(sessions, completedWorkouts, onOpenSession, contentModifier, customNames)
+            else -> CyclesContent(cycles, contentModifier)
         }
     }
 }

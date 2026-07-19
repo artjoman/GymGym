@@ -28,8 +28,9 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ExerciseSelectScreen(
     greeting: String?,
-    dashboard: com.gymgym.app.cycle.DashboardState,
+    homeCycles: com.gymgym.app.cycle.HomeCycles,
     onOpenMission: () -> Unit,
+    onOpenLastCycle: () -> Unit,
     onOpenLibrary: () -> Unit,
     onOpenPrograms: () -> Unit,
     onOpenPlans: () -> Unit,
@@ -65,66 +66,22 @@ fun ExerciseSelectScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            val mission = dashboard.nextMission
-            if (dashboard.hasActivePlan && mission != null) {
-                SectionLabel(stringResource(R.string.home_next_mission), top = 20.dp)
-                androidx.compose.material3.Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = onOpenMission),
-                ) {
-                    Column(Modifier.padding(16.dp)) {
-                        Text(
-                            dashboard.planName.orEmpty(),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Text(
-                            mission.workout.name,
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Spacer(Modifier.height(10.dp))
-                        CycleProgressBar(dashboard)
-                    }
-                }
+            // LAST CYCLE — most recent completed cycle (tap → Statistics → Cycles).
+            SectionLabel(stringResource(R.string.home_last_cycle), top = 20.dp)
+            val lastCycle = homeCycles.lastCycle
+            if (lastCycle != null) {
+                CycleCard(summary = lastCycle, onClick = onOpenLastCycle)
+            } else {
+                EmptyCycleCard(stringResource(R.string.home_no_cycles))
             }
 
-            dashboard.lastWorkout?.let { last ->
-                SectionLabel(stringResource(R.string.home_last_workout), top = 20.dp)
-                val context = androidx.compose.ui.platform.LocalContext.current
-                androidx.compose.material3.Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = onOpenStatistics),
-                ) {
-                    Column(Modifier.padding(16.dp)) {
-                        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                            Text(
-                                last.name,
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.weight(1f),
-                            )
-                            Text(
-                                "${last.avgPercent}%",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                        }
-                        Spacer(Modifier.height(4.dp))
-                        Text(
-                            stringResource(
-                                R.string.history_meta,
-                                formatDate(last.startedAt),
-                                formatDuration(context, last.durationMs),
-                            ),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
+            // CURRENT MISSION — the in-progress cycle (tap → Next Mission).
+            SectionLabel(stringResource(R.string.home_current_mission), top = 20.dp)
+            val currentCycle = homeCycles.currentCycle
+            if (currentCycle != null) {
+                CycleCard(summary = currentCycle, onClick = onOpenMission)
+            } else {
+                EmptyCycleCard(stringResource(R.string.home_no_plan))
             }
 
             SectionLabel(stringResource(R.string.home_train_smarter), top = 26.dp)
@@ -190,4 +147,76 @@ private fun SectionLabel(text: String, top: androidx.compose.ui.unit.Dp) {
         fontWeight = FontWeight.SemiBold,
         modifier = Modifier.padding(top = top, bottom = 12.dp),
     )
+}
+
+/**
+ * A cycle block: cycle name + overall % as the title, the plan name small in the
+ * upper-right, and each workout in execution order below. Used for both LAST
+ * CYCLE and CURRENT MISSION so they share layout and information hierarchy.
+ */
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@Composable
+internal fun CycleCard(summary: com.gymgym.app.cycle.CycleSummary, onClick: (() -> Unit)? = null) {
+    val cardModifier = Modifier.fillMaxWidth()
+        .let { if (onClick != null) it.clickable(onClick = onClick) else it }
+    androidx.compose.material3.Card(modifier = cardModifier) {
+        Column(Modifier.padding(16.dp)) {
+            Row(verticalAlignment = androidx.compose.ui.Alignment.Top) {
+                Text(
+                    "${summary.cycleName} (${summary.percent}%)",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f),
+                )
+                Text(
+                    summary.planName,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 8.dp),
+                )
+            }
+            if (summary.workouts.isNotEmpty()) {
+                Spacer(Modifier.height(8.dp))
+                androidx.compose.foundation.layout.FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    for (w in summary.workouts) {
+                        Text(
+                            cycleWorkoutText(w),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (w.status == com.gymgym.app.cycle.CycleLineStatus.SKIPPED) {
+                                MaterialTheme.colorScheme.error
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+internal fun cycleWorkoutText(w: com.gymgym.app.cycle.CycleWorkoutLine): String {
+    val base = when (w.status) {
+        com.gymgym.app.cycle.CycleLineStatus.DONE -> "${w.name} — ${w.percent}%"
+        com.gymgym.app.cycle.CycleLineStatus.SKIPPED ->
+            "${w.name} — ${stringResource(R.string.cycle_skipped)}"
+        com.gymgym.app.cycle.CycleLineStatus.PENDING -> w.name
+    }
+    return w.weekday?.let { "$base · ${weekdayShort(it)}" } ?: base
+}
+
+@Composable
+private fun EmptyCycleCard(message: String) {
+    androidx.compose.material3.Card(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            message,
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
 }

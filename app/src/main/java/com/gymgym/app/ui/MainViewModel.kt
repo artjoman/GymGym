@@ -28,7 +28,10 @@ import com.gymgym.app.counter.RepFault
 import com.gymgym.app.counter.RepQuality
 import com.gymgym.app.counter.SquatCounter
 import com.gymgym.app.cycle.CycleEngine
+import com.gymgym.app.cycle.CycleSummaries
+import com.gymgym.app.cycle.CycleSummary
 import com.gymgym.app.cycle.DashboardState
+import com.gymgym.app.cycle.HomeCycles
 import com.gymgym.app.data.BodyMeasurement
 import com.gymgym.app.data.BodyMetric
 import com.gymgym.app.data.CompletedWorkoutRepository
@@ -164,6 +167,33 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         SharingStarted.WhileSubscribed(5_000),
         CycleEngine.compute(null, emptyMap(), null, Profile(), System.currentTimeMillis()),
     )
+
+    /** The Last cycle + Current mission blocks shown above "Train smarter" on Home. */
+    val homeCycles: StateFlow<HomeCycles> = combine(
+        planRepository.plans,
+        planRepository.activePlan,
+        workoutProgressRepository.all,
+        completedWorkoutRepository.all,
+        profileRepository.profile,
+    ) { plans, active, progress, completed, profile ->
+        val progMap = progress.associate {
+            it.workoutId to CycleEngine.ProgressEntry(it.status, it.percent)
+        }
+        CycleSummaries.compute(plans, active, progMap, completed, profile)
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        HomeCycles(hasActivePlan = false, lastCycle = null, currentCycle = null),
+    )
+
+    /** All cycles that have any completed workout — for the Statistics → Cycles tab. */
+    val cycleSummaries: StateFlow<List<CycleSummary>> = combine(
+        planRepository.plans,
+        completedWorkoutRepository.all,
+        profileRepository.profile,
+    ) { plans, completed, profile ->
+        CycleSummaries.allCycles(plans, completed, profile)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val customExercises: StateFlow<List<CustomExercise>> = customExerciseRepository.all
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())

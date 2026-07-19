@@ -19,8 +19,11 @@ bump with the changes made since the previous release (see AGENTS.md).
   **`Name: 10×3 sets • 27/30 reps`** (skipped exercises show **Skipped**), custom
   exercises show their real name, and the workout **completion %** is now total
   reps done ÷ total reps planned across the workout, rounded (e.g. 75/80 → 94%).
-- The home screen now shows a **Last workout** card — name, date, completion %
-  and duration at a glance (tap it to open Statistics).
+- The home screen now shows two cycle blocks above Train smarter — **Last cycle**
+  and **Current mission** — each with the cycle name + overall %, the plan name,
+  and every workout in order (skipped ones marked *Skipped*). Cycle % is total
+  reps done ÷ total reps planned across the cycle. Tapping Last cycle opens the
+  new **Statistics → Cycles** tab.
 - Fixed a crash that could occur right after finishing a set.
 
 ## 2.0.3 (versionCode 12)

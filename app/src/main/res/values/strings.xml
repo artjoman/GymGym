@@ -311,6 +311,12 @@
     <string name="home_programs">Programs</string>
     <string name="home_next_mission">Next mission</string>
     <string name="home_last_workout">Last workout</string>
+    <string name="home_last_cycle">Last cycle</string>
+    <string name="home_current_mission">Current mission</string>
+    <string name="home_no_cycles">No completed cycles yet.</string>
+    <string name="home_no_plan">Choose a program or create a workout plan.</string>
+    <string name="cycle_skipped">Skipped</string>
+    <string name="stats_cycles_tab">Cycles</string>
     <string name="home_expert">Expert support</string>
     <string name="expert_title">Expert Support</string>
     <string name="expert_coming_soon">Coming soon</string>

@@ -356,6 +356,12 @@
     <!-- Next Mission / dashboard (Phase 6) -->
     <string name="home_next_mission">Prochaine mission</string>
     <string name="home_last_workout">Dernière séance</string>
+    <string name="home_last_cycle">Dernier cycle</string>
+    <string name="home_current_mission">Mission actuelle</string>
+    <string name="home_no_cycles">Aucun cycle terminé pour l\'instant.</string>
+    <string name="home_no_plan">Choisissez un programme ou créez un plan d\'entraînement.</string>
+    <string name="cycle_skipped">Ignoré</string>
+    <string name="stats_cycles_tab">Cycles</string>
     <string name="mission_title">Prochaine mission</string>
     <string name="mission_planned">Prévu : %1$s</string>
     <string name="mission_swap">Échanger</string>

@@ -353,6 +353,12 @@
     <!-- Next Mission / dashboard (Phase 6) -->
     <string name="home_next_mission">下一个任务</string>
     <string name="home_last_workout">上次训练</string>
+    <string name="home_last_cycle">上一个周期</string>
+    <string name="home_current_mission">当前任务</string>
+    <string name="home_no_cycles">尚无已完成的周期。</string>
+    <string name="home_no_plan">选择一个程序或创建训练计划。</string>
+    <string name="cycle_skipped">已跳过</string>
+    <string name="stats_cycles_tab">周期</string>
     <string name="mission_title">下一个任务</string>
     <string name="mission_planned">计划：%1$s</string>
     <string name="mission_swap">更换</string>

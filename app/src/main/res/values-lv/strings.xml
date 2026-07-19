@@ -359,6 +359,12 @@
     <!-- Next Mission / dashboard (Phase 6) -->
     <string name="home_next_mission">Nākamā misija</string>
     <string name="home_last_workout">Pēdējais treniņš</string>
+    <string name="home_last_cycle">Pēdējais cikls</string>
+    <string name="home_current_mission">Pašreizējā misija</string>
+    <string name="home_no_cycles">Vēl nav pabeigtu ciklu.</string>
+    <string name="home_no_plan">Izvēlieties programmu vai izveidojiet treniņu plānu.</string>
+    <string name="cycle_skipped">Izlaists</string>
+    <string name="stats_cycles_tab">Cikli</string>
     <string name="mission_title">Nākamā misija</string>
     <string name="mission_planned">Plānots: %1$s</string>
     <string name="mission_swap">Mainīt</string>

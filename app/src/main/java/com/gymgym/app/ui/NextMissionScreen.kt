@@ -191,7 +191,7 @@ private fun formatMissionTime(millis: Long): String =
     DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(millis))
 
 /** Localized short weekday name for our 1=Mon..7=Sun encoding. */
-private fun weekdayShort(day: Int): String {
+internal fun weekdayShort(day: Int): String {
     val symbols = java.text.DateFormatSymbols.getInstance().shortWeekdays
     val calDay = if (day == 7) java.util.Calendar.SUNDAY else day + 1
     return symbols.getOrNull(calDay).orEmpty()
