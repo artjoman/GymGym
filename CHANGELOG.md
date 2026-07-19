@@ -3,6 +3,31 @@
 User-facing release notes for GymGym, newest first. Updated on every version
 bump with the changes made since the previous release (see AGENTS.md).
 
+## 2.0.0 (versionCode 9)
+
+GymGym grows from a rep counter into a full workout planner:
+
+- **Exercise library** — browse ~40 exercises grouped by muscle group, test the
+  AI-counted ones, and add your own custom exercises.
+- **Programs** — six ready-made programs (Full Body Beginner/Standard, Home,
+  Street, Weighted Base, Push/Pull/Legs); pick one to set it as your active plan.
+- **Workout plans, restructured** — build Plan → Cycle → Workout → Exercise, set
+  an end date, and mark one plan active.
+- **Home dashboard** — a Next Mission card with cycle progress; open it to Start,
+  Swap or Skip the next workout. Smart Cycle or Weekly Schedule.
+- **Run a whole workout** — rest timers between sets and exercises with spoken
+  "next set / start the set" cues; durations now exclude paused time.
+- **Profile** — training mode, recovery timeouts (between workouts/sets/
+  exercises), centimeters/inches, and body measurements (weight, arm, leg, chest,
+  shoulders, calves, waist) with history.
+- **History** — completed workouts with average form % and duration, on top of
+  per-exercise history.
+- **Reminders** (Motivation & Control) — upcoming/missed workout reminders,
+  a low-cycle-average alert, and a body-measurement reminder.
+- **Expert Support** — a preview of AI Coach and human coaching tiers
+  (coming soon).
+- Everything localized across all seven supported languages.
+
 ## 1.2.4 (versionCode 8)
 
 - Smaller download and a leaner on-device footprint (enabled R8 code shrinking,
