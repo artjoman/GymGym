@@ -263,11 +263,17 @@ private fun AppRoot(
                 CameraScreen(
                     exercise = exercise,
                     viewModel = viewModel,
+                    // The workout flow always ends on Home (the central dashboard):
+                    // pop past any intermediate screen (e.g. Next Mission) so a
+                    // finished/stopped workout lands there with refreshed cycle,
+                    // Current mission and Last workout state — same as Skip.
                     onExit = {
                         viewModel.stopSession()
-                        navController.popBackStack()
+                        navController.popBackStack(Routes.HOME, inclusive = false)
                     },
-                    onFinished = { navController.popBackStack() },
+                    onFinished = {
+                        navController.popBackStack(Routes.HOME, inclusive = false)
+                    },
                 )
             }
         }

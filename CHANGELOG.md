@@ -18,6 +18,10 @@ bump with the changes made since the previous release (see AGENTS.md).
   yourself. During a manual test, a note explains that AI counting is still in
   development and invites you to contribute recordings.
 - The workout screen's exit button now reads **Stop exercise** (was "Stop plan").
+- Finishing (or stopping) a workout now returns you to the **Home** screen — the
+  same as skipping — so you always land on the refreshed dashboard (updated
+  Current mission, cycle progress and Last workout) instead of the Next Mission
+  screen.
 - History workout cards are clearer: each exercise reads
   **`Name: 10×3 sets • 27/30 reps`** (skipped exercises show **Skipped**), custom
   exercises show their real name, and the workout **completion %** is now total
