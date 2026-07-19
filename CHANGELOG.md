@@ -5,6 +5,10 @@ bump with the changes made since the previous release (see AGENTS.md).
 
 ## 2.0.4 (versionCode 13)
 
+- Updated the creator footer to "Built by people who train and work hard. By
+  projectorum.com with ❤️", with only **projectorum.com** tappable (opens the
+  site in your browser); the rest is plain centered text.
+
 - **Notifications now open the right screen.** Tapping a reminder deep-links to
   where it's about — body-measurement → Profile, workout reminder → Next
   Mission, cycle-progress → Workout Plans — whether the app was closed, in the
