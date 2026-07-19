@@ -179,6 +179,7 @@
 
     <!-- Plans -->
     <string name="plans_title">Treniņu plāni</string>
+    <string name="plans_tab_my">Mani plāni</string>
     <string name="plans_new">Jauns plāns</string>
     <string name="plans_empty">Vēl nav plānu. Izveido vienu, lai izpildītu vairākus vingrinājumus pēc kārtas.</string>
     <string name="plans_no_exercises">Nav vingrinājumu</string>

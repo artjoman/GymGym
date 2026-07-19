@@ -41,13 +41,11 @@ import com.gymgym.app.ui.ExerciseLibraryScreen
 import com.gymgym.app.ui.ExerciseSelectScreen
 import com.gymgym.app.ui.ExpertSupportScreen
 import com.gymgym.app.ui.NextMissionScreen
-import com.gymgym.app.ui.ProgramsScreen
 import com.gymgym.app.notify.Reminders
 import com.gymgym.app.ui.MainViewModel
 import com.gymgym.app.ui.PlanEditScreen
 import com.gymgym.app.ui.PlanListScreen
 import com.gymgym.app.ui.ProfileScreen
-import com.gymgym.app.ui.RecordingsScreen
 import com.gymgym.app.ui.SessionDetailScreen
 import com.gymgym.app.ui.SettingsScreen
 import com.gymgym.app.ui.StatisticsScreen
@@ -249,9 +247,7 @@ private fun AppRoot(
                 onOpenMission = { navController.navigate(Routes.MISSION) },
                 onOpenLastCycle = { navController.navigate("${Routes.STATISTICS}?tab=2") },
                 onOpenLibrary = { navController.navigate(Routes.LIBRARY) },
-                onOpenPrograms = { navController.navigate(Routes.PROGRAMS) },
                 onOpenPlans = { navController.navigate(Routes.PLANS) },
-                onOpenRecordings = { navController.navigate(Routes.RECORDINGS) },
                 onOpenStatistics = { navController.navigate(Routes.STATISTICS) },
                 onOpenProfile = { navController.navigate(Routes.PROFILE) },
                 onOpenSettings = { navController.navigate(Routes.SETTINGS) },
@@ -301,22 +297,8 @@ private fun AppRoot(
                 onBack = { navController.popBackStack() },
             )
         }
-        composable(Routes.PROGRAMS) {
-            val ctx = LocalContext.current
-            ProgramsScreen(
-                onUse = { program ->
-                    viewModel.useProgram(program)
-                    Toast.makeText(
-                        ctx,
-                        ctx.getString(R.string.programs_activated),
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                    navController.popBackStack()
-                },
-                onBack = { navController.popBackStack() },
-            )
-        }
         composable(Routes.PLANS) {
+            val ctx = LocalContext.current
             val plans by viewModel.plans.collectAsState()
             PlanListScreen(
                 plans = plans,
@@ -325,6 +307,15 @@ private fun AppRoot(
                 onDelete = viewModel::deletePlan,
                 onSetActive = viewModel::setActivePlan,
                 onStart = ::startPlan,
+                onUseProgram = { program ->
+                    // Activating a preset program creates/assigns it as the active plan.
+                    viewModel.useProgram(program)
+                    Toast.makeText(
+                        ctx,
+                        ctx.getString(R.string.programs_activated),
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                },
                 onBack = { navController.popBackStack() },
             )
         }
@@ -418,9 +409,6 @@ private fun AppRoot(
                 },
                 onBack = { navController.popBackStack() },
             )
-        }
-        composable(Routes.RECORDINGS) {
-            RecordingsScreen(onBack = { navController.popBackStack() })
         }
         composable(Routes.EXPERT) {
             ExpertSupportScreen(onBack = { navController.popBackStack() })

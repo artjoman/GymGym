@@ -179,6 +179,7 @@
 
     <!-- Plans -->
     <string name="plans_title">Programmes</string>
+    <string name="plans_tab_my">Mes plans</string>
     <string name="plans_new">Nouveau programme</string>
     <string name="plans_empty">Pas encore de programme. Créez-en un pour enchaîner plusieurs exercices.</string>
     <string name="plans_no_exercises">Aucun exercice</string>

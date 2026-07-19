@@ -28,10 +28,11 @@ import com.gymgym.app.exercise.ExerciseCatalog
 import com.gymgym.app.program.Program
 import com.gymgym.app.program.Programs
 
+/** Preset programs list (+ detail drill-down), embedded as a tab in Workout Plans. */
 @Composable
-fun ProgramsScreen(
+fun ProgramsContent(
     onUse: (Program) -> Unit,
-    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var selected by remember { mutableStateOf<Program?>(null) }
 
@@ -41,18 +42,15 @@ fun ProgramsScreen(
             program = current,
             onUse = { onUse(current) },
             onBack = { selected = null },
+            modifier = modifier,
         )
     } else {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .systemBarsPadding()
-                .verticalScroll(rememberScrollState())
-                .padding(24.dp),
+            modifier = modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            Text(stringResource(R.string.programs_title), style = MaterialTheme.typography.headlineSmall)
-
             for (program in Programs.ALL) {
                 Card(
                     modifier = Modifier.fillMaxWidth().clickable { selected = program },
@@ -72,10 +70,6 @@ fun ProgramsScreen(
                     }
                 }
             }
-
-            TextButton(onClick = onBack, modifier = Modifier.padding(top = 8.dp)) {
-                Text(stringResource(R.string.action_back))
-            }
         }
     }
 }
@@ -85,14 +79,13 @@ private fun ProgramDetail(
     program: Program,
     onUse: () -> Unit,
     onBack: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .systemBarsPadding()
-            .verticalScroll(rememberScrollState())
-            .padding(24.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         TextButton(onClick = onBack) { Text(stringResource(R.string.action_back)) }

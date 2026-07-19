@@ -179,6 +179,7 @@
 
     <!-- Plans -->
     <string name="plans_title">Planes de entrenamiento</string>
+    <string name="plans_tab_my">Mis planes</string>
     <string name="plans_new">Nuevo plan</string>
     <string name="plans_empty">Aún no hay planes. Crea uno para hacer varios ejercicios seguidos.</string>
     <string name="plans_no_exercises">Sin ejercicios</string>

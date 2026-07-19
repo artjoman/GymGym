@@ -179,6 +179,7 @@
 
     <!-- Plans -->
     <string name="plans_title">Планы тренировок</string>
+    <string name="plans_tab_my">Мои планы</string>
     <string name="plans_new">Новый план</string>
     <string name="plans_empty">Пока нет планов. Создайте план, чтобы выполнять несколько упражнений подряд.</string>
     <string name="plans_no_exercises">Нет упражнений</string>

@@ -272,6 +272,7 @@
 
     <!-- Plans -->
     <string name="plans_title">Workout plans</string>
+    <string name="plans_tab_my">My Plans</string>
     <string name="plans_new">New plan</string>
     <string name="plans_empty">No plans yet. Create one to run several exercises back to back.</string>
     <string name="plans_no_exercises">No exercises</string>

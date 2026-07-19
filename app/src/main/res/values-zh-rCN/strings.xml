@@ -179,6 +179,7 @@
 
     <!-- Plans -->
     <string name="plans_title">训练计划</string>
+    <string name="plans_tab_my">我的计划</string>
     <string name="plans_new">新建计划</string>
     <string name="plans_empty">还没有计划。创建一个即可连续完成多个动作。</string>
     <string name="plans_no_exercises">无动作</string>

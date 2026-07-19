@@ -14,10 +14,13 @@ import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -30,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.gymgym.app.R
 import com.gymgym.app.data.PlanWithCycles
 import com.gymgym.app.exercise.ExerciseRef
+import com.gymgym.app.program.Program
 
 @Composable
 fun PlanListScreen(
@@ -39,41 +43,59 @@ fun PlanListScreen(
     onDelete: (Long) -> Unit,
     onSetActive: (Long) -> Unit,
     onStart: (PlanWithCycles) -> Unit,
+    onUseProgram: (Program) -> Unit,
     onBack: () -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxSize().systemBarsPadding().padding(24.dp)) {
-        Text(stringResource(R.string.plans_title), style = MaterialTheme.typography.headlineSmall)
-
-        GymButton(
-            text = stringResource(R.string.plans_new),
-            onClick = onNew,
-            modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-        )
-
-        if (plans.isEmpty()) {
+    var tab by remember { mutableIntStateOf(0) }
+    Column(
+        modifier = Modifier.fillMaxSize().systemBarsPadding().padding(horizontal = 24.dp, vertical = 16.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextButton(onClick = onBack) { Text(stringResource(R.string.action_back)) }
             Text(
-                stringResource(R.string.plans_empty),
-                modifier = Modifier.padding(vertical = 24.dp),
+                stringResource(R.string.home_workout_plans),
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(start = 4.dp),
             )
-        } else {
-            LazyColumn(
-                modifier = Modifier.weight(1f).padding(top = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                items(plans, key = { it.plan.id }) { plan ->
-                    PlanCard(
-                        plan = plan,
-                        onEdit = { onEdit(plan.plan.id) },
-                        onDelete = { onDelete(plan.plan.id) },
-                        onSetActive = { onSetActive(plan.plan.id) },
-                        onStart = { onStart(plan) },
-                    )
-                }
-            }
         }
 
-        TextButton(onClick = onBack, modifier = Modifier.padding(top = 8.dp)) {
-            Text(stringResource(R.string.action_back))
+        TabRow(selectedTabIndex = tab, modifier = Modifier.padding(top = 8.dp)) {
+            Tab(selected = tab == 0, onClick = { tab = 0 }, text = { Text(stringResource(R.string.plans_tab_my)) })
+            Tab(selected = tab == 1, onClick = { tab = 1 }, text = { Text(stringResource(R.string.home_programs)) })
+        }
+
+        val contentModifier = Modifier.weight(1f).padding(top = 12.dp)
+        if (tab == 0) {
+            Column(modifier = contentModifier) {
+                GymButton(
+                    text = stringResource(R.string.plans_new),
+                    onClick = onNew,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                if (plans.isEmpty()) {
+                    Text(
+                        stringResource(R.string.plans_empty),
+                        modifier = Modifier.padding(vertical = 24.dp),
+                    )
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.weight(1f).padding(top = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        items(plans, key = { it.plan.id }) { plan ->
+                            PlanCard(
+                                plan = plan,
+                                onEdit = { onEdit(plan.plan.id) },
+                                onDelete = { onDelete(plan.plan.id) },
+                                onSetActive = { onSetActive(plan.plan.id) },
+                                onStart = { onStart(plan) },
+                            )
+                        }
+                    }
+                }
+            }
+        } else {
+            ProgramsContent(onUse = onUseProgram, modifier = contentModifier)
         }
     }
 }

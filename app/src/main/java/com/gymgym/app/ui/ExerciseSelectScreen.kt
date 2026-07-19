@@ -32,9 +32,7 @@ fun ExerciseSelectScreen(
     onOpenMission: () -> Unit,
     onOpenLastCycle: () -> Unit,
     onOpenLibrary: () -> Unit,
-    onOpenPrograms: () -> Unit,
     onOpenPlans: () -> Unit,
-    onOpenRecordings: () -> Unit,
     onOpenStatistics: () -> Unit,
     onOpenProfile: () -> Unit,
     onOpenSettings: () -> Unit,
@@ -93,22 +91,8 @@ fun ExerciseSelectScreen(
             )
             Spacer(Modifier.height(12.dp))
             GymButton(
-                text = stringResource(R.string.home_programs),
-                onClick = onOpenPrograms,
-                style = GymButtonStyle.Secondary,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Spacer(Modifier.height(12.dp))
-            GymButton(
                 text = stringResource(R.string.home_workout_plans),
                 onClick = onOpenPlans,
-                style = GymButtonStyle.Secondary,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Spacer(Modifier.height(12.dp))
-            GymButton(
-                text = stringResource(R.string.home_recordings),
-                onClick = onOpenRecordings,
                 style = GymButtonStyle.Secondary,
                 modifier = Modifier.fillMaxWidth(),
             )

@@ -44,6 +44,9 @@ bump with the changes made since the previous release (see AGENTS.md).
   exercises stay in seconds (10-second steps).
 - **Deleting** a plan, workout, exercise, custom exercise, or recording now asks
   for confirmation first.
+- Simpler home screen: the **Programs** and **Recordings** buttons are gone.
+  Programs now live as a tab inside **Workout Plans** (My Plans / Programs), and
+  Recordings are a tab inside **Profile** (Profile / Recordings).
 
 ## 2.0.2 (versionCode 11)
 

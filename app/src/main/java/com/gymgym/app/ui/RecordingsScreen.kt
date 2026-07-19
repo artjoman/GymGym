@@ -32,18 +32,17 @@ import java.util.Locale
 
 private val recordingDateFormat = SimpleDateFormat("MMM d, HH:mm", Locale.getDefault())
 
+/** Recordings list, embedded as a tab inside Profile. */
 @Composable
-fun RecordingsScreen(onBack: () -> Unit) {
+fun RecordingsContent(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     var files by remember { mutableStateOf(RecordingStore.list(context)) }
 
-    Column(modifier = Modifier.fillMaxSize().systemBarsPadding().padding(24.dp)) {
-        Text(stringResource(R.string.recordings_title), style = MaterialTheme.typography.headlineSmall)
+    Column(modifier = modifier.fillMaxWidth()) {
         Text(
             stringResource(R.string.recordings_desc),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 4.dp),
         )
 
         if (files.isEmpty()) {
@@ -69,8 +68,6 @@ fun RecordingsScreen(onBack: () -> Unit) {
                 }
             }
         }
-
-        GymButton(stringResource(R.string.action_back), onBack, Modifier.padding(top = 16.dp), GymButtonStyle.Secondary)
     }
 }
 

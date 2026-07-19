@@ -179,6 +179,7 @@
 
     <!-- Plans -->
     <string name="plans_title">خطط التمرين</string>
+    <string name="plans_tab_my">خططي</string>
     <string name="plans_new">خطة جديدة</string>
     <string name="plans_empty">لا توجد خطط بعد. أنشئ خطة لأداء عدة تمارين متتالية.</string>
     <string name="plans_no_exercises">لا توجد تمارين</string>

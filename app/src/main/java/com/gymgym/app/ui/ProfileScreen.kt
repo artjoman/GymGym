@@ -24,10 +24,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -76,15 +79,36 @@ fun ProfileScreen(
         ActivityResultContracts.OpenDocument(),
     ) { uri -> if (uri != null) pendingImport = uri }
 
+    var tab by remember { mutableIntStateOf(0) }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .systemBarsPadding()
-            .verticalScroll(rememberScrollState())
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+            .padding(horizontal = 24.dp, vertical = 16.dp),
     ) {
-        Text(stringResource(R.string.profile_title), style = MaterialTheme.typography.headlineSmall)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextButton(onClick = onBack) { Text(stringResource(R.string.action_back)) }
+            Text(
+                stringResource(R.string.profile_title),
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(start = 4.dp),
+            )
+        }
+        TabRow(selectedTabIndex = tab, modifier = Modifier.padding(top = 8.dp)) {
+            Tab(selected = tab == 0, onClick = { tab = 0 }, text = { Text(stringResource(R.string.profile_title)) })
+            Tab(selected = tab == 1, onClick = { tab = 1 }, text = { Text(stringResource(R.string.recordings_title)) })
+        }
+        if (tab == 1) {
+            RecordingsContent(modifier = Modifier.weight(1f).padding(top = 12.dp))
+            return@Column
+        }
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .padding(top = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
 
         var name by rememberSaveable { mutableStateOf(profile.displayName) }
         OutlinedTextField(
@@ -210,7 +234,7 @@ fun ProfileScreen(
             )
         }
 
-        GymButton(stringResource(R.string.action_done), onBack, Modifier.padding(top = 16.dp))
+        }
     }
 
     val importUri = pendingImport
