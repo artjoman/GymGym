@@ -1,5 +1,6 @@
 package com.gymgym.app.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Embedded
 import androidx.room.Entity
@@ -48,6 +49,9 @@ data class CompletedExercise(
     val exerciseRef: String,
     val reps: Int,
     val goodReps: Int,
+    /** Planned reps per set and set count, for the completion-% calculation. */
+    @ColumnInfo(defaultValue = "0") val targetReps: Int = 0,
+    @ColumnInfo(defaultValue = "0") val targetSets: Int = 0,
     val durationMs: Long,
     val position: Int,
 )
@@ -86,8 +90,16 @@ class CompletedWorkoutRepository(private val dao: CompletedWorkoutDao) {
         val exerciseRef: String,
         val reps: Int,
         val goodReps: Int,
+        val targetReps: Int,
+        val targetSets: Int,
         val durationMs: Long,
-    )
+    ) {
+        /** Completion % = reps done vs planned (targetReps × targetSets), capped at 100. */
+        fun completionPercent(): Int {
+            val target = targetReps * targetSets
+            return if (target <= 0) 0 else (reps * 100 / target).coerceIn(0, 100)
+        }
+    }
 
     @Transaction
     suspend fun record(
@@ -99,11 +111,7 @@ class CompletedWorkoutRepository(private val dao: CompletedWorkoutDao) {
         durationMs: Long,
         exercises: List<ExerciseResult>,
     ) {
-        val avg = if (exercises.isEmpty()) {
-            0
-        } else {
-            exercises.map { r -> if (r.reps > 0) r.goodReps * 100 / r.reps else 0 }.average().toInt()
-        }
+        val avg = if (exercises.isEmpty()) 0 else exercises.map { it.completionPercent() }.average().toInt()
         val id = dao.insertWorkout(
             CompletedWorkout(
                 planId = planId,
@@ -122,6 +130,8 @@ class CompletedWorkoutRepository(private val dao: CompletedWorkoutDao) {
                     exerciseRef = r.exerciseRef,
                     reps = r.reps,
                     goodReps = r.goodReps,
+                    targetReps = r.targetReps,
+                    targetSets = r.targetSets,
                     durationMs = r.durationMs,
                     position = index,
                 )

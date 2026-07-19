@@ -3,6 +3,23 @@
 User-facing release notes for GymGym, newest first. Updated on every version
 bump with the changes made since the previous release (see AGENTS.md).
 
+## 2.0.3 (versionCode 12)
+
+- **Custom (non-AI) exercises now run during a workout**, set by set: each set
+  shows the target reps (editable), a **Finish set** button, then the rest timer —
+  the same rhythm as AI-counted exercises.
+- Workouts now record a **completion %** — how many reps you actually did versus
+  the planned reps × sets — and that % is shown on each finished block of the
+  progress bar.
+- Every workout now stores its **true total duration** (including rests, excluding
+  pauses), so manual-only workouts get a duration too.
+- **Weekly Schedule** lets you assign a **weekday** to each workout; the next
+  mission follows the weekday order and the progress bar shows each day.
+- All recovery timers (between workouts, sets, and exercises) are now set in
+  **seconds, in steps of 10**.
+- **Deleting** a plan, workout, exercise, custom exercise, or recording now asks
+  for confirmation first.
+
 ## 2.0.2 (versionCode 11)
 
 - Added a **Skip rest** button so you can jump to the next set/exercise without

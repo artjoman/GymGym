@@ -76,9 +76,9 @@ class CycleEngineTest {
     @Test
     fun smartDateIsLastEndPlusRecovery() {
         val last = CompletedWorkout(1, 1, 1, 1, "W1", startedAt = 1_000, durationMs = 2_000, avgPercent = 90)
-        val p = profile.copy(trainingMode = TrainingMode.SMART_CYCLE, workoutTimeoutHours = 48)
+        val p = profile.copy(trainingMode = TrainingMode.SMART_CYCLE, workoutTimeoutSeconds = 172_800)
         val s = CycleEngine.compute(plan(), mapOf(1L to ProgressEntry("DONE", 90)), last, p, now = 5_000)
-        assertEquals(1_000 + 2_000 + 48L * 3_600_000, s.nextMission?.plannedDate)
+        assertEquals(1_000 + 2_000 + 172_800L * 1_000, s.nextMission?.plannedDate)
     }
 
     @Test
@@ -86,5 +86,22 @@ class CycleEngineTest {
         val s = CycleEngine.compute(null, emptyMap(), null, profile, now = 0)
         assertFalse(s.hasActivePlan)
         assertNull(s.nextMission)
+    }
+
+    @Test
+    fun weeklyScheduleOrdersByWeekday() {
+        // Cycle with w10 (Wed=3, pos 0) and w11 (Mon=1, pos 1).
+        fun w(id: Long, weekday: Int?, pos: Int) =
+            WorkoutWithExercises(WorkoutEntity(id, 5, "W$id", pos, weekday), emptyList())
+        val plan = PlanWithCycles(
+            plan = PlanEntity(id = 2, name = "P", endDate = null, isActive = true, createdAt = 0),
+            cycles = listOf(CycleWithWorkouts(CycleEntity(5, 2, "C", 0), listOf(w(10, 3, 0), w(11, 1, 1)))),
+        )
+        val weekly = Profile(trainingMode = TrainingMode.WEEKLY_SCHEDULE)
+        val s = CycleEngine.compute(plan, emptyMap(), null, weekly, now = 0)
+        // Monday (w11) comes before Wednesday (w10) despite its later position.
+        assertEquals(11L, s.nextMission?.workout?.id)
+        assertEquals(1, s.nextMission?.weekday)
+        assertEquals(11L, s.blocks.first().workout.id)
     }
 }

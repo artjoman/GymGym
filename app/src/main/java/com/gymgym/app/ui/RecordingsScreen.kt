@@ -81,6 +81,15 @@ private fun RecordingRow(
     onPlay: () -> Unit,
     onDelete: () -> Unit,
 ) {
+    var confirmDelete by remember { mutableStateOf(false) }
+    if (confirmDelete) {
+        ConfirmDialog(
+            title = stringResource(R.string.confirm_delete_title),
+            message = stringResource(R.string.confirm_delete_message),
+            onConfirm = onDelete,
+            onDismiss = { confirmDelete = false },
+        )
+    }
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -99,7 +108,7 @@ private fun RecordingRow(
             ) {
                 GymButton(stringResource(R.string.action_share), onShare)
                 TextButton(onClick = onPlay) { Text(stringResource(R.string.action_play)) }
-                TextButton(onClick = onDelete) { Text(stringResource(R.string.action_delete)) }
+                TextButton(onClick = { confirmDelete = true }) { Text(stringResource(R.string.action_delete)) }
             }
         }
     }

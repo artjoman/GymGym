@@ -95,7 +95,7 @@ data class BackupProfile(
     val lengthUnit: String = "CM",
     val trainingMode: String = "SMART_CYCLE",
     val workoutDays: String = "2,3,4,5,6,7",
-    val workoutTimeoutHours: Int = 48,
+    val workoutTimeoutSeconds: Int = 172_800,
     val setTimeoutSeconds: Int = 180,
-    val exerciseTimeoutMinutes: Int = 3,
+    val exerciseTimeoutSeconds: Int = 180,
 )

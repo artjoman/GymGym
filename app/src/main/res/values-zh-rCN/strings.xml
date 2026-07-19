@@ -397,4 +397,10 @@
     <string name="plan_save">保存计划</string>
     <string name="statistics_title">统计</string>
     <string name="stats_data_title">数据</string>
+    <string name="camera_manual_set">第 %1$d / %2$d 组</string>
+    <string name="camera_finish_set">完成这一组</string>
+    <string name="plan_weekday">星期几（每周计划）</string>
+    <string name="plan_weekday_none">任意</string>
+    <string name="confirm_delete_title">删除？</string>
+    <string name="confirm_delete_message">此操作无法撤消。</string>
 </resources>

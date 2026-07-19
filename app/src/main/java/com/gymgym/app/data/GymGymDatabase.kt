@@ -19,7 +19,7 @@ import androidx.room.RoomDatabase
         CompletedExercise::class,
         WorkoutProgress::class,
     ],
-    version = 8,
+    version = 9,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -28,6 +28,7 @@ import androidx.room.RoomDatabase
         AutoMigration(from = 5, to = 6), // adds body_measurement table
         AutoMigration(from = 6, to = 7), // adds completed_workout + completed_exercise
         AutoMigration(from = 7, to = 8), // adds workout_progress table
+        AutoMigration(from = 8, to = 9), // adds completed_exercise.targetReps/targetSets
     ],
 )
 abstract class GymGymDatabase : RoomDatabase() {

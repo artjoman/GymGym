@@ -24,12 +24,12 @@ data class Profile(
     val trainingMode: TrainingMode = TrainingMode.SMART_CYCLE,
     /** Weekdays (1=Mon..7=Sun) the user trains in Weekly Schedule mode. */
     val workoutDays: Set<Int> = setOf(2, 3, 4, 5, 6, 7),
-    /** Recovery: hours between workouts (Smart Cycle next-date offset). */
-    val workoutTimeoutHours: Int = 48,
+    /** Recovery: seconds between workouts (Smart Cycle next-date offset). Default 48h. */
+    val workoutTimeoutSeconds: Int = 172_800,
     /** Recovery: rest seconds between sets. */
     val setTimeoutSeconds: Int = 180,
-    /** Recovery: rest minutes between exercises. */
-    val exerciseTimeoutMinutes: Int = 3,
+    /** Recovery: rest seconds between exercises. */
+    val exerciseTimeoutSeconds: Int = 180,
 )
 
 class ProfileRepository(context: Context) {
@@ -51,9 +51,9 @@ class ProfileRepository(context: Context) {
             workoutDays = prefs[WORKOUT_DAYS]
                 ?.split(",")?.mapNotNull { it.toIntOrNull() }?.toSet()
                 ?: setOf(2, 3, 4, 5, 6, 7),
-            workoutTimeoutHours = prefs[WORKOUT_TIMEOUT_H] ?: 48,
+            workoutTimeoutSeconds = prefs[WORKOUT_TIMEOUT_S] ?: 172_800,
             setTimeoutSeconds = prefs[SET_TIMEOUT_S] ?: 180,
-            exerciseTimeoutMinutes = prefs[EXERCISE_TIMEOUT_M] ?: 3,
+            exerciseTimeoutSeconds = prefs[EXERCISE_TIMEOUT_S] ?: 180,
         )
     }
 
@@ -68,14 +68,14 @@ class ProfileRepository(context: Context) {
     suspend fun setWorkoutDays(days: Set<Int>) =
         dataStore.edit { it[WORKOUT_DAYS] = days.sorted().joinToString(",") }
 
-    suspend fun setWorkoutTimeoutHours(hours: Int) =
-        dataStore.edit { it[WORKOUT_TIMEOUT_H] = hours }
+    suspend fun setWorkoutTimeoutSeconds(seconds: Int) =
+        dataStore.edit { it[WORKOUT_TIMEOUT_S] = seconds }
 
     suspend fun setSetTimeoutSeconds(seconds: Int) =
         dataStore.edit { it[SET_TIMEOUT_S] = seconds }
 
-    suspend fun setExerciseTimeoutMinutes(minutes: Int) =
-        dataStore.edit { it[EXERCISE_TIMEOUT_M] = minutes }
+    suspend fun setExerciseTimeoutSeconds(seconds: Int) =
+        dataStore.edit { it[EXERCISE_TIMEOUT_S] = seconds }
 
     private companion object {
         val DISPLAY_NAME = stringPreferencesKey("display_name")
@@ -83,8 +83,8 @@ class ProfileRepository(context: Context) {
         val LENGTH_UNIT = stringPreferencesKey("length_unit")
         val TRAINING_MODE = stringPreferencesKey("training_mode")
         val WORKOUT_DAYS = stringPreferencesKey("workout_days")
-        val WORKOUT_TIMEOUT_H = intPreferencesKey("workout_timeout_h")
+        val WORKOUT_TIMEOUT_S = intPreferencesKey("workout_timeout_s")
         val SET_TIMEOUT_S = intPreferencesKey("set_timeout_s")
-        val EXERCISE_TIMEOUT_M = intPreferencesKey("exercise_timeout_m")
+        val EXERCISE_TIMEOUT_S = intPreferencesKey("exercise_timeout_s")
     }
 }

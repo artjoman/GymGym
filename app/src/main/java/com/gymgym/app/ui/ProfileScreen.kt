@@ -58,9 +58,9 @@ fun ProfileScreen(
     onLengthUnit: (LengthUnit) -> Unit,
     onTrainingMode: (TrainingMode) -> Unit,
     onWorkoutDays: (Set<Int>) -> Unit,
-    onWorkoutTimeoutHours: (Int) -> Unit,
+    onWorkoutTimeoutSeconds: (Int) -> Unit,
     onSetTimeoutSeconds: (Int) -> Unit,
-    onExerciseTimeoutMinutes: (Int) -> Unit,
+    onExerciseTimeoutSeconds: (Int) -> Unit,
     onLogMeasurement: (BodyMetric, Double, String) -> Unit,
     onExport: (Uri) -> Unit,
     onImport: (Uri) -> Unit,
@@ -121,15 +121,15 @@ fun ProfileScreen(
         Text(stringResource(R.string.profile_recovery), style = MaterialTheme.typography.titleMedium)
         RecoveryRow(
             label = stringResource(R.string.profile_workout_timeout),
-            valueText = stringResource(R.string.profile_hours, profile.workoutTimeoutHours),
+            valueText = stringResource(R.string.profile_seconds, profile.workoutTimeoutSeconds),
             presets = listOf(
-                stringResource(R.string.recovery_beginner) to 72,
-                stringResource(R.string.recovery_intermediate) to 48,
-                stringResource(R.string.recovery_advanced) to 30,
+                stringResource(R.string.recovery_beginner) to 259_200,
+                stringResource(R.string.recovery_intermediate) to 172_800,
+                stringResource(R.string.recovery_advanced) to 108_000,
             ),
-            current = profile.workoutTimeoutHours,
-            step = 6,
-            onSet = onWorkoutTimeoutHours,
+            current = profile.workoutTimeoutSeconds,
+            step = 10,
+            onSet = onWorkoutTimeoutSeconds,
         )
         RecoveryRow(
             label = stringResource(R.string.profile_set_timeout),
@@ -140,16 +140,20 @@ fun ProfileScreen(
                 stringResource(R.string.recovery_advanced) to 120,
             ),
             current = profile.setTimeoutSeconds,
-            step = 15,
+            step = 10,
             onSet = onSetTimeoutSeconds,
         )
         RecoveryRow(
             label = stringResource(R.string.profile_exercise_timeout),
-            valueText = stringResource(R.string.profile_minutes, profile.exerciseTimeoutMinutes),
-            presets = emptyList(),
-            current = profile.exerciseTimeoutMinutes,
-            step = 1,
-            onSet = onExerciseTimeoutMinutes,
+            valueText = stringResource(R.string.profile_seconds, profile.exerciseTimeoutSeconds),
+            presets = listOf(
+                stringResource(R.string.recovery_beginner) to 300,
+                stringResource(R.string.recovery_intermediate) to 180,
+                stringResource(R.string.recovery_advanced) to 120,
+            ),
+            current = profile.exerciseTimeoutSeconds,
+            step = 10,
+            onSet = onExerciseTimeoutSeconds,
         )
 
         // --- Units ---

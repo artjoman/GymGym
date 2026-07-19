@@ -45,7 +45,12 @@ import com.gymgym.app.data.DraftWorkoutExercise
 import com.gymgym.app.data.PlanWithCycles
 import com.gymgym.app.exercise.ExerciseCatalog
 import com.gymgym.app.exercise.ExerciseRef
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.material3.FilterChip
 import java.text.DateFormat
+import java.text.DateFormatSymbols
+import java.util.Calendar
 import java.util.Date
 
 // --- Editable in-memory state (Compose-observable) ---
@@ -63,8 +68,10 @@ private class ExRow(
     var seconds by mutableStateOf(seconds)
 }
 
-private class WoRow(name: String, val exercises: SnapshotStateList<ExRow>) {
+private class WoRow(name: String, weekday: Int?, val exercises: SnapshotStateList<ExRow>) {
     var name by mutableStateOf(name)
+    /** 1=Mon..7=Sun for Weekly Schedule, or null. */
+    var weekday by mutableStateOf(weekday)
 }
 
 private class CyRow(name: String, val workouts: SnapshotStateList<WoRow>) {
@@ -88,6 +95,7 @@ fun PlanEditScreen(
                 cw.orderedWorkouts.map { ww ->
                     WoRow(
                         ww.workout.name,
+                        ww.workout.weekday,
                         ww.orderedExercises.map { we ->
                             val timed = ExerciseRef.counter(we.exerciseRef)?.timed == true
                             ExRow(
@@ -322,6 +330,7 @@ private fun CycleEditor(
             onClick = {
                 val newWorkout = WoRow(
                     context.getString(R.string.plan_default_workout_name, cycle.workouts.size + 1),
+                    null,
                     mutableListOf<ExRow>().toMutableStateList(),
                 )
                 cycle.workouts.add(newWorkout)
@@ -367,6 +376,10 @@ private fun WorkoutEditor(
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
+
+        // Weekday assignment (used when the profile's Weekly Schedule is on).
+        Text(stringResource(R.string.plan_weekday), style = MaterialTheme.typography.titleMedium)
+        WeekdayRow(selected = workout.weekday, onSelect = { workout.weekday = it })
 
         if (workout.exercises.isEmpty()) {
             Text(
@@ -414,6 +427,28 @@ private fun WorkoutEditor(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun WeekdayRow(selected: Int?, onSelect: (Int?) -> Unit) {
+    val symbols = remember { DateFormatSymbols.getInstance().shortWeekdays }
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        FilterChip(
+            selected = selected == null,
+            onClick = { onSelect(null) },
+            label = { Text(stringResource(R.string.plan_weekday_none)) },
+        )
+        for (day in 1..7) {
+            // Our encoding: 1=Mon..7=Sun. Map to Calendar day for the localized label.
+            val calDay = if (day == 7) Calendar.SUNDAY else day + 1
+            FilterChip(
+                selected = selected == day,
+                onClick = { onSelect(day) },
+                label = { Text(symbols[calDay]) },
+            )
+        }
+    }
+}
+
 @Composable
 private fun EditorHeader(title: String, onBack: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -429,6 +464,15 @@ private fun NodeCard(
     onOpen: () -> Unit,
     onRemove: () -> Unit,
 ) {
+    var confirmDelete by remember { mutableStateOf(false) }
+    if (confirmDelete) {
+        ConfirmDialog(
+            title = stringResource(R.string.confirm_delete_title),
+            message = title,
+            onConfirm = onRemove,
+            onDismiss = { confirmDelete = false },
+        )
+    }
     Card(modifier = Modifier.fillMaxWidth().clickable(onClick = onOpen)) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 12.dp, bottom = 12.dp, end = 4.dp),
@@ -442,7 +486,7 @@ private fun NodeCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            TextButton(onClick = onRemove) { Text("✕") }
+            TextButton(onClick = { confirmDelete = true }) { Text("✕") }
         }
     }
 }
@@ -459,6 +503,15 @@ private fun ExerciseRowCard(
     onMoveDown: () -> Unit,
     onRemove: () -> Unit,
 ) {
+    var confirmDelete by remember { mutableStateOf(false) }
+    if (confirmDelete) {
+        ConfirmDialog(
+            title = stringResource(R.string.confirm_delete_title),
+            message = row.label,
+            onConfirm = onRemove,
+            onDismiss = { confirmDelete = false },
+        )
+    }
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(
@@ -475,7 +528,7 @@ private fun ExerciseRowCard(
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     TextButton(onClick = onMoveUp, enabled = canMoveUp) { Text("↑") }
                     TextButton(onClick = onMoveDown, enabled = canMoveDown) { Text("↓") }
-                    TextButton(onClick = onRemove) { Text("✕") }
+                    TextButton(onClick = { confirmDelete = true }) { Text("✕") }
                 }
             }
             if (row.timed) {
@@ -574,7 +627,7 @@ private fun buildDraft(name: String, endDate: Long?, cycles: List<CyRow>): Draft
                 workouts = cy.workouts.map { wo ->
                     DraftWorkout(
                         name = wo.name.trim(),
-                        weekday = null,
+                        weekday = wo.weekday,
                         exercises = wo.exercises.map { ex ->
                             DraftWorkoutExercise(
                                 exerciseRef = ex.ref,

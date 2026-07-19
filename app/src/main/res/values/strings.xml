@@ -15,6 +15,8 @@
     <string name="action_share">Share</string>
     <string name="action_add">Add</string>
     <string name="action_clear">Clear</string>
+    <string name="confirm_delete_title">Delete?</string>
+    <string name="confirm_delete_message">This can\'t be undone.</string>
     <string name="action_play">Play</string>
     <string name="action_replace">Replace</string>
 
@@ -297,6 +299,8 @@
     <string name="plan_untitled_workout">Untitled workout</string>
     <string name="plan_default_workout_name">Workout %1$d</string>
     <string name="plan_no_exercises">No exercises yet. Add one from the library.</string>
+    <string name="plan_weekday">Weekday (Weekly Schedule)</string>
+    <string name="plan_weekday_none">Any</string>
 
     <!-- Programs (Phase 3) -->
     <string name="home_programs">Programs</string>
@@ -399,6 +403,8 @@
     <string name="speak_start_set">Start the set!</string>
     <string name="camera_rest">Rest</string>
     <string name="camera_skip_rest">Skip rest</string>
+    <string name="camera_manual_set">Set %1$d / %2$d</string>
+    <string name="camera_finish_set">Finish set</string>
     <string name="plan_save">Save plan</string>
     <string name="cue_shallow">Go deeper</string>
     <string name="cue_wobbly">Steady</string>

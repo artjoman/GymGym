@@ -17,6 +17,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
@@ -85,6 +89,15 @@ private fun PlanCard(
     val runnable = plan.cycles.any { c ->
         c.workouts.any { w -> w.exercises.any { ExerciseRef.counter(it.exerciseRef) != null } }
     }
+    var confirmDelete by remember { mutableStateOf(false) }
+    if (confirmDelete) {
+        ConfirmDialog(
+            title = stringResource(R.string.confirm_delete_title),
+            message = plan.plan.name,
+            onConfirm = onDelete,
+            onDismiss = { confirmDelete = false },
+        )
+    }
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -129,7 +142,7 @@ private fun PlanCard(
                 if (!plan.plan.isActive) {
                     OutlinedButton(onClick = onSetActive) { Text(stringResource(R.string.plans_set_active)) }
                 }
-                TextButton(onClick = onDelete) { Text(stringResource(R.string.action_delete)) }
+                TextButton(onClick = { confirmDelete = true }) { Text(stringResource(R.string.action_delete)) }
             }
         }
     }

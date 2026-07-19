@@ -403,4 +403,10 @@
     <string name="plan_save">Saglabāt plānu</string>
     <string name="statistics_title">Statistika</string>
     <string name="stats_data_title">Dati</string>
+    <string name="camera_manual_set">Piegājiens %1$d / %2$d</string>
+    <string name="camera_finish_set">Pabeigt piegājienu</string>
+    <string name="plan_weekday">Nedēļas diena (nedēļas grafiks)</string>
+    <string name="plan_weekday_none">Jebkura</string>
+    <string name="confirm_delete_title">Dzēst?</string>
+    <string name="confirm_delete_message">To nevar atsaukt.</string>
 </resources>

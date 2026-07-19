@@ -216,7 +216,9 @@ private fun AppRoot(viewModel: MainViewModel) {
         composable(Routes.CAMERA) {
             val exercise by viewModel.selectedExercise.collectAsState()
             val autoDetecting by viewModel.autoDetecting.collectAsState()
-            if (exercise != null || autoDetecting) {
+            val manualActive by viewModel.manualActive.collectAsState()
+            val planProgress by viewModel.planProgress.collectAsState()
+            if (exercise != null || autoDetecting || manualActive != null || planProgress != null) {
                 CameraScreen(
                     exercise = exercise,
                     viewModel = viewModel,
@@ -337,9 +339,9 @@ private fun AppRoot(viewModel: MainViewModel) {
                 onLengthUnit = viewModel::setLengthUnit,
                 onTrainingMode = viewModel::setTrainingMode,
                 onWorkoutDays = viewModel::setWorkoutDays,
-                onWorkoutTimeoutHours = viewModel::setWorkoutTimeoutHours,
+                onWorkoutTimeoutSeconds = viewModel::setWorkoutTimeoutSeconds,
                 onSetTimeoutSeconds = viewModel::setSetTimeoutSeconds,
-                onExerciseTimeoutMinutes = viewModel::setExerciseTimeoutMinutes,
+                onExerciseTimeoutSeconds = viewModel::setExerciseTimeoutSeconds,
                 onLogMeasurement = viewModel::logMeasurement,
                 onExport = { uri ->
                     viewModel.exportBackup(uri) { ok ->

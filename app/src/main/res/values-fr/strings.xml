@@ -400,4 +400,10 @@
     <string name="plan_save">Enregistrer le programme</string>
     <string name="statistics_title">Statistiques</string>
     <string name="stats_data_title">Données</string>
+    <string name="camera_manual_set">Série %1$d / %2$d</string>
+    <string name="camera_finish_set">Terminer la série</string>
+    <string name="plan_weekday">Jour de la semaine (planning hebdomadaire)</string>
+    <string name="plan_weekday_none">Aucun</string>
+    <string name="confirm_delete_title">Supprimer ?</string>
+    <string name="confirm_delete_message">Cette action est irréversible.</string>
 </resources>

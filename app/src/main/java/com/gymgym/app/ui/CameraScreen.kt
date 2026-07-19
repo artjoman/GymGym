@@ -84,6 +84,8 @@ fun CameraScreen(
     val goodReps by viewModel.goodReps.collectAsState()
     val repFeedback by viewModel.repFeedback.collectAsState()
     val restRemaining by viewModel.restRemaining.collectAsState()
+    val manualActive by viewModel.manualActive.collectAsState()
+    val manual = manualActive != null
     val timed = exercise?.timed == true
 
     val previewView = remember { PreviewView(context) }
@@ -260,7 +262,7 @@ fun CameraScreen(
                     )
                 }
             }
-        } else if (!autoDetecting) {
+        } else if (!autoDetecting && !manual) {
             val badFault = repFeedback?.takeIf { !it.quality.isGood }?.quality
             val cue = when {
                 badFault == null -> null
@@ -305,7 +307,9 @@ fun CameraScreen(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = exercise?.let { stringResource(it.labelRes()) } ?: stringResource(R.string.camera_auto_detect),
+                    text = manualActive?.label
+                        ?: exercise?.let { stringResource(it.labelRes()) }
+                        ?: stringResource(R.string.camera_auto_detect),
                     fontSize = 20.sp,
                     color = Color.White,
                 )
@@ -356,7 +360,15 @@ fun CameraScreen(
             }
         }
 
-        if (countdownValue == null && !isTracking && !planComplete && celebration == null && !paused && !timed) {
+        manualActive?.let { m ->
+            ManualExerciseCard(
+                manual = m,
+                onFinish = { reps -> viewModel.finishManualSet(reps) },
+                modifier = Modifier.align(Alignment.Center),
+            )
+        }
+
+        if (countdownValue == null && !isTracking && !planComplete && celebration == null && !paused && !timed && !manual) {
             Text(
                 text = stringResource(R.string.camera_move_into_frame),
                 fontSize = 18.sp,
@@ -377,7 +389,11 @@ fun CameraScreen(
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            if (timed && progress != null) {
+            if (manual) {
+                // Manual move: FINISH lives on the card; just skip or stop here.
+                GymButton(stringResource(R.string.camera_skip_exercise), { viewModel.skipToNextExercise() }, style = GymButtonStyle.Secondary)
+                GymButton(stringResource(R.string.camera_stop_plan), onExit, style = GymButtonStyle.Secondary)
+            } else if (timed && progress != null) {
                 // Plan hold runs automatically to its target; just skip or stop.
                 GymButton(stringResource(R.string.camera_skip_exercise), { viewModel.skipToNextExercise() }, style = GymButtonStyle.Secondary)
                 GymButton(stringResource(R.string.camera_stop_plan), onExit, style = GymButtonStyle.Secondary)
@@ -532,4 +548,44 @@ private fun formatClock2(ms: Long): String {
     val minutes = totalSeconds / 60
     val seconds = totalSeconds % 60
     return "%d:%02d".format(minutes, seconds)
+}
+
+@Composable
+private fun ManualExerciseCard(
+    manual: MainViewModel.ManualExercise,
+    onFinish: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    // Seeded from the target; resets when the set changes (keyed on the state object).
+    var reps by remember(manual) { mutableStateOf(manual.targetReps) }
+    Column(
+        modifier = modifier
+            .padding(24.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(Color(0xE60E151B))
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(manual.label, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        Text(
+            stringResource(R.string.camera_manual_set, manual.setIndex + 1, manual.setCount),
+            fontSize = 15.sp,
+            color = Color(0xFFCFD8DC),
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            GymButton("−", { reps = (reps - 1).coerceAtLeast(0) }, style = GymButtonStyle.Secondary)
+            Text("$reps", fontSize = 40.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            GymButton("+", { reps += 1 }, style = GymButtonStyle.Secondary)
+        }
+        Text(
+            stringResource(R.string.plan_reps),
+            fontSize = 13.sp,
+            color = Color(0xFF9FB0BC),
+        )
+        GymButton(stringResource(R.string.camera_finish_set), { onFinish(reps) })
+    }
 }

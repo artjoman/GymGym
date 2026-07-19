@@ -189,6 +189,15 @@ private fun ManualBadge() {
 
 @Composable
 private fun CustomRow(name: String, onDelete: () -> Unit) {
+    var confirmDelete by remember { mutableStateOf(false) }
+    if (confirmDelete) {
+        ConfirmDialog(
+            title = stringResource(R.string.confirm_delete_title),
+            message = name,
+            onConfirm = onDelete,
+            onDismiss = { confirmDelete = false },
+        )
+    }
     Card(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -208,7 +217,7 @@ private fun CustomRow(name: String, onDelete: () -> Unit) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            IconButton(onClick = onDelete) {
+            IconButton(onClick = { confirmDelete = true }) {
                 Icon(
                     Icons.Rounded.Delete,
                     contentDescription = stringResource(R.string.action_delete),

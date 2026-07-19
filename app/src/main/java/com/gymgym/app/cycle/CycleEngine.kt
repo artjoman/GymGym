@@ -15,6 +15,8 @@ data class WorkoutBlock(
     val workout: WorkoutEntity,
     val status: BlockStatus,
     val percent: Int,
+    /** Assigned weekday (1=Mon..7=Sun) in Weekly Schedule mode, else null. */
+    val weekday: Int? = null,
 )
 
 data class NextMission(
@@ -22,6 +24,7 @@ data class NextMission(
     val workout: WorkoutEntity,
     /** Planned start (epoch ms): last workout end + recovery, or the weekly slot. */
     val plannedDate: Long?,
+    val weekday: Int? = null,
 )
 
 data class DashboardState(
@@ -53,9 +56,19 @@ object CycleEngine {
             return DashboardState(false, null, null, emptyList(), 0, lastWorkout, null)
         }
 
-        // Flattened workout sequence in plan order (cycles then workouts).
+        val weekly = profile.trainingMode == TrainingMode.WEEKLY_SCHEDULE
+
+        // Workout order: plan order normally; by (weekday, position) in Weekly mode.
+        fun cycleWorkouts(cw: com.gymgym.app.data.CycleWithWorkouts): List<WorkoutEntity> =
+            if (weekly) {
+                cw.orderedWorkouts.map { it.workout }
+                    .sortedWith(compareBy({ it.weekday ?: 99 }, { it.position }))
+            } else {
+                cw.orderedWorkouts.map { it.workout }
+            }
+
         val sequence: List<Pair<CycleEntity, WorkoutEntity>> = plan.orderedCycles.flatMap { cw ->
-            cw.orderedWorkouts.map { cw.cycle to it.workout }
+            cycleWorkouts(cw).map { cw.cycle to it }
         }
         if (sequence.isEmpty()) {
             return DashboardState(true, plan.plan.name, null, emptyList(), 0, lastWorkout, null)
@@ -67,9 +80,9 @@ object CycleEngine {
 
         val nextPair = sequence.firstOrNull { it.second.id !in effectiveProgress } ?: sequence.first()
         val currentCycleEntity = nextPair.first
-        val currentWorkouts = plan.orderedCycles
-            .first { it.cycle.id == currentCycleEntity.id }
-            .orderedWorkouts.map { it.workout }
+        val currentWorkouts = cycleWorkouts(
+            plan.orderedCycles.first { it.cycle.id == currentCycleEntity.id },
+        )
 
         val blocks = currentWorkouts.map { w ->
             val entry = effectiveProgress[w.id]
@@ -79,13 +92,14 @@ object CycleEngine {
                 w.id == nextPair.second.id -> BlockStatus.NEXT
                 else -> BlockStatus.PENDING
             }
-            WorkoutBlock(w, status, entry?.percent ?: 0)
+            WorkoutBlock(w, status, entry?.percent ?: 0, if (weekly) w.weekday else null)
         }
 
         val processedInCycle = blocks.count { it.status == BlockStatus.DONE || it.status == BlockStatus.SKIPPED }
         val cyclePercent = if (blocks.isEmpty()) 0 else processedInCycle * 100 / blocks.size
 
-        val plannedDate = computePlannedDate(profile, lastWorkout, now)
+        val nextWorkout = nextPair.second
+        val plannedDate = computePlannedDate(profile, nextWorkout.weekday, lastWorkout, now)
 
         return DashboardState(
             hasActivePlan = true,
@@ -94,18 +108,27 @@ object CycleEngine {
             blocks = blocks,
             cyclePercent = cyclePercent,
             lastWorkout = lastWorkout,
-            nextMission = NextMission(currentCycleEntity, nextPair.second, plannedDate),
+            nextMission = NextMission(
+                currentCycleEntity, nextWorkout, plannedDate,
+                if (weekly) nextWorkout.weekday else null,
+            ),
         )
     }
 
-    private fun computePlannedDate(profile: Profile, lastWorkout: CompletedWorkout?, now: Long): Long? =
-        when (profile.trainingMode) {
-            TrainingMode.SMART_CYCLE -> {
-                val base = lastWorkout?.let { it.startedAt + it.durationMs } ?: return now
-                base + profile.workoutTimeoutHours * 3_600_000L
-            }
-            TrainingMode.WEEKLY_SCHEDULE -> nextWeekdaySlot(profile.workoutDays, now)
+    private fun computePlannedDate(
+        profile: Profile,
+        nextWeekday: Int?,
+        lastWorkout: CompletedWorkout?,
+        now: Long,
+    ): Long? = when (profile.trainingMode) {
+        TrainingMode.SMART_CYCLE -> {
+            val base = lastWorkout?.let { it.startedAt + it.durationMs } ?: return now
+            base + profile.workoutTimeoutSeconds * 1_000L
         }
+        TrainingMode.WEEKLY_SCHEDULE ->
+            // The next mission's own weekday if assigned, else the profile's training days.
+            nextWeekdaySlot(nextWeekday?.let { setOf(it) } ?: profile.workoutDays, now)
+    }
 
     /** Next day (from [now]) whose weekday (1=Mon..7=Sun) is in [days], at 08:00 local. */
     private fun nextWeekdaySlot(days: Set<Int>, now: Long): Long? {

@@ -412,4 +412,10 @@
     <string name="plan_save">حفظ الخطة</string>
     <string name="statistics_title">الإحصائيات</string>
     <string name="stats_data_title">البيانات</string>
+    <string name="camera_manual_set">المجموعة %1$d / %2$d</string>
+    <string name="camera_finish_set">إنهاء المجموعة</string>
+    <string name="plan_weekday">يوم الأسبوع (الجدول الأسبوعي)</string>
+    <string name="plan_weekday_none">أي يوم</string>
+    <string name="confirm_delete_title">حذف؟</string>
+    <string name="confirm_delete_message">لا يمكن التراجع عن هذا.</string>
 </resources>

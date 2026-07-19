@@ -154,10 +154,19 @@ fun CycleProgressBar(dashboard: DashboardState) {
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .height(10.dp)
+                        .height(20.dp)
                         .clip(RoundedCornerShape(4.dp))
                         .background(color),
-                )
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (block.status == BlockStatus.DONE) {
+                        Text(
+                            "${block.percent}%",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                        )
+                    }
+                }
             }
         }
         Row(
@@ -165,8 +174,9 @@ fun CycleProgressBar(dashboard: DashboardState) {
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             dashboard.blocks.forEach { block ->
+                val wd = block.weekday?.let { " · ${weekdayShort(it)}" }.orEmpty()
                 Text(
-                    block.workout.name,
+                    block.workout.name + wd,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f),
@@ -179,3 +189,10 @@ fun CycleProgressBar(dashboard: DashboardState) {
 
 private fun formatMissionTime(millis: Long): String =
     DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(millis))
+
+/** Localized short weekday name for our 1=Mon..7=Sun encoding. */
+private fun weekdayShort(day: Int): String {
+    val symbols = java.text.DateFormatSymbols.getInstance().shortWeekdays
+    val calDay = if (day == 7) java.util.Calendar.SUNDAY else day + 1
+    return symbols.getOrNull(calDay).orEmpty()
+}

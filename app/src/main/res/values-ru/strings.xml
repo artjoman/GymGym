@@ -406,4 +406,10 @@
     <string name="plan_save">Сохранить план</string>
     <string name="statistics_title">Статистика</string>
     <string name="stats_data_title">Данные</string>
+    <string name="camera_manual_set">Подход %1$d / %2$d</string>
+    <string name="camera_finish_set">Завершить подход</string>
+    <string name="plan_weekday">День недели (недельный график)</string>
+    <string name="plan_weekday_none">Любой</string>
+    <string name="confirm_delete_title">Удалить?</string>
+    <string name="confirm_delete_message">Это действие нельзя отменить.</string>
 </resources>
