@@ -381,4 +381,23 @@
     <string name="reminder_body_text">Пора записать параметры тела в профиле.</string>
     <string name="reminder_cycle_title">Цикл ниже цели</string>
     <string name="reminder_cycle_text">Твой последний цикл в среднем %1$d%%. В следующий раз поднажмём.</string>
+    <!-- Expert Support (Phase 9) -->
+    <string name="home_expert">Экспертная поддержка</string>
+    <string name="expert_title">Экспертная поддержка</string>
+    <string name="expert_coming_soon">Скоро</string>
+    <string name="expert_l1">Уровень 1 — ИИ-тренер</string>
+    <string name="expert_l1_f1">Рекомендации по тренировкам</string>
+    <string name="expert_l1_f2">Советы по восстановлению</string>
+    <string name="expert_l1_f3">Недельные цели</string>
+    <string name="expert_l1_f4">Анализ прогресса</string>
+    <string name="expert_l2">Уровень 2 — Эксперт-тренер</string>
+    <string name="expert_l2_f1">Разбор записей</string>
+    <string name="expert_l2_f2">Коррекция техники</string>
+    <string name="expert_l2_f3">Настройка программ</string>
+    <string name="expert_l2_f4">Советы по питанию</string>
+    <string name="expert_l3">Уровень 3 — Премиум-коучинг</string>
+    <string name="expert_l3_f1">Индивидуальное сопровождение</string>
+    <string name="expert_l3_f2">Чат с тренером</string>
+    <string name="expert_l3_f3">Недельные и месячные обзоры</string>
+    <string name="expert_l3_f4">Персональные планы</string>
 </resources>

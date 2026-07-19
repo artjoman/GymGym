@@ -378,4 +378,23 @@
     <string name="reminder_body_text">Laiks pierakstīt ķermeņa parametrus profilā.</string>
     <string name="reminder_cycle_title">Cikls zem mērķa</string>
     <string name="reminder_cycle_text">Tavs pēdējais cikls vidēji %1$d%%. Nākamreiz pacentīsimies vairāk.</string>
+    <!-- Expert Support (Phase 9) -->
+    <string name="home_expert">Ekspertu atbalsts</string>
+    <string name="expert_title">Ekspertu atbalsts</string>
+    <string name="expert_coming_soon">Drīzumā</string>
+    <string name="expert_l1">1. līmenis — MI treneris</string>
+    <string name="expert_l1_f1">Treniņu ieteikumi</string>
+    <string name="expert_l1_f2">Atjaunošanās ieteikumi</string>
+    <string name="expert_l1_f3">Nedēļas mērķi</string>
+    <string name="expert_l1_f4">Progresa analīze</string>
+    <string name="expert_l2">2. līmenis — Eksperts treneris</string>
+    <string name="expert_l2_f1">Pārskatīt ierakstus</string>
+    <string name="expert_l2_f2">Labot tehniku</string>
+    <string name="expert_l2_f3">Pielāgot programmas</string>
+    <string name="expert_l2_f4">Uztura padomi</string>
+    <string name="expert_l3">3. līmenis — Premium trenēšana</string>
+    <string name="expert_l3_f1">Individuāla progresa uzraudzība</string>
+    <string name="expert_l3_f2">Tērzēšana ar treneri</string>
+    <string name="expert_l3_f3">Nedēļas un mēneša pārskati</string>
+    <string name="expert_l3_f4">Personalizēti plāni</string>
 </resources>

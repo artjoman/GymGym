@@ -372,4 +372,23 @@
     <string name="reminder_body_text">该在个人资料中记录你的身体参数了。</string>
     <string name="reminder_cycle_title">周期低于目标</string>
     <string name="reminder_cycle_text">你上个周期平均 %1$d%%。下次更努力。</string>
+    <!-- Expert Support (Phase 9) -->
+    <string name="home_expert">专家支持</string>
+    <string name="expert_title">专家支持</string>
+    <string name="expert_coming_soon">即将推出</string>
+    <string name="expert_l1">级别 1 — AI 教练</string>
+    <string name="expert_l1_f1">训练建议</string>
+    <string name="expert_l1_f2">恢复建议</string>
+    <string name="expert_l1_f3">每周目标</string>
+    <string name="expert_l1_f4">进度分析</string>
+    <string name="expert_l2">级别 2 — 专家教练</string>
+    <string name="expert_l2_f1">审阅录像</string>
+    <string name="expert_l2_f2">纠正技术</string>
+    <string name="expert_l2_f3">调整计划</string>
+    <string name="expert_l2_f4">营养建议</string>
+    <string name="expert_l3">级别 3 — 高级私教</string>
+    <string name="expert_l3_f1">个人进度跟进</string>
+    <string name="expert_l3_f2">与教练聊天</string>
+    <string name="expert_l3_f3">每周和每月回顾</string>
+    <string name="expert_l3_f4">个性化计划</string>
 </resources>

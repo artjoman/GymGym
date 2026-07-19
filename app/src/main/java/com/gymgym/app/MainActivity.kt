@@ -39,6 +39,7 @@ import com.gymgym.app.data.PlanWithCycles
 import com.gymgym.app.exercise.ExerciseRef
 import com.gymgym.app.ui.ExerciseLibraryScreen
 import com.gymgym.app.ui.ExerciseSelectScreen
+import com.gymgym.app.ui.ExpertSupportScreen
 import com.gymgym.app.ui.NextMissionScreen
 import com.gymgym.app.ui.ProgramsScreen
 import com.gymgym.app.ui.HistoryScreen
@@ -66,6 +67,7 @@ private object Routes {
     const val LIBRARY = "library"
     const val PROGRAMS = "programs"
     const val MISSION = "mission"
+    const val EXPERT = "expert"
 }
 
 class MainActivity : ComponentActivity() {
@@ -213,6 +215,7 @@ private fun AppRoot(viewModel: MainViewModel) {
                 onOpenStats = { navController.navigate(Routes.STATS) },
                 onOpenProfile = { navController.navigate(Routes.PROFILE) },
                 onOpenSettings = { navController.navigate(Routes.SETTINGS) },
+                onOpenExpert = { navController.navigate(Routes.EXPERT) },
             )
         }
         composable(Routes.CAMERA) {
@@ -370,6 +373,9 @@ private fun AppRoot(viewModel: MainViewModel) {
         }
         composable(Routes.RECORDINGS) {
             RecordingsScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Routes.EXPERT) {
+            ExpertSupportScreen(onBack = { navController.popBackStack() })
         }
         composable(Routes.SETTINGS) {
             val soundSettings by viewModel.soundSettings.collectAsState()

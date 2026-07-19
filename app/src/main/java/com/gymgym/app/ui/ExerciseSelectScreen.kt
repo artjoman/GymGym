@@ -40,6 +40,7 @@ fun ExerciseSelectScreen(
     onOpenStats: () -> Unit,
     onOpenProfile: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenExpert: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -147,6 +148,13 @@ fun ExerciseSelectScreen(
                 GymButton(stringResource(R.string.nav_profile), onOpenProfile, Modifier.weight(1f), GymButtonStyle.Secondary)
                 GymButton(stringResource(R.string.nav_settings), onOpenSettings, Modifier.weight(1f), GymButtonStyle.Secondary)
             }
+            Spacer(Modifier.height(12.dp))
+            GymButton(
+                text = stringResource(R.string.home_expert),
+                onClick = onOpenExpert,
+                style = GymButtonStyle.Secondary,
+                modifier = Modifier.fillMaxWidth(),
+            )
             Spacer(Modifier.height(28.dp))
             CreatorFooter()
             Spacer(Modifier.height(16.dp))

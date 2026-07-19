@@ -298,6 +298,24 @@
     <!-- Programs (Phase 3) -->
     <string name="home_programs">Programs</string>
     <string name="home_next_mission">Next mission</string>
+    <string name="home_expert">Expert support</string>
+    <string name="expert_title">Expert Support</string>
+    <string name="expert_coming_soon">Coming soon</string>
+    <string name="expert_l1">Level 1 — AI Coach</string>
+    <string name="expert_l1_f1">Workout recommendations</string>
+    <string name="expert_l1_f2">Recovery suggestions</string>
+    <string name="expert_l1_f3">Weekly goals</string>
+    <string name="expert_l1_f4">Progress analysis</string>
+    <string name="expert_l2">Level 2 — Get Expert Coach</string>
+    <string name="expert_l2_f1">Review recordings</string>
+    <string name="expert_l2_f2">Correct technique</string>
+    <string name="expert_l2_f3">Adjust programs</string>
+    <string name="expert_l2_f4">Nutrition advice</string>
+    <string name="expert_l3">Level 3 — Premium Coaching</string>
+    <string name="expert_l3_f1">Individual progress follow-up</string>
+    <string name="expert_l3_f2">Chat with a trainer</string>
+    <string name="expert_l3_f3">Weekly and monthly reviews</string>
+    <string name="expert_l3_f4">Personalized plans</string>
     <string name="mission_title">Next Mission</string>
     <string name="mission_planned">Planned: %1$s</string>
     <string name="mission_swap">Swap</string>

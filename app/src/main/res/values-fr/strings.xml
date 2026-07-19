@@ -375,4 +375,23 @@
     <string name="reminder_body_text">Il est temps de noter vos mensurations dans votre profil.</string>
     <string name="reminder_cycle_title">Cycle sous l\'objectif</string>
     <string name="reminder_cycle_text">Votre dernier cycle a atteint %1$d%% en moyenne. Redoublons d\'efforts.</string>
+    <!-- Expert Support (Phase 9) -->
+    <string name="home_expert">Accompagnement expert</string>
+    <string name="expert_title">Accompagnement expert</string>
+    <string name="expert_coming_soon">Bientôt disponible</string>
+    <string name="expert_l1">Niveau 1 — Coach IA</string>
+    <string name="expert_l1_f1">Recommandations d\'entraînement</string>
+    <string name="expert_l1_f2">Suggestions de récupération</string>
+    <string name="expert_l1_f3">Objectifs hebdomadaires</string>
+    <string name="expert_l1_f4">Analyse des progrès</string>
+    <string name="expert_l2">Niveau 2 — Coach expert</string>
+    <string name="expert_l2_f1">Analyser les enregistrements</string>
+    <string name="expert_l2_f2">Corriger la technique</string>
+    <string name="expert_l2_f3">Ajuster les programmes</string>
+    <string name="expert_l2_f4">Conseils nutritionnels</string>
+    <string name="expert_l3">Niveau 3 — Coaching premium</string>
+    <string name="expert_l3_f1">Suivi individuel des progrès</string>
+    <string name="expert_l3_f2">Discuter avec un coach</string>
+    <string name="expert_l3_f3">Bilans hebdomadaires et mensuels</string>
+    <string name="expert_l3_f4">Programmes personnalisés</string>
 </resources>

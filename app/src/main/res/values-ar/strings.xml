@@ -387,4 +387,23 @@
     <string name="reminder_body_text">حان وقت تسجيل قياسات جسمك في ملفك.</string>
     <string name="reminder_cycle_title">الدورة دون الهدف</string>
     <string name="reminder_cycle_text">متوسط دورتك الأخيرة %1$d%%. لنبذل جهدًا أكبر.</string>
+    <!-- Expert Support (Phase 9) -->
+    <string name="home_expert">دعم الخبراء</string>
+    <string name="expert_title">دعم الخبراء</string>
+    <string name="expert_coming_soon">قريبًا</string>
+    <string name="expert_l1">المستوى 1 — مدرب الذكاء الاصطناعي</string>
+    <string name="expert_l1_f1">توصيات التدريب</string>
+    <string name="expert_l1_f2">اقتراحات الاستشفاء</string>
+    <string name="expert_l1_f3">أهداف أسبوعية</string>
+    <string name="expert_l1_f4">تحليل التقدم</string>
+    <string name="expert_l2">المستوى 2 — مدرب خبير</string>
+    <string name="expert_l2_f1">مراجعة التسجيلات</string>
+    <string name="expert_l2_f2">تصحيح الأداء</string>
+    <string name="expert_l2_f3">تعديل البرامج</string>
+    <string name="expert_l2_f4">نصائح غذائية</string>
+    <string name="expert_l3">المستوى 3 — تدريب مميز</string>
+    <string name="expert_l3_f1">متابعة فردية للتقدم</string>
+    <string name="expert_l3_f2">محادثة مع مدرب</string>
+    <string name="expert_l3_f3">مراجعات أسبوعية وشهرية</string>
+    <string name="expert_l3_f4">خطط مخصصة</string>
 </resources>
