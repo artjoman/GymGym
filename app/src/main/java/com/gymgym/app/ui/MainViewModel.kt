@@ -974,7 +974,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun finishExercise() {
         val step = currentStep() ?: return
-        finishExercise()
+        logSession(step.exercise, exerciseRepsAccum, exerciseGoodAccum, sessionStartedAt)
         runResults.add(
             CompletedWorkoutRepository.ExerciseResult(
                 exerciseRef = step.exerciseRef,
