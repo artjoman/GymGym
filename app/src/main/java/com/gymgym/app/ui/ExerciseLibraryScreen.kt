@@ -44,6 +44,7 @@ import com.gymgym.app.exercise.ExerciseCatalog
 fun ExerciseLibraryScreen(
     customExercises: List<CustomExercise>,
     onTest: (Exercise) -> Unit,
+    onAutoDetect: () -> Unit,
     onAddCustom: (String) -> Unit,
     onDeleteCustom: (Long) -> Unit,
     onBack: () -> Unit,
@@ -59,6 +60,13 @@ fun ExerciseLibraryScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(stringResource(R.string.library_title), style = MaterialTheme.typography.headlineSmall)
+
+        GymButton(
+            text = stringResource(R.string.home_auto_detect),
+            onClick = onAutoDetect,
+            style = GymButtonStyle.Secondary,
+            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+        )
 
         for ((category, exercises) in ExerciseCatalog.byCategory()) {
             if (exercises.isEmpty()) continue

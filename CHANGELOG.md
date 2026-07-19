@@ -3,6 +3,15 @@
 User-facing release notes for GymGym, newest first. Updated on every version
 bump with the changes made since the previous release (see AGENTS.md).
 
+## 2.0.1 (versionCode 10)
+
+- Fixed: **Start** and **Swap** on the Next Mission screen now actually launch the
+  workout (the active plan wasn't being read).
+- Home is cleaner: removed the redundant "Choose your exercise" buttons — browse
+  and test exercises in the Exercise Library instead (Auto-detect moved there too).
+- New: **body-parameter trends** in Stats — see how your weight and measurements
+  change over time. Included in backup export/import.
+
 ## 2.0.0 (versionCode 9)
 
 GymGym grows from a rep counter into a full workout planner:

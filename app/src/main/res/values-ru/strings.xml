@@ -400,4 +400,5 @@
     <string name="expert_l3_f2">Чат с тренером</string>
     <string name="expert_l3_f3">Недельные и месячные обзоры</string>
     <string name="expert_l3_f4">Персональные планы</string>
+    <string name="stats_body_trends">Динамика параметров тела</string>
 </resources>

@@ -137,8 +137,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val plans: StateFlow<List<PlanWithCycles>> = planRepository.plans
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    // Eagerly shared: startWorkoutById() reads activePlan.value directly (e.g. from
+    // the Next Mission screen, which doesn't otherwise collect this flow).
     val activePlan: StateFlow<PlanWithCycles?> = planRepository.activePlan
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     val completedWorkouts: StateFlow<List<CompletedWorkoutWithExercises>> =
         completedWorkoutRepository.all

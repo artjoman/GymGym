@@ -205,8 +205,6 @@ private fun AppRoot(viewModel: MainViewModel) {
                 greeting = profile.displayName,
                 dashboard = dashboard,
                 onOpenMission = { navController.navigate(Routes.MISSION) },
-                onExerciseSelected = ::startExercise,
-                onAutoDetect = ::startAuto,
                 onOpenLibrary = { navController.navigate(Routes.LIBRARY) },
                 onOpenPrograms = { navController.navigate(Routes.PROGRAMS) },
                 onOpenPlans = { navController.navigate(Routes.PLANS) },
@@ -238,6 +236,7 @@ private fun AppRoot(viewModel: MainViewModel) {
             ExerciseLibraryScreen(
                 customExercises = customExercises,
                 onTest = ::startExercise,
+                onAutoDetect = ::startAuto,
                 onAddCustom = viewModel::addCustomExercise,
                 onDeleteCustom = viewModel::deleteCustomExercise,
                 onBack = { navController.popBackStack() },
@@ -329,8 +328,10 @@ private fun AppRoot(viewModel: MainViewModel) {
         }
         composable(Routes.STATS) {
             val sessions by viewModel.history.collectAsState()
+            val bodyMeasurements by viewModel.bodyMeasurements.collectAsState()
             StatsScreen(
                 sessions = sessions,
+                bodyMeasurements = bodyMeasurements,
                 onBack = { navController.popBackStack() },
             )
         }

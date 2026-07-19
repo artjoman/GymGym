@@ -25,11 +25,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.gymgym.app.R
+import com.gymgym.app.data.BodyMeasurement
+import com.gymgym.app.data.BodyMetric
 import com.gymgym.app.data.WorkoutSession
 
 @Composable
 fun StatsScreen(
     sessions: List<WorkoutSession>,
+    bodyMeasurements: List<BodyMeasurement>,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -37,6 +40,12 @@ fun StatsScreen(
     val filtered = sessions.applyFilter(filter)
     val stats = aggregateStats(filtered)
     val lineColor = MaterialTheme.colorScheme.primary
+
+    // Body measurements grouped by metric, oldest -> newest, within the date range.
+    val cutoff = filter.range.cutoff()
+    val bodyByMetric: Map<BodyMetric, List<BodyMeasurement>> = BodyMetric.entries.associateWith { m ->
+        bodyMeasurements.filter { it.type == m.name && it.loggedAt >= cutoff }.sortedBy { it.loggedAt }
+    }.filterValues { it.isNotEmpty() }
     Column(
         modifier = Modifier.fillMaxSize().systemBarsPadding().padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -45,12 +54,13 @@ fun StatsScreen(
 
         FilterBar(filter = filter, onFilter = { filter = it })
 
-        if (stats.isEmpty()) {
+        if (stats.isEmpty() && bodyByMetric.isEmpty()) {
             Text(
                 stringResource(R.string.stats_empty),
                 modifier = Modifier.padding(vertical = 24.dp),
             )
-        } else {
+        }
+        if (stats.isNotEmpty()) {
             for (stat in stats) {
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -169,9 +179,74 @@ fun StatsScreen(
             }
         }
 
+        if (bodyByMetric.isNotEmpty()) {
+            Text(
+                stringResource(R.string.stats_body_trends),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+            for ((metric, series) in bodyByMetric) {
+                val latest = series.last()
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                stringResource(metric.labelRes()),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                            Text(
+                                "${formatMeasure(latest.value)} ${latest.unit}",
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                        }
+                        if (series.size >= 2) {
+                            BodyTrendChart(series.map { it.value.toFloat() }, lineColor)
+                        }
+                    }
+                }
+            }
+        }
+
         GymButton(stringResource(R.string.action_back), onBack, Modifier.padding(top = 8.dp), GymButtonStyle.Secondary)
     }
 }
+
+@Composable
+private fun BodyTrendChart(values: List<Float>, lineColor: androidx.compose.ui.graphics.Color) {
+    val min = values.min()
+    val max = values.max()
+    val span = (max - min).takeIf { it > 0f } ?: 1f
+    Canvas(modifier = Modifier.fillMaxWidth().height(80.dp).padding(top = 12.dp)) {
+        val stepX = size.width / (values.size - 1)
+        val path = Path()
+        values.forEachIndexed { i, v ->
+            val x = stepX * i
+            // Leave 10% headroom top/bottom so the line isn't clipped to the edges.
+            val norm = (v - min) / span
+            val y = size.height * (0.9f - norm * 0.8f)
+            if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
+        }
+        drawPath(
+            path = path,
+            color = lineColor,
+            style = androidx.compose.ui.graphics.drawscope.Stroke(width = 5f),
+        )
+        values.forEachIndexed { i, v ->
+            val x = stepX * i
+            val norm = (v - min) / span
+            val y = size.height * (0.9f - norm * 0.8f)
+            drawCircle(color = lineColor, radius = 6f, center = Offset(x, y))
+        }
+    }
+}
+
+private fun formatMeasure(v: Double): String =
+    if (v == v.toLong().toDouble()) v.toLong().toString() else "%.1f".format(v)
 
 @Composable
 private fun StatCell(label: String, value: String, modifier: Modifier = Modifier, big: Boolean = true) {

@@ -240,6 +240,7 @@
     <string name="stats_avg_hold">Avg hold</string>
     <string name="stats_reps_trend">Recent reps trend</string>
     <string name="stats_form_trend">Form quality trend</string>
+    <string name="stats_body_trends">Body parameter trends</string>
 
     <!-- History -->
     <string name="history_title">History</string>

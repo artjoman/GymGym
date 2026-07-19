@@ -394,4 +394,5 @@
     <string name="expert_l3_f2">Chat con un entrenador</string>
     <string name="expert_l3_f3">Revisiones semanales y mensuales</string>
     <string name="expert_l3_f4">Planes personalizados</string>
+    <string name="stats_body_trends">Tendencias de parámetros corporales</string>
 </resources>

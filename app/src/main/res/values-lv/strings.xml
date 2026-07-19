@@ -397,4 +397,5 @@
     <string name="expert_l3_f2">Tērzēšana ar treneri</string>
     <string name="expert_l3_f3">Nedēļas un mēneša pārskati</string>
     <string name="expert_l3_f4">Personalizēti plāni</string>
+    <string name="stats_body_trends">Ķermeņa parametru tendences</string>
 </resources>

@@ -391,4 +391,5 @@
     <string name="expert_l3_f2">与教练聊天</string>
     <string name="expert_l3_f3">每周和每月回顾</string>
     <string name="expert_l3_f4">个性化计划</string>
+    <string name="stats_body_trends">身体参数趋势</string>
 </resources>

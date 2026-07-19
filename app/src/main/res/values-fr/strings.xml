@@ -394,4 +394,5 @@
     <string name="expert_l3_f2">Discuter avec un coach</string>
     <string name="expert_l3_f3">Bilans hebdomadaires et mensuels</string>
     <string name="expert_l3_f4">Programmes personnalisés</string>
+    <string name="stats_body_trends">Tendances des mensurations</string>
 </resources>

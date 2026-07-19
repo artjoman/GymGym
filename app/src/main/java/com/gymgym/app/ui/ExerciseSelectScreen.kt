@@ -30,8 +30,6 @@ fun ExerciseSelectScreen(
     greeting: String?,
     dashboard: com.gymgym.app.cycle.DashboardState,
     onOpenMission: () -> Unit,
-    onExerciseSelected: (Exercise) -> Unit,
-    onAutoDetect: () -> Unit,
     onOpenLibrary: () -> Unit,
     onOpenPrograms: () -> Unit,
     onOpenPlans: () -> Unit,
@@ -91,23 +89,6 @@ fun ExerciseSelectScreen(
                         CycleProgressBar(dashboard)
                     }
                 }
-            }
-
-            SectionLabel(stringResource(R.string.home_choose_exercise), top = 20.dp)
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                for (exercise in Exercise.entries) {
-                    GymButton(
-                        text = stringResource(exercise.labelRes()),
-                        onClick = { onExerciseSelected(exercise) },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-                GymButton(
-                    text = stringResource(R.string.home_auto_detect),
-                    onClick = onAutoDetect,
-                    style = GymButtonStyle.Secondary,
-                    modifier = Modifier.fillMaxWidth(),
-                )
             }
 
             SectionLabel(stringResource(R.string.home_train_smarter), top = 26.dp)
