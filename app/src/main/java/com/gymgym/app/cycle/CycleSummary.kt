@@ -21,6 +21,21 @@ data class CycleWorkoutLine(
     val weekday: Int?,
 )
 
+/** One exercise within a featured workout, in the shared History display format. */
+data class CycleExerciseLine(
+    val exerciseRef: String,
+    val targetReps: Int,
+    val targetSets: Int,
+    /** Reps done, or null when the workout hasn't been executed yet (planned only). */
+    val completedReps: Int?,
+)
+
+/** The featured workout shown in detail under a cycle card. */
+data class CycleWorkoutDetail(
+    val workoutName: String,
+    val exercises: List<CycleExerciseLine>,
+)
+
 /**
  * A cycle rolled up for display: the plan/cycle names, the overall completion %
  * (total completed reps ÷ total planned reps across its workouts), and each
@@ -33,6 +48,12 @@ data class CycleSummary(
     val cycleName: String,
     val percent: Int,
     val workouts: List<CycleWorkoutLine>,
+    /**
+     * The featured workout's exercise breakdown: the upcoming workout (planned
+     * only) for the current cycle, or the most recently executed workout (with
+     * results) for a completed cycle. Null when there's nothing to detail.
+     */
+    val detail: CycleWorkoutDetail? = null,
 )
 
 /** The two cycle blocks shown above "Train smarter" on the home screen. */
@@ -100,7 +121,9 @@ object CycleSummaries {
         val effectiveProgress = if (allProcessed) emptyMap() else progress
         val nextPair = sequence.firstOrNull { it.second.workout.id !in effectiveProgress } ?: sequence.first()
         val cyc = nextPair.first
-        return summarize(activePlan, cyc, completed.forCycle(cyc.cycle.id), weekly, effectiveProgress)
+        val summary = summarize(activePlan, cyc, completed.forCycle(cyc.cycle.id), weekly, effectiveProgress)
+        // Featured detail = the upcoming workout, planned only (not executed yet).
+        return summary.copy(detail = workoutDetail(nextPair.second, completedRow = null))
     }
 
     private fun lastCycleSummary(
@@ -114,7 +137,28 @@ object CycleSummaries {
             .maxByOrNull { it.workout.startedAt } ?: return null
         val cycleId = latest.workout.cycleId ?: return null
         val (plan, cyc) = findCycle(plans, cycleId) ?: return null
-        return summarize(plan, cyc, completed.forCycle(cycleId), weekly, progress = null)
+        val summary = summarize(plan, cyc, completed.forCycle(cycleId), weekly, progress = null)
+        // Featured detail = the most recently executed workout, with its results.
+        val featured = cyc.orderedWorkouts.firstOrNull { it.workout.id == latest.workout.workoutId }
+        val detail = featured?.let { workoutDetail(it, completedRow = latest) }
+        return summary.copy(detail = detail)
+    }
+
+    /** Build the featured workout's exercise breakdown (planned only when [completedRow] is null). */
+    private fun workoutDetail(
+        w: WorkoutWithExercises,
+        completedRow: CompletedWorkoutWithExercises?,
+    ): CycleWorkoutDetail {
+        val completedExercises = completedRow?.orderedExercises
+        val lines = w.orderedExercises.mapIndexed { i, pe ->
+            CycleExerciseLine(
+                exerciseRef = pe.exerciseRef,
+                targetReps = pe.targetReps,
+                targetSets = pe.targetSets,
+                completedReps = completedExercises?.getOrNull(i)?.reps,
+            )
+        }
+        return CycleWorkoutDetail(workoutName = w.workout.name, exercises = lines)
     }
 
     /**

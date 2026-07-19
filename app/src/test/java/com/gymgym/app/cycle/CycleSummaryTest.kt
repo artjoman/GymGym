@@ -92,6 +92,25 @@ class CycleSummaryTest {
     }
 
     @Test
+    fun currentCycleDetailIsUpcomingWorkoutPlannedOnly() {
+        val done = listOf(completed(1, 10, 30, 100))
+        val home = CycleSummaries.compute(
+            plans = listOf(plan),
+            activePlan = plan,
+            progress = mapOf(10L to CycleEngine.ProgressEntry("DONE", 100)),
+            completed = done,
+            profile = Profile(),
+        )
+        // Workout 10 done → the next workout is 11 ("Workout 2"), shown planned only.
+        val detail = home.currentCycle?.detail
+        assertEquals("Workout 2", detail?.workoutName)
+        val ex = detail?.exercises?.first()
+        assertEquals(15, ex?.targetReps)
+        assertEquals(3, ex?.targetSets)
+        assertNull(ex?.completedReps) // not executed yet
+    }
+
+    @Test
     fun noCompletedCyclesIsNull() {
         val home = CycleSummaries.compute(emptyList(), null, emptyMap(), emptyList(), Profile())
         assertNull(home.lastCycle)

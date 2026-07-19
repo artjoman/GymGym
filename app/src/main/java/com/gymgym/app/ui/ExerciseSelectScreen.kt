@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 fun ExerciseSelectScreen(
     greeting: String?,
     homeCycles: com.gymgym.app.cycle.HomeCycles,
+    customNames: Map<String, String>,
     onOpenMission: () -> Unit,
     onOpenLastCycle: () -> Unit,
     onOpenLibrary: () -> Unit,
@@ -68,7 +69,7 @@ fun ExerciseSelectScreen(
             SectionLabel(stringResource(R.string.home_last_cycle), top = 20.dp)
             val lastCycle = homeCycles.lastCycle
             if (lastCycle != null) {
-                CycleCard(summary = lastCycle, onClick = onOpenLastCycle)
+                CycleCard(summary = lastCycle, onClick = onOpenLastCycle, customNames = customNames)
             } else {
                 EmptyCycleCard(stringResource(R.string.home_no_cycles))
             }
@@ -77,7 +78,7 @@ fun ExerciseSelectScreen(
             SectionLabel(stringResource(R.string.home_current_mission), top = 20.dp)
             val currentCycle = homeCycles.currentCycle
             if (currentCycle != null) {
-                CycleCard(summary = currentCycle, onClick = onOpenMission)
+                CycleCard(summary = currentCycle, onClick = onOpenMission, customNames = customNames)
             } else {
                 EmptyCycleCard(stringResource(R.string.home_no_plan))
             }
@@ -140,7 +141,11 @@ private fun SectionLabel(text: String, top: androidx.compose.ui.unit.Dp) {
  */
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-internal fun CycleCard(summary: com.gymgym.app.cycle.CycleSummary, onClick: (() -> Unit)? = null) {
+internal fun CycleCard(
+    summary: com.gymgym.app.cycle.CycleSummary,
+    onClick: (() -> Unit)? = null,
+    customNames: Map<String, String> = emptyMap(),
+) {
     val cardModifier = Modifier.fillMaxWidth()
         .let { if (onClick != null) it.clickable(onClick = onClick) else it }
     androidx.compose.material3.Card(modifier = cardModifier) {
@@ -176,6 +181,30 @@ internal fun CycleCard(summary: com.gymgym.app.cycle.CycleSummary, onClick: (() 
                             },
                         )
                     }
+                }
+            }
+            // Featured workout's exercises (planned for Current mission, results for
+            // Last cycle) in the same format as History / Workout Details.
+            summary.detail?.let { detail ->
+                Spacer(Modifier.height(10.dp))
+                Text(
+                    detail.workoutName,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Spacer(Modifier.height(2.dp))
+                for (ex in detail.exercises) {
+                    Text(
+                        exerciseLineText(
+                            name = exerciseRefName(ex.exerciseRef, customNames),
+                            targetReps = ex.targetReps,
+                            targetSets = ex.targetSets,
+                            completedReps = ex.completedReps,
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 2.dp),
+                    )
                 }
             }
         }

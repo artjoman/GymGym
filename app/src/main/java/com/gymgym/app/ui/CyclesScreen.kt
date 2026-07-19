@@ -14,6 +14,41 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.gymgym.app.R
 import com.gymgym.app.cycle.CycleSummary
+import com.gymgym.app.exercise.ExerciseCatalog
+import androidx.compose.ui.platform.LocalContext
+
+/**
+ * The shared exercise line used across History and the cycle cards:
+ *   "<Name>: <TargetReps>×<Sets> sets • <Completed>/<Planned> reps"
+ * With [completedReps] null it renders planned-only ("<Name>: 10×3 sets"); with
+ * 0 completed it renders "<Name>: Skipped".
+ */
+@Composable
+internal fun exerciseLineText(
+    name: String,
+    targetReps: Int,
+    targetSets: Int,
+    completedReps: Int?,
+): String {
+    val planned = targetReps * targetSets
+    return when {
+        completedReps == null ->
+            if (planned > 0) stringResource(R.string.history_exercise_planned, name, targetReps, targetSets)
+            else name
+        planned <= 0 -> stringResource(R.string.history_exercise_legacy, name, completedReps)
+        completedReps == 0 -> stringResource(R.string.history_exercise_skipped, name)
+        else -> stringResource(R.string.history_exercise_line, name, targetReps, targetSets, completedReps, planned)
+    }
+}
+
+/** Resolve an exercise ref to a display name (catalog string or custom name). */
+@Composable
+internal fun exerciseRefName(ref: String, customNames: Map<String, String>): String {
+    val ctx = LocalContext.current
+    return ExerciseCatalog.byId(ref)?.let { ctx.getString(it.nameRes) }
+        ?: customNames[ref]
+        ?: ref
+}
 
 /** History-style list of completed cycles (Statistics → Cycles tab). */
 @Composable

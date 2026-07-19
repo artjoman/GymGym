@@ -241,9 +241,12 @@ private fun AppRoot(
         composable(Routes.HOME) {
             val profile by viewModel.profile.collectAsState()
             val homeCycles by viewModel.homeCycles.collectAsState()
+            val customExercises by viewModel.customExercises.collectAsState()
+            val customNames = customExercises.associate { ExerciseRef.forCustom(it.id) to it.name }
             ExerciseSelectScreen(
                 greeting = profile.displayName,
                 homeCycles = homeCycles,
+                customNames = customNames,
                 onOpenMission = { navController.navigate(Routes.MISSION) },
                 onOpenLastCycle = { navController.navigate("${Routes.STATISTICS}?tab=2") },
                 onOpenLibrary = { navController.navigate(Routes.LIBRARY) },

@@ -28,8 +28,11 @@ bump with the changes made since the previous release (see AGENTS.md).
   reps done ÷ total reps planned across the workout, rounded (e.g. 75/80 → 94%).
 - The home screen now shows two cycle blocks above Train smarter — **Last cycle**
   and **Current mission** — each with the cycle name + overall %, the plan name,
-  and every workout in order (skipped ones marked *Skipped*). Cycle % is total
-  reps done ÷ total reps planned across the cycle. Tapping Last cycle opens the
+  every workout in order (skipped ones marked *Skipped*), and the featured
+  workout's **exercise breakdown**: Current mission shows the planned setup
+  (`Squat: 10×3 sets`) while Last cycle shows what you did
+  (`Squat: 10×3 sets • 27/30 reps`, or *Skipped*) — the same format as History.
+  Cycle % is total reps done ÷ total reps planned. Tapping Last cycle opens the
   new **Statistics → Cycles** tab.
 - Fixed a crash that could occur right after finishing a set.
 

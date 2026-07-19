@@ -145,22 +145,13 @@ private fun CompletedWorkoutRow(
             }
             if (expanded) {
                 for (e in item.orderedExercises) {
-                    val label = ExerciseCatalog.byId(e.exerciseRef)
-                        ?.let { context.getString(it.nameRes) }
-                        ?: customNames[e.exerciseRef]
-                        ?: e.exerciseRef
-                    val planned = e.targetReps * e.targetSets
-                    val line = when {
-                        // Legacy rows saved before targets were stored.
-                        planned <= 0 -> stringResource(R.string.history_exercise_legacy, label, e.reps)
-                        // No reps completed → the exercise was skipped.
-                        e.reps == 0 -> stringResource(R.string.history_exercise_skipped, label)
-                        // <Name>: <TargetReps>×<Sets> sets • <Completed>/<Planned> reps
-                        else -> stringResource(
-                            R.string.history_exercise_line,
-                            label, e.targetReps, e.targetSets, e.reps, planned,
-                        )
-                    }
+                    // Same representation as the home cycle cards / Workout Details.
+                    val line = exerciseLineText(
+                        name = exerciseRefName(e.exerciseRef, customNames),
+                        targetReps = e.targetReps,
+                        targetSets = e.targetSets,
+                        completedReps = e.reps,
+                    )
                     Text(
                         line,
                         style = MaterialTheme.typography.bodySmall,

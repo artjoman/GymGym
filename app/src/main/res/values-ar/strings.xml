@@ -165,6 +165,7 @@
     <string name="history_empty_filtered">لا توجد جلسات مطابقة لهذا الفلتر.</string>
     <string name="history_meta">%1$s · %2$s</string>
     <string name="history_exercise_line">%1$s: %2$d×%3$d مجموعات • %4$d/%5$d تكرار</string>
+    <string name="history_exercise_planned">%1$s: %2$d×%3$d مجموعات</string>
     <string name="history_exercise_skipped">%1$s: تم التخطي</string>
     <string name="history_exercise_legacy">%1$s · %2$d تكرار</string>
 
