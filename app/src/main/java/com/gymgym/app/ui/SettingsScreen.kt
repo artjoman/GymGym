@@ -153,7 +153,7 @@ fun SettingsScreen(
         SwitchRow(
             label = stringResource(R.string.settings_combo_callout),
             checked = settings.setCelebration,
-            enabled = true,
+            enabled = settings.soundsEnabled,
             onChange = onSetCelebration,
         )
         HorizontalDivider()

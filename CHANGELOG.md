@@ -45,6 +45,9 @@ bump with the changes made since the previous release (see AGENTS.md).
   pauses), so manual-only workouts get a duration too.
 - **Weekly Schedule** lets you assign a **weekday** to each workout; the next
   mission follows the weekday order and the progress bar shows each day.
+- The **All Sounds** master toggle now also controls the **Set-Complete Combo
+  Callout** — turning All Sounds off disables it (and suppresses the callout)
+  like every other sound feature.
 - Recovery timers: **Between workouts** is now set in **hours** (8-hour steps,
   8–168 h, default 48 h) with Beginner/Intermediate/Advanced presets of
   72/48/24 h — no more confusing raw-second values. Between sets and Between

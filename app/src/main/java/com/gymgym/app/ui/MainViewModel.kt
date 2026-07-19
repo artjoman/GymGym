@@ -661,7 +661,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
 
-        if (!soundSettings.value.setCelebration) {
+        // The Set-Complete Combo Callout is a sound feature: it runs only when its
+        // own toggle is on AND the All Sounds master is on, so All Sounds truly
+        // controls every audio feature (see also SettingsScreen gating).
+        val comboEnabled = soundSettings.value.setCelebration && soundSettings.value.soundsEnabled
+        if (!comboEnabled) {
             advanceAfterSet(moreSets, step)
             return
         }
@@ -671,7 +675,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _countdownValue.value = null
         val word = getApplication<Application>().resources.getStringArray(R.array.combo_words).random()
         _celebration.value = word
-        if (soundSettings.value.soundsEnabled) speak(word)
+        speak(word)
         transitionJob?.cancel()
         transitionJob = viewModelScope.launch {
             delay(CELEBRATION_DISPLAY_MS)
