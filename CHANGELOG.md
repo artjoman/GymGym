@@ -12,9 +12,12 @@ bump with the changes made since the previous release (see AGENTS.md).
   screens are stacked.
 - Added a **mic mute** button during a workout: tap it to stop listening for
   voice commands. The choice sticks between exercises and sessions.
-- **Every exercise is now testable from the library** — non-AI moves and your
-  own custom exercises open a manual session where you enter the reps yourself.
-  AI-counted moves are labelled **AI Count**.
+- **Every exercise is now testable from the library** — AI-counted moves show a
+  **Test** button, while non-AI moves and your own custom exercises show a
+  **Manual Test** button that opens a manual session where you enter the reps
+  yourself. During a manual test, a note explains that AI counting is still in
+  development and invites you to contribute recordings.
+- The workout screen's exit button now reads **Stop exercise** (was "Stop plan").
 - History workout cards are clearer: each exercise reads
   **`Name: 10×3 sets • 27/30 reps`** (skipped exercises show **Skipped**), custom
   exercises show their real name, and the workout **completion %** is now total

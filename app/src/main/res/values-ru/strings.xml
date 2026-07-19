@@ -54,7 +54,9 @@
     <string name="camera_pause">Пауза</string>
     <string name="camera_change_exercise">Сменить упражнение</string>
     <string name="camera_skip_exercise">Пропустить упражнение</string>
-    <string name="camera_stop_plan">Остановить план</string>
+    <string name="camera_stop_exercise">Остановить упражнение</string>
+    <string name="manual_ai_dev_title">Подсчёт с помощью ИИ в разработке.</string>
+    <string name="manual_ai_dev_body">Помогите улучшить GymGym, присылая записи упражнений. Ваши видео используются исключительно для обучения и улучшения наших моделей машинного обучения.</string>
     <string name="camera_paused">Пауза</string>
     <string name="camera_say_resume">Скажите \"resume\" или коснитесь</string>
     <string name="camera_workout_complete">Тренировка завершена!</string>
@@ -269,6 +271,7 @@
     <string name="library_manual_badge">Вручную</string>
     <string name="library_ai_badge">ИИ</string>
     <string name="library_test">Тест</string>
+    <string name="library_manual_test">Ручной тест</string>
     <string name="library_ai_count">ИИ-подсчёт</string>
     <string name="library_custom_section">Свои</string>
     <string name="library_add_custom">Добавить своё упражнение</string>

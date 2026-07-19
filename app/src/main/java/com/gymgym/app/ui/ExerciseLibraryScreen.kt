@@ -179,7 +179,9 @@ private fun CatalogRow(exercise: CatalogExercise, onTest: () -> Unit) {
                     tint = MaterialTheme.colorScheme.primary,
                 )
                 Text(
-                    stringResource(R.string.library_test),
+                    stringResource(
+                        if (exercise.isAiCounted) R.string.library_test else R.string.library_manual_test,
+                    ),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
@@ -226,7 +228,7 @@ private fun CustomRow(name: String, onTest: () -> Unit, onDelete: () -> Unit) {
                     tint = MaterialTheme.colorScheme.primary,
                 )
                 Text(
-                    stringResource(R.string.library_test),
+                    stringResource(R.string.library_manual_test),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,

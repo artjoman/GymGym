@@ -54,7 +54,9 @@
     <string name="camera_pause">暂停</string>
     <string name="camera_change_exercise">更换动作</string>
     <string name="camera_skip_exercise">跳过动作</string>
-    <string name="camera_stop_plan">停止计划</string>
+    <string name="camera_stop_exercise">停止练习</string>
+    <string name="manual_ai_dev_title">AI 计数功能正在开发中。</string>
+    <string name="manual_ai_dev_body">提交动作录像，帮助我们改进 GymGym。您的视频仅用于训练和改进我们的机器学习模型。</string>
     <string name="camera_paused">已暂停</string>
     <string name="camera_say_resume">说“resume”或点按</string>
     <string name="camera_workout_complete">训练完成！</string>
@@ -260,6 +262,7 @@
     <string name="library_manual_badge">手动</string>
     <string name="library_ai_badge">AI</string>
     <string name="library_test">测试</string>
+    <string name="library_manual_test">手动测试</string>
     <string name="library_ai_count">AI 计数</string>
     <string name="library_custom_section">自定义</string>
     <string name="library_add_custom">添加自定义动作</string>

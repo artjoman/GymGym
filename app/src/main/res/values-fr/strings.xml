@@ -54,7 +54,9 @@
     <string name="camera_pause">Pause</string>
     <string name="camera_change_exercise">Changer d\'exercice</string>
     <string name="camera_skip_exercise">Passer l\'exercice</string>
-    <string name="camera_stop_plan">Arrêter le programme</string>
+    <string name="camera_stop_exercise">Arrêter l\'exercice</string>
+    <string name="manual_ai_dev_title">Le comptage par IA est en cours de développement.</string>
+    <string name="manual_ai_dev_body">Aidez-nous à améliorer GymGym en envoyant des enregistrements d\'exercices. Vos vidéos servent exclusivement à entraîner et améliorer nos modèles d\'apprentissage automatique.</string>
     <string name="camera_paused">En pause</string>
     <string name="camera_say_resume">Dites \"resume\" ou touchez</string>
     <string name="camera_workout_complete">Séance terminée !</string>
@@ -263,6 +265,7 @@
     <string name="library_manual_badge">Manuel</string>
     <string name="library_ai_badge">IA</string>
     <string name="library_test">Tester</string>
+    <string name="library_manual_test">Test manuel</string>
     <string name="library_ai_count">Comptage IA</string>
     <string name="library_custom_section">Personnalisés</string>
     <string name="library_add_custom">Ajouter un exercice personnalisé</string>

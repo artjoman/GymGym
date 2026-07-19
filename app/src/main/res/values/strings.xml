@@ -49,6 +49,7 @@
     <string name="library_manual_badge">Manual</string>
     <string name="library_ai_badge">AI</string>
     <string name="library_test">Test</string>
+    <string name="library_manual_test">Manual Test</string>
     <string name="library_ai_count">AI Count</string>
     <string name="library_custom_section">Custom</string>
     <string name="library_add_custom">Add custom exercise</string>
@@ -125,7 +126,9 @@
     <string name="camera_pause">Pause</string>
     <string name="camera_change_exercise">Change exercise</string>
     <string name="camera_skip_exercise">Skip exercise</string>
-    <string name="camera_stop_plan">Stop plan</string>
+    <string name="camera_stop_exercise">Stop exercise</string>
+    <string name="manual_ai_dev_title">AI support is under development.</string>
+    <string name="manual_ai_dev_body">Help us improve GymGym by submitting exercise recordings. Your videos are used exclusively to train and improve our machine learning models.</string>
     <string name="camera_paused">Paused</string>
     <string name="camera_say_resume">Say \"resume\" or tap</string>
     <string name="camera_workout_complete">Workout complete!</string>

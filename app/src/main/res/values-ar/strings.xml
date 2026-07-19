@@ -54,7 +54,9 @@
     <string name="camera_pause">إيقاف مؤقت</string>
     <string name="camera_change_exercise">تغيير التمرين</string>
     <string name="camera_skip_exercise">تخطي التمرين</string>
-    <string name="camera_stop_plan">إيقاف الخطة</string>
+    <string name="camera_stop_exercise">إيقاف التمرين</string>
+    <string name="manual_ai_dev_title">عدّ الذكاء الاصطناعي قيد التطوير.</string>
+    <string name="manual_ai_dev_body">ساعدنا في تحسين GymGym بإرسال تسجيلات التمارين. تُستخدم مقاطعك حصريًا لتدريب نماذج التعلم الآلي لدينا وتحسينها.</string>
     <string name="camera_paused">متوقف مؤقتاً</string>
     <string name="camera_say_resume">قل \"resume\" أو انقر</string>
     <string name="camera_workout_complete">اكتمل التمرين!</string>
@@ -275,6 +277,7 @@
     <string name="library_manual_badge">يدوي</string>
     <string name="library_ai_badge">AI</string>
     <string name="library_test">اختبار</string>
+    <string name="library_manual_test">اختبار يدوي</string>
     <string name="library_ai_count">عدّ بالذكاء الاصطناعي</string>
     <string name="library_custom_section">مخصص</string>
     <string name="library_add_custom">إضافة تمرين مخصص</string>

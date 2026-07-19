@@ -54,7 +54,9 @@
     <string name="camera_pause">Pauze</string>
     <string name="camera_change_exercise">Mainīt vingrinājumu</string>
     <string name="camera_skip_exercise">Izlaist vingrinājumu</string>
-    <string name="camera_stop_plan">Apturēt plānu</string>
+    <string name="camera_stop_exercise">Apturēt vingrinājumu</string>
+    <string name="manual_ai_dev_title">MI skaitīšana tiek izstrādāta.</string>
+    <string name="manual_ai_dev_body">Palīdziet uzlabot GymGym, iesniedzot vingrinājumu ierakstus. Jūsu video tiek izmantoti tikai mūsu mašīnmācīšanās modeļu apmācībai un uzlabošanai.</string>
     <string name="camera_paused">Pauzēts</string>
     <string name="camera_say_resume">Saki \"resume\" vai pieskaries</string>
     <string name="camera_workout_complete">Treniņš pabeigts!</string>
@@ -266,6 +268,7 @@
     <string name="library_manual_badge">Manuāli</string>
     <string name="library_ai_badge">MI</string>
     <string name="library_test">Testēt</string>
+    <string name="library_manual_test">Manuāls tests</string>
     <string name="library_ai_count">MI skaitīšana</string>
     <string name="library_custom_section">Pielāgotie</string>
     <string name="library_add_custom">Pievienot pielāgotu vingrinājumu</string>

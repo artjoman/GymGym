@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -395,11 +396,11 @@ fun CameraScreen(
             if (manual) {
                 // Manual move: FINISH lives on the card; just skip or stop here.
                 GymButton(stringResource(R.string.camera_skip_exercise), { viewModel.skipToNextExercise() }, style = GymButtonStyle.Secondary)
-                GymButton(stringResource(R.string.camera_stop_plan), onExit, style = GymButtonStyle.Secondary)
+                GymButton(stringResource(R.string.camera_stop_exercise), onExit, style = GymButtonStyle.Secondary)
             } else if (timed && progress != null) {
                 // Plan hold runs automatically to its target; just skip or stop.
                 GymButton(stringResource(R.string.camera_skip_exercise), { viewModel.skipToNextExercise() }, style = GymButtonStyle.Secondary)
-                GymButton(stringResource(R.string.camera_stop_plan), onExit, style = GymButtonStyle.Secondary)
+                GymButton(stringResource(R.string.camera_stop_exercise), onExit, style = GymButtonStyle.Secondary)
             } else if (timed) {
                 GymButton(
                     if (timerRunning) stringResource(R.string.camera_stop_timer) else stringResource(R.string.camera_start_timer),
@@ -409,7 +410,7 @@ fun CameraScreen(
             } else if (progress != null) {
                 GymButton(stringResource(R.string.camera_skip_exercise), { viewModel.skipToNextExercise() }, style = GymButtonStyle.Secondary)
                 GymButton(stringResource(R.string.camera_pause), { viewModel.pause() }, style = GymButtonStyle.Secondary)
-                GymButton(stringResource(R.string.camera_stop_plan), onExit, style = GymButtonStyle.Secondary)
+                GymButton(stringResource(R.string.camera_stop_exercise), onExit, style = GymButtonStyle.Secondary)
             } else {
                 GymButton(stringResource(R.string.camera_reset), { viewModel.resetSession() }, style = GymButtonStyle.Secondary)
                 GymButton(stringResource(R.string.camera_pause), { viewModel.pause() }, style = GymButtonStyle.Secondary)
@@ -600,5 +601,19 @@ private fun ManualExerciseCard(
             color = Color(0xFF9FB0BC),
         )
         GymButton(stringResource(R.string.camera_finish_set), { onFinish(reps) })
+        // Manual moves have no AI counter yet — explain, and invite recordings.
+        Text(
+            stringResource(R.string.manual_ai_dev_title),
+            fontSize = 13.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Color(0xFF9FE7C7),
+            modifier = Modifier.padding(top = 8.dp),
+        )
+        Text(
+            stringResource(R.string.manual_ai_dev_body),
+            fontSize = 12.sp,
+            color = Color(0xFF9FB0BC),
+            textAlign = TextAlign.Center,
+        )
     }
 }
