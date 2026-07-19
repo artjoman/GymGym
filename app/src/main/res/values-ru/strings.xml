@@ -406,6 +406,7 @@
     <string name="plan_save">Сохранить план</string>
     <string name="statistics_title">Статистика</string>
     <string name="stats_data_title">Данные</string>
+    <string name="cd_mic_muted">Микрофон выключен, нажмите, чтобы включить</string>
     <string name="camera_manual_set">Подход %1$d / %2$d</string>
     <string name="camera_finish_set">Завершить подход</string>
     <string name="plan_weekday">День недели (недельный график)</string>

@@ -3,6 +3,14 @@
 User-facing release notes for GymGym, newest first. Updated on every version
 bump with the changes made since the previous release (see AGENTS.md).
 
+## 2.0.4 (versionCode 13)
+
+- Tapping the **body-measurement reminder** now opens straight to the Profile
+  screen so you can log your measurements right away.
+- Added a **mic mute** button during a workout: tap it to stop listening for
+  voice commands. The choice sticks between exercises and sessions.
+- Fixed a crash that could occur right after finishing a set.
+
 ## 2.0.3 (versionCode 12)
 
 - **Custom (non-AI) exercises now run during a workout**, set by set: each set

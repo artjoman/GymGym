@@ -6,6 +6,7 @@ import com.gymgym.app.settings.AppLocale
 import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -42,6 +43,7 @@ import com.gymgym.app.ui.ExerciseSelectScreen
 import com.gymgym.app.ui.ExpertSupportScreen
 import com.gymgym.app.ui.NextMissionScreen
 import com.gymgym.app.ui.ProgramsScreen
+import com.gymgym.app.notify.Reminders
 import com.gymgym.app.ui.MainViewModel
 import com.gymgym.app.ui.PlanEditScreen
 import com.gymgym.app.ui.PlanListScreen
@@ -72,6 +74,9 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
 
+    /** Screen a tapped notification asked us to open; consumed once by AppRoot. */
+    private var launchDestination by mutableStateOf<String?>(null)
+
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(AppLocale.attach(newBase))
     }
@@ -79,11 +84,16 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        launchDestination = intent?.getStringExtra(Reminders.EXTRA_DESTINATION)
         setContent {
             val appSettings by viewModel.soundSettings.collectAsState()
             GymGymTheme(accent = appSettings.accentTheme) {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    AppRoot(viewModel)
+                    AppRoot(
+                        viewModel = viewModel,
+                        launchDestination = launchDestination,
+                        onDestinationHandled = { launchDestination = null },
+                    )
                 }
             }
         }
@@ -93,12 +103,32 @@ class MainActivity : ComponentActivity() {
             (application as GymGymApp).container.adManager.warmUp(this)
         }
     }
+
+    // A notification tapped while the app is already running arrives here.
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        launchDestination = intent.getStringExtra(Reminders.EXTRA_DESTINATION)
+    }
 }
 
 @Composable
-private fun AppRoot(viewModel: MainViewModel) {
+private fun AppRoot(
+    viewModel: MainViewModel,
+    launchDestination: String?,
+    onDestinationHandled: () -> Unit,
+) {
     val context = LocalContext.current
     val navController = rememberNavController()
+
+    // A tapped reminder can ask us to jump straight to a screen (e.g. Profile to
+    // log measurements). Consume it once so returning Back doesn't re-trigger.
+    LaunchedEffect(launchDestination) {
+        when (launchDestination) {
+            Reminders.DEST_PROFILE -> navController.navigate(Routes.PROFILE)
+        }
+        if (launchDestination != null) onDestinationHandled()
+    }
 
     var hasCameraPermission by remember {
         mutableStateOf(

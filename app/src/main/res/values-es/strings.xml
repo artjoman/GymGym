@@ -400,6 +400,7 @@
     <string name="plan_save">Guardar plan</string>
     <string name="statistics_title">Estadísticas</string>
     <string name="stats_data_title">Datos</string>
+    <string name="cd_mic_muted">Micrófono silenciado, toca para activar</string>
     <string name="camera_manual_set">Serie %1$d / %2$d</string>
     <string name="camera_finish_set">Terminar serie</string>
     <string name="plan_weekday">Día de la semana (horario semanal)</string>

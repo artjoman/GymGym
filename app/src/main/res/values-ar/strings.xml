@@ -412,6 +412,7 @@
     <string name="plan_save">حفظ الخطة</string>
     <string name="statistics_title">الإحصائيات</string>
     <string name="stats_data_title">البيانات</string>
+    <string name="cd_mic_muted">الميكروفون صامت، انقر لإلغاء الكتم</string>
     <string name="camera_manual_set">المجموعة %1$d / %2$d</string>
     <string name="camera_finish_set">إنهاء المجموعة</string>
     <string name="plan_weekday">يوم الأسبوع (الجدول الأسبوعي)</string>

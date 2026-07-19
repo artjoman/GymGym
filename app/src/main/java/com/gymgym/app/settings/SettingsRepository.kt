@@ -36,6 +36,8 @@ data class SoundSettings(
     val trackingRegainedChime: Boolean = true,
     val setCelebration: Boolean = true,
     val voiceControl: Boolean = false,
+    /** Mute the mic during a workout: stop listening for voice commands. Persists. */
+    val micMuted: Boolean = false,
     val cameraFacing: CameraFacing = CameraFacing.BACK,
     val accentTheme: AccentTheme = AccentTheme.EMERALD,
     val backgroundStyle: BackgroundStyle = BackgroundStyle.GYM_EMERALD,
@@ -74,6 +76,7 @@ class SettingsRepository(context: Context) {
             trackingRegainedChime = prefs[TRACKING_REGAINED_CHIME] ?: true,
             setCelebration = prefs[SET_CELEBRATION] ?: true,
             voiceControl = prefs[VOICE_CONTROL] ?: false,
+            micMuted = prefs[MIC_MUTED] ?: false,
             cameraFacing = prefs[CAMERA_FACING]
                 ?.let { stored -> CameraFacing.entries.find { it.name == stored } }
                 ?: CameraFacing.BACK,
@@ -110,6 +113,9 @@ class SettingsRepository(context: Context) {
 
     suspend fun setVoiceControl(value: Boolean) =
         dataStore.edit { it[VOICE_CONTROL] = value }
+
+    suspend fun setMicMuted(value: Boolean) =
+        dataStore.edit { it[MIC_MUTED] = value }
 
     suspend fun setCameraFacing(facing: CameraFacing) =
         dataStore.edit { it[CAMERA_FACING] = facing.name }
@@ -172,6 +178,7 @@ class SettingsRepository(context: Context) {
         val TRACKING_REGAINED_CHIME = booleanPreferencesKey("tracking_regained_chime")
         val SET_CELEBRATION = booleanPreferencesKey("set_celebration")
         val VOICE_CONTROL = booleanPreferencesKey("voice_control")
+        val MIC_MUTED = booleanPreferencesKey("mic_muted")
         val CAMERA_FACING = stringPreferencesKey("camera_facing")
         val ACCENT_THEME = stringPreferencesKey("accent_theme")
         val BACKGROUND_STYLE = stringPreferencesKey("background_style")

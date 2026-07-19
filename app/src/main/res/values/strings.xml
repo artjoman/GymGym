@@ -134,6 +134,7 @@
     <string name="cd_switch_camera">Switch camera</string>
     <string name="cd_listening">Listening</string>
     <string name="cd_voice_paused">Voice paused</string>
+    <string name="cd_mic_muted">Microphone muted, tap to unmute</string>
     <string name="form_cue_shallow_caps">GO DEEPER</string>
     <string name="form_cue_wobbly_caps">STEADY</string>
     <string name="form_cue_fast_caps">SLOW DOWN</string>

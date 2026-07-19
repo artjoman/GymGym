@@ -112,7 +112,10 @@ fun CameraScreen(
         }
     }
 
-    val canListen = settings.voiceControl && hasMicPermission
+    // Voice control is available (enabled + permission); muting stops listening
+    // without turning the feature off, and the mute persists across exercises.
+    val voiceAvailable = settings.voiceControl && hasMicPermission
+    val canListen = voiceAvailable && !settings.micMuted
     // Live snapshots so the remembered voice callback reads current state.
     val frontFacing = rememberUpdatedState(settings.cameraFacing == CameraFacing.FRONT)
     val recordingActive = rememberUpdatedState(recordingState.active)
@@ -460,11 +463,21 @@ fun CameraScreen(
                     )
                 },
             )
-            if (canListen) {
+            if (voiceAvailable) {
+                val muted = settings.micMuted
                 CircleIconButton(
-                    icon = if (isSpeaking) Icons.Rounded.MicOff else Icons.Rounded.Mic,
-                    contentDescription = if (isSpeaking) stringResource(R.string.cd_voice_paused) else stringResource(R.string.cd_listening),
-                    tint = if (isSpeaking) Color(0xFF9AA5AD) else Color.White,
+                    icon = if (muted || isSpeaking) Icons.Rounded.MicOff else Icons.Rounded.Mic,
+                    contentDescription = when {
+                        muted -> stringResource(R.string.cd_mic_muted)
+                        isSpeaking -> stringResource(R.string.cd_voice_paused)
+                        else -> stringResource(R.string.cd_listening)
+                    },
+                    tint = when {
+                        muted -> Color(0xFFFF5A5A)
+                        isSpeaking -> Color(0xFF9AA5AD)
+                        else -> Color.White
+                    },
+                    onClick = { viewModel.setMicMuted(!muted) },
                 )
             }
         }

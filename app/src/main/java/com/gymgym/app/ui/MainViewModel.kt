@@ -1065,6 +1065,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setVoiceControl(value: Boolean) =
         viewModelScope.launch { settingsRepository.setVoiceControl(value) }
 
+    fun setMicMuted(value: Boolean) =
+        viewModelScope.launch { settingsRepository.setMicMuted(value) }
+
     fun setCameraFacing(facing: CameraFacing) =
         viewModelScope.launch { settingsRepository.setCameraFacing(facing) }
 
