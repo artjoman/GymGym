@@ -363,4 +363,19 @@
     <!-- History workouts (Phase 7) -->
     <string name="history_workouts">Treniņi</string>
     <string name="history_exercises">Vingrinājumi</string>
+    <!-- Reminders (Phase 8) -->
+    <string name="settings_reminders">Motivācija un kontrole</string>
+    <string name="reminder_upcoming">Atgādinājums par gaidāmo treniņu (stundas pirms)</string>
+    <string name="reminder_missed">Atgādinājums par izlaistu treniņu (stundas pēc)</string>
+    <string name="reminder_cycle">Brīdināt, ja cikls nokrītas zem 90%</string>
+    <string name="reminder_body">Atgādinājums par ķermeņa mērījumiem (dienas)</string>
+    <string name="reminders_channel">Atgādinājumi</string>
+    <string name="reminder_upcoming_title">Gaidāmais treniņš</string>
+    <string name="reminder_upcoming_text">Tuvojas nākamais treniņš. Sagatavojies!</string>
+    <string name="reminder_missed_title">Izlaists treniņš?</string>
+    <string name="reminder_missed_text">Tevi gaida treniņš. Sāc, mainī vai izlaid.</string>
+    <string name="reminder_body_title">Reģistrē savus mērījumus</string>
+    <string name="reminder_body_text">Laiks pierakstīt ķermeņa parametrus profilā.</string>
+    <string name="reminder_cycle_title">Cikls zem mērķa</string>
+    <string name="reminder_cycle_text">Tavs pēdējais cikls vidēji %1$d%%. Nākamreiz pacentīsimies vairāk.</string>
 </resources>

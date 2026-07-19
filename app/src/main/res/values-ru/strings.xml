@@ -366,4 +366,19 @@
     <!-- History workouts (Phase 7) -->
     <string name="history_workouts">Тренировки</string>
     <string name="history_exercises">Упражнения</string>
+    <!-- Reminders (Phase 8) -->
+    <string name="settings_reminders">Мотивация и контроль</string>
+    <string name="reminder_upcoming">Напоминание о предстоящей тренировке (часов до)</string>
+    <string name="reminder_missed">Напоминание о пропущенной тренировке (часов после)</string>
+    <string name="reminder_cycle">Оповещать, если цикл ниже 90%</string>
+    <string name="reminder_body">Напоминание об измерениях тела (дней)</string>
+    <string name="reminders_channel">Напоминания</string>
+    <string name="reminder_upcoming_title">Скоро тренировка</string>
+    <string name="reminder_upcoming_text">Скоро следующая тренировка. Готовься!</string>
+    <string name="reminder_missed_title">Пропустил тренировку?</string>
+    <string name="reminder_missed_text">Тебя ждёт тренировка. Начни, замени или пропусти.</string>
+    <string name="reminder_body_title">Запиши измерения</string>
+    <string name="reminder_body_text">Пора записать параметры тела в профиле.</string>
+    <string name="reminder_cycle_title">Цикл ниже цели</string>
+    <string name="reminder_cycle_text">Твой последний цикл в среднем %1$d%%. В следующий раз поднажмём.</string>
 </resources>

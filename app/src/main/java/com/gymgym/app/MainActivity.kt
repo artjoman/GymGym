@@ -18,6 +18,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -127,6 +128,21 @@ private fun AppRoot(viewModel: MainViewModel) {
     // Ads are gated here — at "open a workout", never once counting has started.
     val activity = context as Activity
     val adManager = remember { (activity.application as GymGymApp).container.adManager }
+
+    // Notification permission (Android 13+) + reminder (re)scheduling.
+    val notifLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { }
+    LaunchedEffect(Unit) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            notifLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+    val dashboardForReminders by viewModel.dashboard.collectAsState()
+    val reminderSettingsState by viewModel.reminderSettings.collectAsState()
+    LaunchedEffect(dashboardForReminders.nextMission?.plannedDate, reminderSettingsState) {
+        viewModel.rescheduleReminders()
+    }
 
     fun startExercise(exercise: Exercise) = requireCameraThen {
         adManager.onWorkoutOpen(activity) {
@@ -357,8 +373,14 @@ private fun AppRoot(viewModel: MainViewModel) {
         }
         composable(Routes.SETTINGS) {
             val soundSettings by viewModel.soundSettings.collectAsState()
+            val reminders by viewModel.reminderSettings.collectAsState()
             SettingsScreen(
                 settings = soundSettings,
+                reminders = reminders,
+                onUpcomingReminder = viewModel::setUpcomingReminder,
+                onMissedReminder = viewModel::setMissedReminder,
+                onCycleProgressReminder = viewModel::setCycleProgressReminder,
+                onBodyReminder = viewModel::setBodyReminder,
                 onSoundsEnabled = viewModel::setSoundsEnabled,
                 onCountdownVoice = viewModel::setCountdownVoice,
                 onRepAnnouncement = viewModel::setRepAnnouncement,

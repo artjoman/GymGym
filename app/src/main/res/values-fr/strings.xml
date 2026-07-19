@@ -360,4 +360,19 @@
     <!-- History workouts (Phase 7) -->
     <string name="history_workouts">Séances</string>
     <string name="history_exercises">Exercices</string>
+    <!-- Reminders (Phase 8) -->
+    <string name="settings_reminders">Motivation et contrôle</string>
+    <string name="reminder_upcoming">Rappel de séance à venir (heures avant)</string>
+    <string name="reminder_missed">Rappel de séance manquée (heures après)</string>
+    <string name="reminder_cycle">Alerte si le cycle passe sous 90 %</string>
+    <string name="reminder_body">Rappel de mensurations (jours)</string>
+    <string name="reminders_channel">Rappels</string>
+    <string name="reminder_upcoming_title">Séance à venir</string>
+    <string name="reminder_upcoming_text">Votre prochaine séance approche. Préparez-vous !</string>
+    <string name="reminder_missed_title">Séance manquée ?</string>
+    <string name="reminder_missed_text">Une séance vous attend. Démarrez, échangez ou passez.</string>
+    <string name="reminder_body_title">Enregistrez vos mensurations</string>
+    <string name="reminder_body_text">Il est temps de noter vos mensurations dans votre profil.</string>
+    <string name="reminder_cycle_title">Cycle sous l\'objectif</string>
+    <string name="reminder_cycle_text">Votre dernier cycle a atteint %1$d%% en moyenne. Redoublons d\'efforts.</string>
 </resources>

@@ -360,4 +360,19 @@
     <!-- History workouts (Phase 7) -->
     <string name="history_workouts">Entrenamientos</string>
     <string name="history_exercises">Ejercicios</string>
+    <!-- Reminders (Phase 8) -->
+    <string name="settings_reminders">Motivación y control</string>
+    <string name="reminder_upcoming">Aviso de próximo entrenamiento (horas antes)</string>
+    <string name="reminder_missed">Aviso de entrenamiento perdido (horas después)</string>
+    <string name="reminder_cycle">Avisar si el ciclo baja del 90%</string>
+    <string name="reminder_body">Aviso de medidas corporales (días)</string>
+    <string name="reminders_channel">Recordatorios</string>
+    <string name="reminder_upcoming_title">Entrenamiento próximo</string>
+    <string name="reminder_upcoming_text">Tu próximo entrenamiento está por llegar. ¡Prepárate!</string>
+    <string name="reminder_missed_title">¿Entrenamiento perdido?</string>
+    <string name="reminder_missed_text">Tienes un entrenamiento pendiente. Empieza, cámbialo o sáltalo.</string>
+    <string name="reminder_body_title">Registra tus medidas</string>
+    <string name="reminder_body_text">Es hora de anotar tus parámetros corporales en tu perfil.</string>
+    <string name="reminder_cycle_title">Ciclo bajo objetivo</string>
+    <string name="reminder_cycle_text">Tu último ciclo promedió %1$d%%. Vamos a esforzarnos más.</string>
 </resources>

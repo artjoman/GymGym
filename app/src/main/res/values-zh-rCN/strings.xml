@@ -357,4 +357,19 @@
     <!-- History workouts (Phase 7) -->
     <string name="history_workouts">训练</string>
     <string name="history_exercises">动作</string>
+    <!-- Reminders (Phase 8) -->
+    <string name="settings_reminders">激励与控制</string>
+    <string name="reminder_upcoming">即将开始的训练提醒（提前小时）</string>
+    <string name="reminder_missed">错过训练提醒（之后小时）</string>
+    <string name="reminder_cycle">周期低于 90% 时提醒</string>
+    <string name="reminder_body">身体测量提醒（天）</string>
+    <string name="reminders_channel">提醒</string>
+    <string name="reminder_upcoming_title">训练即将开始</string>
+    <string name="reminder_upcoming_text">你的下一次训练快到了。准备好！</string>
+    <string name="reminder_missed_title">错过训练了？</string>
+    <string name="reminder_missed_text">有一个训练在等你。开始、更换或跳过。</string>
+    <string name="reminder_body_title">记录你的测量</string>
+    <string name="reminder_body_text">该在个人资料中记录你的身体参数了。</string>
+    <string name="reminder_cycle_title">周期低于目标</string>
+    <string name="reminder_cycle_text">你上个周期平均 %1$d%%。下次更努力。</string>
 </resources>

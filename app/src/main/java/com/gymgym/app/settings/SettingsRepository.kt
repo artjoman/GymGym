@@ -3,6 +3,7 @@ package com.gymgym.app.settings
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -45,6 +46,17 @@ data class SoundSettings(
     val strictForm: Boolean = false,
     /** How strict the form check is. */
     val formSensitivity: FormSensitivity = FormSensitivity.STANDARD,
+)
+
+/** Motivation & Control reminder preferences. */
+data class ReminderSettings(
+    val upcomingEnabled: Boolean = false,
+    val upcomingHours: Int = 2,
+    val missedEnabled: Boolean = false,
+    val missedHours: Int = 4,
+    val cycleProgressEnabled: Boolean = false,
+    val bodyReminderEnabled: Boolean = false,
+    val bodyReminderDays: Int = 7,
 )
 
 class SettingsRepository(context: Context) {
@@ -121,6 +133,37 @@ class SettingsRepository(context: Context) {
     suspend fun setFormSensitivity(value: FormSensitivity) =
         dataStore.edit { it[FORM_SENSITIVITY] = value.name }
 
+    // --- Reminders (Motivation & Control) ---
+
+    val reminders: Flow<ReminderSettings> = dataStore.data.map { prefs ->
+        ReminderSettings(
+            upcomingEnabled = prefs[REM_UPCOMING] ?: false,
+            upcomingHours = prefs[REM_UPCOMING_H] ?: 2,
+            missedEnabled = prefs[REM_MISSED] ?: false,
+            missedHours = prefs[REM_MISSED_H] ?: 4,
+            cycleProgressEnabled = prefs[REM_CYCLE] ?: false,
+            bodyReminderEnabled = prefs[REM_BODY] ?: false,
+            bodyReminderDays = prefs[REM_BODY_D] ?: 7,
+        )
+    }
+
+    suspend fun setUpcomingReminder(enabled: Boolean, hours: Int) = dataStore.edit {
+        it[REM_UPCOMING] = enabled
+        it[REM_UPCOMING_H] = hours
+    }
+
+    suspend fun setMissedReminder(enabled: Boolean, hours: Int) = dataStore.edit {
+        it[REM_MISSED] = enabled
+        it[REM_MISSED_H] = hours
+    }
+
+    suspend fun setCycleProgressReminder(enabled: Boolean) = dataStore.edit { it[REM_CYCLE] = enabled }
+
+    suspend fun setBodyReminder(enabled: Boolean, days: Int) = dataStore.edit {
+        it[REM_BODY] = enabled
+        it[REM_BODY_D] = days
+    }
+
     private companion object {
         val SOUNDS_ENABLED = booleanPreferencesKey("sounds_enabled")
         val COUNTDOWN_VOICE = booleanPreferencesKey("countdown_voice")
@@ -136,5 +179,12 @@ class SettingsRepository(context: Context) {
         val FORM_FEEDBACK = booleanPreferencesKey("form_feedback")
         val STRICT_FORM = booleanPreferencesKey("strict_form")
         val FORM_SENSITIVITY = stringPreferencesKey("form_sensitivity")
+        val REM_UPCOMING = booleanPreferencesKey("rem_upcoming")
+        val REM_UPCOMING_H = intPreferencesKey("rem_upcoming_h")
+        val REM_MISSED = booleanPreferencesKey("rem_missed")
+        val REM_MISSED_H = intPreferencesKey("rem_missed_h")
+        val REM_CYCLE = booleanPreferencesKey("rem_cycle")
+        val REM_BODY = booleanPreferencesKey("rem_body")
+        val REM_BODY_D = intPreferencesKey("rem_body_d")
     }
 }

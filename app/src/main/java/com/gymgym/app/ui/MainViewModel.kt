@@ -56,8 +56,10 @@ import com.gymgym.app.settings.BackgroundStyle
 import com.gymgym.app.settings.CameraFacing
 import com.gymgym.app.settings.FormSensitivity
 import com.gymgym.app.settings.RepAnnouncementMode
+import com.gymgym.app.settings.ReminderSettings
 import com.gymgym.app.settings.SettingsRepository
 import com.gymgym.app.settings.SoundSettings
+import com.gymgym.app.notify.Reminders
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -119,6 +121,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val soundSettings: StateFlow<SoundSettings> = settingsRepository.settings
         .stateIn(viewModelScope, SharingStarted.Eagerly, SoundSettings())
+
+    val reminderSettings: StateFlow<ReminderSettings> = settingsRepository.reminders
+        .stateIn(viewModelScope, SharingStarted.Eagerly, ReminderSettings())
 
     val history: StateFlow<List<WorkoutSession>> = workoutRepository.allSessions
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -660,8 +665,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val allIds = planRepository.activePlanOnce()
             ?.orderedCycles?.flatMap { c -> c.orderedWorkouts.map { it.workout.id } }
             ?: emptyList()
-        val processed = workoutProgressRepository.allOnce().map { it.workoutId }.toSet()
+        val progress = workoutProgressRepository.allOnce()
+        val processed = progress.map { it.workoutId }.toSet()
         if (allIds.isNotEmpty() && allIds.all { it in processed }) {
+            // Pass complete: alert if the average completion fell below target (90%).
+            val avg = if (progress.isEmpty()) 0 else progress.map { it.percent }.average().toInt()
+            if (reminderSettings.value.cycleProgressEnabled && avg < 90) {
+                Reminders.post(
+                    getApplication(),
+                    Reminders.NOTIF_CYCLE,
+                    str(R.string.reminder_cycle_title),
+                    str(R.string.reminder_cycle_text, avg),
+                )
+            }
             workoutProgressRepository.clear()
         }
     }
@@ -994,6 +1010,34 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }.getOrNull()
         }
         if (path != null) settingsRepository.setCustomBackground(path)
+    }
+
+    // --- Reminders (Motivation & Control) ---
+
+    fun setUpcomingReminder(enabled: Boolean, hours: Int) = viewModelScope.launch {
+        settingsRepository.setUpcomingReminder(enabled, hours)
+        rescheduleReminders()
+    }
+
+    fun setMissedReminder(enabled: Boolean, hours: Int) = viewModelScope.launch {
+        settingsRepository.setMissedReminder(enabled, hours)
+        rescheduleReminders()
+    }
+
+    fun setCycleProgressReminder(enabled: Boolean) = viewModelScope.launch {
+        settingsRepository.setCycleProgressReminder(enabled)
+    }
+
+    fun setBodyReminder(enabled: Boolean, days: Int) = viewModelScope.launch {
+        settingsRepository.setBodyReminder(enabled, days)
+        rescheduleReminders()
+    }
+
+    /** Recompute WorkManager reminders from the current settings + next mission. */
+    fun rescheduleReminders() {
+        val settings = reminderSettings.value
+        val nextAt = dashboard.value.nextMission?.plannedDate
+        Reminders.schedule(getApplication(), settings, nextAt, System.currentTimeMillis())
     }
 
     // --- Custom exercises ---

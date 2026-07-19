@@ -59,5 +59,6 @@ class GymGymApp : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
+        com.gymgym.app.notify.Reminders.ensureChannel(this)
     }
 }

@@ -86,6 +86,11 @@ fun SettingsScreen(
     onAccentTheme: (AccentTheme) -> Unit,
     onBackgroundStyle: (BackgroundStyle) -> Unit,
     onCustomBackground: (Uri) -> Unit,
+    reminders: com.gymgym.app.settings.ReminderSettings,
+    onUpcomingReminder: (Boolean, Int) -> Unit,
+    onMissedReminder: (Boolean, Int) -> Unit,
+    onCycleProgressReminder: (Boolean) -> Unit,
+    onBodyReminder: (Boolean, Int) -> Unit,
     onBack: () -> Unit,
 ) {
     Column(
@@ -221,6 +226,34 @@ fun SettingsScreen(
         Text(
             stringResource(R.string.settings_voice_desc),
             style = MaterialTheme.typography.bodySmall,
+        )
+        HorizontalDivider()
+
+        Text(stringResource(R.string.settings_reminders), style = MaterialTheme.typography.headlineSmall)
+        ReminderToggle(
+            label = stringResource(R.string.reminder_upcoming),
+            enabled = reminders.upcomingEnabled,
+            hours = reminders.upcomingHours,
+            onChange = onUpcomingReminder,
+        )
+        ReminderToggle(
+            label = stringResource(R.string.reminder_missed),
+            enabled = reminders.missedEnabled,
+            hours = reminders.missedHours,
+            onChange = onMissedReminder,
+        )
+        SwitchRow(
+            label = stringResource(R.string.reminder_cycle),
+            checked = reminders.cycleProgressEnabled,
+            enabled = true,
+            onChange = onCycleProgressReminder,
+        )
+        ReminderToggle(
+            label = stringResource(R.string.reminder_body),
+            enabled = reminders.bodyReminderEnabled,
+            hours = reminders.bodyReminderDays,
+            options = listOf(3, 7, 14, 30),
+            onChange = onBodyReminder,
         )
         HorizontalDivider()
 
@@ -510,6 +543,38 @@ private fun rememberThumb(path: String?): ImageBitmap? = remember(path) {
         val opts = BitmapFactory.Options().apply { inSampleSize = 8 }
         BitmapFactory.decodeFile(path, opts)?.asImageBitmap()
     }.getOrNull()
+}
+
+@Composable
+private fun ReminderToggle(
+    label: String,
+    enabled: Boolean,
+    hours: Int,
+    options: List<Int> = listOf(1, 2, 4, 8),
+    onChange: (Boolean, Int) -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(label, modifier = Modifier.weight(1f))
+        Switch(checked = enabled, onCheckedChange = { onChange(it, hours) })
+    }
+    if (enabled) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            for (value in options) {
+                FilterChip(
+                    selected = hours == value,
+                    onClick = { onChange(true, value) },
+                    label = { Text(value.toString()) },
+                )
+            }
+        }
+    }
 }
 
 @Composable
