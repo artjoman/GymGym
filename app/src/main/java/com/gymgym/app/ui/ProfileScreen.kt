@@ -139,23 +139,37 @@ fun ProfileScreen(
         // --- Training mode ---
         HorizontalDivider()
         Text(stringResource(R.string.profile_training_mode), style = MaterialTheme.typography.titleMedium)
+        // Each mode explains itself, but only the selected one shows its note.
+        // Switching modes never touches the per-workout weekdays stored in plans,
+        // so they're preserved and restored when Weekly Schedule is re-enabled.
         for (mode in TrainingMode.entries) {
-            Row(
-                modifier = Modifier.fillMaxWidth().selectable(
-                    selected = profile.trainingMode == mode,
-                    onClick = { onTrainingMode(mode) },
-                ),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                RadioButton(selected = profile.trainingMode == mode, onClick = { onTrainingMode(mode) })
-                Text(stringResource(mode.labelRes()))
+            val selected = profile.trainingMode == mode
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().selectable(
+                        selected = selected,
+                        onClick = { onTrainingMode(mode) },
+                    ),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    RadioButton(selected = selected, onClick = { onTrainingMode(mode) })
+                    Text(stringResource(mode.labelRes()))
+                }
+                if (selected) {
+                    Text(
+                        stringResource(
+                            if (mode == TrainingMode.SMART_CYCLE) {
+                                R.string.profile_mode_smart_desc
+                            } else {
+                                R.string.profile_mode_weekly_desc
+                            },
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(start = 48.dp, bottom = 4.dp),
+                    )
+                }
             }
-        }
-        if (profile.trainingMode == TrainingMode.WEEKLY_SCHEDULE) {
-            WeekdayPicker(selected = profile.workoutDays, onToggle = { day ->
-                val next = if (day in profile.workoutDays) profile.workoutDays - day else profile.workoutDays + day
-                onWorkoutDays(next)
-            })
         }
 
         // --- Recovery ---

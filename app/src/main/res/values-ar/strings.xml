@@ -344,6 +344,8 @@
     <string name="unit_in">بوصات (in)</string>
     <string name="profile_length_unit">وحدة الطول</string>
     <string name="profile_training_mode">وضع التدريب</string>
+    <string name="profile_mode_smart_desc">تدرّب عندما تكون مستعدًا. يتطلب انضباطًا ذاتيًا ويتبع فترة تعافيك.</string>
+    <string name="profile_mode_weekly_desc">خصّص التمارين لأيام محددة من الأسبوع. الأفضل إن كنت تفضل روتينًا أسبوعيًا ثابتًا.</string>
     <string name="profile_mode_smart">الدورة الذكية (موصى بها)</string>
     <string name="profile_mode_weekly">الجدول الأسبوعي</string>
     <string name="profile_recovery">الاستشفاء</string>

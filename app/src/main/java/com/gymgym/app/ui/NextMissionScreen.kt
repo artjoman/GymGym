@@ -43,8 +43,8 @@ fun NextMissionScreen(
     onSwap: (Long) -> Unit,
     onSkip: (Long) -> Unit,
     onBack: () -> Unit,
-    /** The upcoming workout's exercises, shown expanded before Start. */
-    nextWorkout: com.gymgym.app.cycle.CycleWorkoutDetail? = null,
+    /** The active cycle, shown expanded with the upcoming workout highlighted. */
+    currentCycle: com.gymgym.app.cycle.CycleSummary? = null,
     customNames: Map<String, String> = emptyMap(),
 ) {
     var showSwap by remember { mutableStateOf(false) }
@@ -70,42 +70,23 @@ fun NextMissionScreen(
             return@Column
         }
 
-        Text(
-            dashboard.currentCycle?.name.orEmpty(),
-            style = MaterialTheme.typography.titleMedium,
-        )
-        CycleProgressBar(dashboard)
+        mission.plannedDate?.let {
+            Text(
+                stringResource(R.string.mission_planned, formatMissionTime(it)),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
 
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    mission.workout.name,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                )
-                mission.plannedDate?.let {
-                    Text(
-                        stringResource(R.string.mission_planned, formatMissionTime(it)),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
-                }
-                // Expanded: what you're about to do, in the shared exercise format.
-                nextWorkout?.exercises?.forEach { ex ->
-                    Text(
-                        exerciseLineText(
-                            name = exerciseRefName(ex.exerciseRef, customNames),
-                            targetReps = ex.targetReps,
-                            targetSets = ex.targetSets,
-                            completedReps = ex.completedReps,
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
-                }
-            }
+        // The whole current cycle, expanded, with the workout you're about to run
+        // highlighted — Start/Swap/Skip all act on that highlighted workout.
+        currentCycle?.let { cycle ->
+            CycleRecordCard(
+                summary = cycle,
+                customNames = customNames,
+                expanded = true,
+                highlightWorkoutId = mission.workout.id,
+            )
         }
 
         GymButton(

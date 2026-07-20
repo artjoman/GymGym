@@ -99,8 +99,9 @@ object CycleSummaries {
     }
 
     /**
-     * All cycle records for the Statistics → Cycles tab: the active cycle first
-     * (latest), then every completed cycle by recency (excluding the active one).
+     * Completed cycle records for the Statistics → Cycles tab, most recent first.
+     * The active cycle is deliberately excluded — it's shown (expanded) on the
+     * workout execution screen instead.
      */
     fun cycleRecords(
         plans: List<PlanWithCycles>,
@@ -111,7 +112,7 @@ object CycleSummaries {
     ): List<CycleSummary> {
         val weekly = profile.trainingMode == TrainingMode.WEEKLY_SCHEDULE
         val active = currentCycleSummary(activePlan, progress, completed, weekly)
-        return listOfNotNull(active) + completedPasses(plans, active?.cycleId, progress, completed, weekly)
+        return completedPasses(plans, active?.cycleId, progress, completed, weekly)
     }
 
     /**

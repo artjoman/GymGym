@@ -304,7 +304,7 @@ private fun AppRoot(
             val customNames = customExercises.associate { ExerciseRef.forCustom(it.id) to it.name }
             NextMissionScreen(
                 dashboard = dashboard,
-                nextWorkout = homeCycles.currentCycle?.detail,
+                currentCycle = homeCycles.currentCycle,
                 customNames = customNames,
                 onStart = { id ->
                     startWorkoutById(id)

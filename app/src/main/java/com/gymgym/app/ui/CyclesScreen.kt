@@ -113,14 +113,22 @@ fun CyclesContent(
 /** Stable key: the same cycle can appear once per completed pass. */
 private fun CycleSummary.key(): String = "$cycleId-$status-${startedAt ?: 0L}"
 
+/**
+ * One cycle record: header (name, %, plan, status/dates) and — when [expanded] —
+ * every workout in order with its status, % and exercise breakdown.
+ * [highlightWorkoutId] marks the workout the user is about to run.
+ */
 @Composable
-private fun CycleRecordCard(
+internal fun CycleRecordCard(
     summary: CycleSummary,
     customNames: Map<String, String>,
     expanded: Boolean,
-    onToggle: () -> Unit,
+    onToggle: (() -> Unit)? = null,
+    highlightWorkoutId: Long? = null,
 ) {
-    Card(modifier = Modifier.fillMaxWidth().clickable(onClick = onToggle)) {
+    val cardModifier = Modifier.fillMaxWidth()
+        .let { if (onToggle != null) it.clickable(onClick = onToggle) else it }
+    Card(modifier = cardModifier) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.Top) {
                 Text(
@@ -151,12 +159,18 @@ private fun CycleRecordCard(
                 return@Column
             }
             for (w in summary.workouts) {
+                val highlighted = highlightWorkoutId != null && w.workoutId == highlightWorkoutId
                 Spacer(Modifier.height(10.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         w.name,
                         style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
+                        fontWeight = if (highlighted) FontWeight.Bold else FontWeight.SemiBold,
+                        color = if (highlighted) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
                         modifier = Modifier.weight(1f),
                     )
                     Text(

@@ -375,6 +375,8 @@
     <string name="profile_length_unit">Length unit</string>
     <!-- Profile: training mode + recovery + body metrics (Phase 4) -->
     <string name="profile_training_mode">Training mode</string>
+    <string name="profile_mode_smart_desc">Train when you\'re ready. Requires self-discipline and follows your recovery.</string>
+    <string name="profile_mode_weekly_desc">Assign workouts to specific weekdays. Best if you prefer a consistent weekly routine.</string>
     <string name="profile_mode_smart">Smart cycle (recommended)</string>
     <string name="profile_mode_weekly">Weekly schedule</string>
     <string name="profile_recovery">Recovery</string>

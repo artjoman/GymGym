@@ -157,9 +157,10 @@ class CycleSummaryTest {
             completed = done,
             profile = Profile(),
         )
-        // Active cycle first, then exactly one finished pass (pass 2 is in progress).
-        assertEquals(CycleStatus.ACTIVE, records.first().status)
-        assertEquals(1, records.count { it.status == CycleStatus.COMPLETED })
+        // Statistics → Cycles lists only completed passes (the active cycle lives on
+        // the execution screen), and pass 2 is still in progress, so exactly one.
+        assertEquals(1, records.size)
+        assertEquals(CycleStatus.COMPLETED, records.first().status)
     }
 
     @Test

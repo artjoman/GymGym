@@ -335,6 +335,8 @@
     <string name="unit_in">Collas (in)</string>
     <string name="profile_length_unit">Garuma vienība</string>
     <string name="profile_training_mode">Treniņu režīms</string>
+    <string name="profile_mode_smart_desc">Trenējieties, kad esat gatavs. Prasa pašdisciplīnu un seko jūsu atjaunotnei.</string>
+    <string name="profile_mode_weekly_desc">Piešķiriet treniņus konkrētām nedēļas dienām. Vislabāk, ja vēlaties nemainīgu nedēļas rutīnu.</string>
     <string name="profile_mode_smart">Viedais cikls (ieteicams)</string>
     <string name="profile_mode_weekly">Nedēļas grafiks</string>
     <string name="profile_recovery">Atjaunošanās</string>

@@ -332,6 +332,8 @@
     <string name="unit_in">Pouces (in)</string>
     <string name="profile_length_unit">Unité de longueur</string>
     <string name="profile_training_mode">Mode d\'entraînement</string>
+    <string name="profile_mode_smart_desc">Entraînez-vous quand vous êtes prêt. Demande de la discipline et suit votre récupération.</string>
+    <string name="profile_mode_weekly_desc">Assignez les séances à des jours précis. Idéal si vous préférez une routine hebdomadaire régulière.</string>
     <string name="profile_mode_smart">Cycle intelligent (recommandé)</string>
     <string name="profile_mode_weekly">Programme hebdomadaire</string>
     <string name="profile_recovery">Récupération</string>

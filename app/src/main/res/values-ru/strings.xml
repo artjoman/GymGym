@@ -338,6 +338,8 @@
     <string name="unit_in">Дюймы (in)</string>
     <string name="profile_length_unit">Единица длины</string>
     <string name="profile_training_mode">Режим тренировок</string>
+    <string name="profile_mode_smart_desc">Тренируйтесь, когда готовы. Требует самодисциплины и учитывает восстановление.</string>
+    <string name="profile_mode_weekly_desc">Назначайте тренировки на конкретные дни недели. Лучше всего для постоянного недельного распорядка.</string>
     <string name="profile_mode_smart">Умный цикл (рекомендуется)</string>
     <string name="profile_mode_weekly">Недельный график</string>
     <string name="profile_recovery">Восстановление</string>

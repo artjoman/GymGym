@@ -332,6 +332,8 @@
     <string name="unit_in">Pulgadas (in)</string>
     <string name="profile_length_unit">Unidad de longitud</string>
     <string name="profile_training_mode">Modo de entrenamiento</string>
+    <string name="profile_mode_smart_desc">Entrena cuando estés listo. Requiere autodisciplina y sigue tu recuperación.</string>
+    <string name="profile_mode_weekly_desc">Asigna entrenamientos a días concretos. Ideal si prefieres una rutina semanal constante.</string>
     <string name="profile_mode_smart">Ciclo inteligente (recomendado)</string>
     <string name="profile_mode_weekly">Horario semanal</string>
     <string name="profile_recovery">Recuperación</string>

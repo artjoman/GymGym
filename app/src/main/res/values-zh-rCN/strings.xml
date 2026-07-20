@@ -329,6 +329,8 @@
     <string name="unit_in">英寸 (in)</string>
     <string name="profile_length_unit">长度单位</string>
     <string name="profile_training_mode">训练模式</string>
+    <string name="profile_mode_smart_desc">准备好了再练。需要自律，并按你的恢复情况安排。</string>
+    <string name="profile_mode_weekly_desc">把训练安排到具体的星期几。适合喜欢固定每周节奏的人。</string>
     <string name="profile_mode_smart">智能周期（推荐）</string>
     <string name="profile_mode_weekly">每周计划</string>
     <string name="profile_recovery">恢复</string>
