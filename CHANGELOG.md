@@ -3,6 +3,25 @@
 User-facing release notes for GymGym, newest first. Updated on every version
 bump with the changes made since the previous release (see AGENTS.md).
 
+## 2.0.6 (versionCode 15)
+
+- Completed cycles are now kept forever: editing or deleting a workout plan no
+  longer erases past cycles from Statistics → Cycles or Home.
+- Cycle % now uses hierarchical averaging (exercise → workout → cycle) instead of
+  pooling all reps, so a skipped workout counts as a clean 0%.
+- Redesigned the workout execution screen ("Let's go!"): it shows the whole
+  current cycle expanded with the next workout highlighted; the active cycle no
+  longer appears in Statistics → Cycles.
+- Profile training modes each show a one-line description; the weekday picker no
+  longer shows day icons in Smart cycle mode, and per-workout weekdays are kept
+  when you switch modes.
+- Workout-plan editor: the weekday selector only appears in Weekly Schedule mode,
+  the "Any" option is gone, days already used in the cycle are highlighted (still
+  reusable), and Edit Cycle shows each workout's weekday.
+- Exercise library: 🔴 Rec button restyled; Auto-detect's "Change exercise" now
+  returns to the library; using a preset program returns you to My Plans.
+- Workout plans and Profile tabs are now swipeable, like Statistics.
+
 ## 2.0.5 (versionCode 14)
 
 - Fixed: **completed cycles never appeared** anywhere. When a cycle finished, its

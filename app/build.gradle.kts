@@ -25,8 +25,8 @@ android {
         applicationId = "com.projectorum.gymgym"
         minSdk = 26
         targetSdk = 35
-        versionCode = 14
-        versionName = "2.0.5"
+        versionCode = 15
+        versionName = "2.0.6"
 
         // --- Ad tuning knobs (see AGENTS.md) ---
         // Minimum time between interstitials, gated at "open a workout". 5 min.
