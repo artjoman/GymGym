@@ -68,8 +68,9 @@ class CycleSummaryTest {
 
         assertEquals("Full Body Cycle", summary.cycleName)
         assertEquals("Custom Plan", summary.planName)
-        // Total completed 73 / total planned 99 = 73.7% → 74%.
-        assertEquals(74, summary.percent)
+        // Hierarchical: workouts are 100%, 96% (43/45) and 0% (skipped)
+        // → cycle = (100 + 96 + 0) / 3 = 65.3% → 65%.
+        assertEquals(65, summary.percent)
 
         val (w1, w2, w3) = summary.workouts
         assertEquals(CycleLineStatus.DONE, w1.status)

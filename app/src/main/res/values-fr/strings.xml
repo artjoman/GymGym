@@ -266,7 +266,7 @@
     <string name="library_manual_badge">Manuel</string>
     <string name="library_ai_badge">IA</string>
     <string name="library_test">Tester</string>
-    <string name="library_manual_test">🔴 Rec</string>
+    <string name="library_manual_test">Rec</string>
     <string name="library_ai_count">Comptage IA</string>
     <string name="library_custom_section">Personnalisés</string>
     <string name="library_add_custom">Ajouter un exercice personnalisé</string>
@@ -370,7 +370,7 @@
     <string name="cycle_status_completed">Terminé</string>
     <string name="cycle_status_pending">En attente</string>
     <string name="stats_cycles_tab">Cycles</string>
-    <string name="mission_title">Prochaine mission</string>
+    <string name="mission_title">C\'est parti !</string>
     <string name="mission_planned">Prévu : %1$s</string>
     <string name="mission_swap">Échanger</string>
     <string name="mission_skip">Passer</string>

@@ -263,7 +263,7 @@
     <string name="library_manual_badge">手动</string>
     <string name="library_ai_badge">AI</string>
     <string name="library_test">测试</string>
-    <string name="library_manual_test">🔴 Rec</string>
+    <string name="library_manual_test">Rec</string>
     <string name="library_ai_count">AI 计数</string>
     <string name="library_custom_section">自定义</string>
     <string name="library_add_custom">添加自定义动作</string>
@@ -367,7 +367,7 @@
     <string name="cycle_status_completed">已完成</string>
     <string name="cycle_status_pending">待完成</string>
     <string name="stats_cycles_tab">周期</string>
-    <string name="mission_title">下一个任务</string>
+    <string name="mission_title">出发！</string>
     <string name="mission_planned">计划：%1$s</string>
     <string name="mission_swap">更换</string>
     <string name="mission_skip">跳过</string>

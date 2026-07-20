@@ -32,27 +32,34 @@ class ExerciseResultTest {
         assertEquals(0, result(reps = 5, targetReps = 0, targetSets = 0).completionPercent())
     }
 
-    // --- Workout-level completion: total completed reps ÷ total planned reps ---
+    // --- Hierarchical completion: exercise → workout → cycle ---
 
     @Test
-    fun workoutPercentRoundsToNearest() {
-        // Squat 27/30, Push-Up 30/30, Pull-Up 18/20 → 75/80 = 93.75% → 94%.
-        assertEquals(94, CompletedWorkoutRepository.workoutPercent(totalCompleted = 75, totalPlanned = 80))
+    fun exercisePercentIsRepsOverPlanned() {
+        assertEquals(90, CompletedWorkoutRepository.exercisePercent(completed = 27, planned = 30))
+        assertEquals(100, CompletedWorkoutRepository.exercisePercent(completed = 30, planned = 30))
+        assertEquals(0, CompletedWorkoutRepository.exercisePercent(completed = 0, planned = 30))
     }
 
     @Test
-    fun workoutPercentAllComplete() {
-        assertEquals(100, CompletedWorkoutRepository.workoutPercent(totalCompleted = 99, totalPlanned = 99))
+    fun exercisePercentNoPlanIsZero() {
+        assertEquals(0, CompletedWorkoutRepository.exercisePercent(completed = 10, planned = 0))
     }
 
     @Test
-    fun workoutPercentSkippedExerciseCountsPlanned() {
-        // Squat 30/30, Push-Up skipped 0/45, Pull-Up 24/24 → 54/99 = 54.5% → 55%.
-        assertEquals(55, CompletedWorkoutRepository.workoutPercent(totalCompleted = 54, totalPlanned = 99))
+    fun workoutPercentIsAverageOfExercises() {
+        // Five exercises at 100/100/80/100/100 → 96%.
+        assertEquals(96, CompletedWorkoutRepository.averagePercent(listOf(100, 100, 80, 100, 100)))
     }
 
     @Test
-    fun workoutPercentNoPlanIsZero() {
-        assertEquals(0, CompletedWorkoutRepository.workoutPercent(totalCompleted = 10, totalPlanned = 0))
+    fun cyclePercentIsAverageOfWorkoutsWithSkippedAsZero() {
+        // (100 + 0 + 100 + 100 + 100 + 100 + 100) / 7 = 85.7% → 86%.
+        assertEquals(86, CompletedWorkoutRepository.averagePercent(listOf(100, 0, 100, 100, 100, 100, 100)))
+    }
+
+    @Test
+    fun averageOfNothingIsZero() {
+        assertEquals(0, CompletedWorkoutRepository.averagePercent(emptyList()))
     }
 }

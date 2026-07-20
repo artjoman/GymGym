@@ -229,16 +229,10 @@ object CycleSummaries {
         progress: Map<Long, CycleEngine.ProgressEntry>?,
         status: CycleStatus = CycleStatus.COMPLETED,
     ): CycleSummary {
-        var totalCompleted = 0
-        var totalPlanned = 0
         val lines = orderedWorkouts(cyc, weekly).map { w ->
-            val planned = plannedReps(w)
             val row = completedForCycle
                 .filter { it.workout.workoutId == w.workout.id }
                 .maxByOrNull { it.workout.startedAt }
-            val done = row?.let { r -> r.orderedExercises.sumOf { it.reps } } ?: 0
-            totalCompleted += done
-            totalPlanned += planned
             val lineStatus = when {
                 progress != null -> when (progress[w.workout.id]?.status) {
                     "DONE" -> CycleLineStatus.DONE
@@ -248,13 +242,27 @@ object CycleSummaries {
                 row != null -> CycleLineStatus.DONE
                 else -> CycleLineStatus.SKIPPED
             }
+            val exercises = workoutDetail(w, if (lineStatus == CycleLineStatus.PENDING) null else row).exercises
+            // Workout % = average of its exercises'; a skipped workout counts as 0.
+            val workoutPercent = if (lineStatus == CycleLineStatus.SKIPPED) {
+                0
+            } else {
+                CompletedWorkoutRepository.averagePercent(
+                    exercises.map {
+                        CompletedWorkoutRepository.exercisePercent(
+                            it.completedReps ?: 0,
+                            it.targetReps * it.targetSets,
+                        )
+                    },
+                )
+            }
             CycleWorkoutLine(
                 workoutId = w.workout.id,
                 name = w.workout.name,
-                percent = CompletedWorkoutRepository.workoutPercent(done, planned),
+                percent = workoutPercent,
                 status = lineStatus,
                 weekday = if (weekly) w.workout.weekday else null,
-                exercises = workoutDetail(w, if (lineStatus == CycleLineStatus.PENDING) null else row).exercises,
+                exercises = exercises,
             )
         }
         val rows = completedForCycle
@@ -263,7 +271,8 @@ object CycleSummaries {
             cycleId = cyc.cycle.id,
             planName = plan.plan.name,
             cycleName = cyc.cycle.name,
-            percent = CompletedWorkoutRepository.workoutPercent(totalCompleted, totalPlanned),
+            // Cycle % = average of its workouts' percentages.
+            percent = CompletedWorkoutRepository.averagePercent(lines.map { it.percent }),
             status = status,
             startedAt = rows.minOfOrNull { it.workout.startedAt },
             completedAt = if (status == CycleStatus.COMPLETED) {

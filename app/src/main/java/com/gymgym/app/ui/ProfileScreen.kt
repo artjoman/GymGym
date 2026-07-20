@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,8 +33,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -79,7 +82,9 @@ fun ProfileScreen(
         ActivityResultContracts.OpenDocument(),
     ) { uri -> if (uri != null) pendingImport = uri }
 
-    var tab by remember { mutableIntStateOf(0) }
+    // Two tabs, switchable by tap or horizontal swipe (as in Statistics).
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { 2 })
+    val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -94,19 +99,31 @@ fun ProfileScreen(
                 modifier = Modifier.padding(start = 4.dp),
             )
         }
-        TabRow(selectedTabIndex = tab, modifier = Modifier.padding(top = 8.dp)) {
-            Tab(selected = tab == 0, onClick = { tab = 0 }, text = { Text(stringResource(R.string.profile_title)) })
-            Tab(selected = tab == 1, onClick = { tab = 1 }, text = { Text(stringResource(R.string.recordings_title)) })
+        val tabLabels = listOf(
+            stringResource(R.string.profile_title),
+            stringResource(R.string.recordings_title),
+        )
+        TabRow(selectedTabIndex = pagerState.currentPage, modifier = Modifier.padding(top = 8.dp)) {
+            tabLabels.forEachIndexed { i, label ->
+                Tab(
+                    selected = pagerState.currentPage == i,
+                    onClick = { scope.launch { pagerState.animateScrollToPage(i) } },
+                    text = { Text(label) },
+                )
+            }
         }
-        if (tab == 1) {
-            RecordingsContent(modifier = Modifier.weight(1f).padding(top = 12.dp))
-            return@Column
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.weight(1f).padding(top = 12.dp),
+        ) { page ->
+        if (page == 1) {
+            RecordingsContent(modifier = Modifier.fillMaxSize())
+            return@HorizontalPager
         }
         Column(
             modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(top = 12.dp),
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
 
@@ -234,6 +251,7 @@ fun ProfileScreen(
             )
         }
 
+        }
         }
     }
 

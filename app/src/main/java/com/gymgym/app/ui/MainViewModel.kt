@@ -787,10 +787,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         // Total workout duration = wall-clock from run start to finish, minus pauses
         // (so rests are included, pauses excluded).
         val duration = (System.currentTimeMillis() - runStartedAt - runPausedTotalMs).coerceAtLeast(0)
-        // Workout % = total completed reps ÷ total planned reps across all exercises.
-        val avg = CompletedWorkoutRepository.workoutPercent(
-            totalCompleted = results.sumOf { it.reps },
-            totalPlanned = results.sumOf { it.targetReps * it.targetSets },
+        // Workout % = average of its exercises' completion percentages.
+        val avg = CompletedWorkoutRepository.averagePercent(
+            results.map {
+                CompletedWorkoutRepository.exercisePercent(it.reps, it.targetReps * it.targetSets)
+            },
         )
         viewModelScope.launch {
             completedWorkoutRepository.record(

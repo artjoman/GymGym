@@ -278,7 +278,7 @@
     <string name="library_manual_badge">يدوي</string>
     <string name="library_ai_badge">AI</string>
     <string name="library_test">اختبار</string>
-    <string name="library_manual_test">🔴 Rec</string>
+    <string name="library_manual_test">Rec</string>
     <string name="library_ai_count">عدّ بالذكاء الاصطناعي</string>
     <string name="library_custom_section">مخصص</string>
     <string name="library_add_custom">إضافة تمرين مخصص</string>
@@ -382,7 +382,7 @@
     <string name="cycle_status_completed">مكتمل</string>
     <string name="cycle_status_pending">قيد الانتظار</string>
     <string name="stats_cycles_tab">الدورات</string>
-    <string name="mission_title">المهمة التالية</string>
+    <string name="mission_title">هيا بنا!</string>
     <string name="mission_planned">مقرر: %1$s</string>
     <string name="mission_swap">تبديل</string>
     <string name="mission_skip">تخطي</string>

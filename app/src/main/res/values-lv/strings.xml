@@ -269,7 +269,7 @@
     <string name="library_manual_badge">Manuāli</string>
     <string name="library_ai_badge">MI</string>
     <string name="library_test">Testēt</string>
-    <string name="library_manual_test">🔴 Rec</string>
+    <string name="library_manual_test">Rec</string>
     <string name="library_ai_count">MI skaitīšana</string>
     <string name="library_custom_section">Pielāgotie</string>
     <string name="library_add_custom">Pievienot pielāgotu vingrinājumu</string>
@@ -373,7 +373,7 @@
     <string name="cycle_status_completed">Pabeigts</string>
     <string name="cycle_status_pending">Gaida</string>
     <string name="stats_cycles_tab">Cikli</string>
-    <string name="mission_title">Nākamā misija</string>
+    <string name="mission_title">Aiziet!</string>
     <string name="mission_planned">Plānots: %1$s</string>
     <string name="mission_swap">Mainīt</string>
     <string name="mission_skip">Izlaist</string>

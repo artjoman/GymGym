@@ -88,12 +88,18 @@ class CompletedWorkoutRepository(private val dao: CompletedWorkoutDao) {
 
     companion object {
         /**
-         * Workout completion % = total completed reps ÷ total planned reps,
-         * rounded to the nearest whole percent (e.g. 75/80 → 94). Returns 0 when
-         * nothing was planned (e.g. legacy rows without stored targets).
+         * Completion is hierarchical:
+         *  1. exercise % = completed reps ÷ planned reps (e.g. 27/30 → 90);
+         *  2. workout % = average of its exercise percentages;
+         *  3. cycle %  = average of its workout percentages (a skipped workout is 0).
+         * Averaging at each level keeps a long exercise from dominating a short one.
          */
-        fun workoutPercent(totalCompleted: Int, totalPlanned: Int): Int =
-            if (totalPlanned <= 0) 0 else (totalCompleted * 100f / totalPlanned).roundToInt().coerceIn(0, 100)
+        fun exercisePercent(completed: Int, planned: Int): Int =
+            if (planned <= 0) 0 else (completed * 100f / planned).roundToInt().coerceIn(0, 100)
+
+        /** Rounded mean of the given percentages; 0 when there are none. */
+        fun averagePercent(percents: List<Int>): Int =
+            if (percents.isEmpty()) 0 else percents.sum().toFloat().div(percents.size).roundToInt().coerceIn(0, 100)
     }
 
     /** Draft of one exercise's result, before the parent workout has a row id. */
@@ -122,9 +128,9 @@ class CompletedWorkoutRepository(private val dao: CompletedWorkoutDao) {
         durationMs: Long,
         exercises: List<ExerciseResult>,
     ) {
-        val avg = workoutPercent(
-            totalCompleted = exercises.sumOf { it.reps },
-            totalPlanned = exercises.sumOf { it.targetReps * it.targetSets },
+        // Workout % = average of its exercises' completion percentages.
+        val avg = averagePercent(
+            exercises.map { exercisePercent(it.reps, it.targetReps * it.targetSets) },
         )
         val id = dao.insertWorkout(
             CompletedWorkout(

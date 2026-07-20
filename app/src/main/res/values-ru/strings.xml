@@ -272,7 +272,7 @@
     <string name="library_manual_badge">Вручную</string>
     <string name="library_ai_badge">ИИ</string>
     <string name="library_test">Тест</string>
-    <string name="library_manual_test">🔴 Rec</string>
+    <string name="library_manual_test">Rec</string>
     <string name="library_ai_count">ИИ-подсчёт</string>
     <string name="library_custom_section">Свои</string>
     <string name="library_add_custom">Добавить своё упражнение</string>
@@ -376,7 +376,7 @@
     <string name="cycle_status_completed">Завершён</string>
     <string name="cycle_status_pending">Ожидает</string>
     <string name="stats_cycles_tab">Циклы</string>
-    <string name="mission_title">Следующая миссия</string>
+    <string name="mission_title">Поехали!</string>
     <string name="mission_planned">Запланировано: %1$s</string>
     <string name="mission_swap">Заменить</string>
     <string name="mission_skip">Пропустить</string>

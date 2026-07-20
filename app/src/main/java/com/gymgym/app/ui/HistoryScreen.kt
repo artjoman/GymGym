@@ -130,10 +130,13 @@ private fun CompletedWorkoutRow(
                 // exercises, computed live so it always matches the rows below (and
                 // is correct for rows saved before the formula changed). Legacy rows
                 // without stored targets fall back to the value recorded at the time.
-                val totalPlanned = item.orderedExercises.sumOf { it.targetReps * it.targetSets }
-                val totalCompleted = item.orderedExercises.sumOf { it.reps }
-                val pct = if (totalPlanned > 0) {
-                    CompletedWorkoutRepository.workoutPercent(totalCompleted, totalPlanned)
+                val hasTargets = item.orderedExercises.any { it.targetReps * it.targetSets > 0 }
+                val pct = if (hasTargets) {
+                    CompletedWorkoutRepository.averagePercent(
+                        item.orderedExercises.map {
+                            CompletedWorkoutRepository.exercisePercent(it.reps, it.targetReps * it.targetSets)
+                        },
+                    )
                 } else {
                     w.avgPercent
                 }

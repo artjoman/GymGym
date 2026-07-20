@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
@@ -20,10 +22,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
@@ -46,7 +49,9 @@ fun PlanListScreen(
     onUseProgram: (Program) -> Unit,
     onBack: () -> Unit,
 ) {
-    var tab by remember { mutableIntStateOf(0) }
+    // Two tabs, switchable by tap or horizontal swipe (as in Statistics).
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { 2 })
+    val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier.fillMaxSize().systemBarsPadding().padding(horizontal = 24.dp, vertical = 16.dp),
     ) {
@@ -59,43 +64,63 @@ fun PlanListScreen(
             )
         }
 
-        TabRow(selectedTabIndex = tab, modifier = Modifier.padding(top = 8.dp)) {
-            Tab(selected = tab == 0, onClick = { tab = 0 }, text = { Text(stringResource(R.string.plans_tab_my)) })
-            Tab(selected = tab == 1, onClick = { tab = 1 }, text = { Text(stringResource(R.string.home_programs)) })
+        val tabLabels = listOf(
+            stringResource(R.string.plans_tab_my),
+            stringResource(R.string.home_programs),
+        )
+        TabRow(selectedTabIndex = pagerState.currentPage, modifier = Modifier.padding(top = 8.dp)) {
+            tabLabels.forEachIndexed { i, label ->
+                Tab(
+                    selected = pagerState.currentPage == i,
+                    onClick = { scope.launch { pagerState.animateScrollToPage(i) } },
+                    text = { Text(label) },
+                )
+            }
         }
 
-        val contentModifier = Modifier.weight(1f).padding(top = 12.dp)
-        if (tab == 0) {
-            Column(modifier = contentModifier) {
-                GymButton(
-                    text = stringResource(R.string.plans_new),
-                    onClick = onNew,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                if (plans.isEmpty()) {
-                    Text(
-                        stringResource(R.string.plans_empty),
-                        modifier = Modifier.padding(vertical = 24.dp),
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.weight(1f).fillMaxWidth().padding(top = 12.dp),
+        ) { page ->
+            if (page == 0) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    GymButton(
+                        text = stringResource(R.string.plans_new),
+                        onClick = onNew,
+                        modifier = Modifier.fillMaxWidth(),
                     )
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.weight(1f).padding(top = 12.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        items(plans, key = { it.plan.id }) { plan ->
-                            PlanCard(
-                                plan = plan,
-                                onEdit = { onEdit(plan.plan.id) },
-                                onDelete = { onDelete(plan.plan.id) },
-                                onSetActive = { onSetActive(plan.plan.id) },
-                                onStart = { onStart(plan) },
-                            )
+                    if (plans.isEmpty()) {
+                        Text(
+                            stringResource(R.string.plans_empty),
+                            modifier = Modifier.padding(vertical = 24.dp),
+                        )
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.weight(1f).padding(top = 12.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            items(plans, key = { it.plan.id }) { plan ->
+                                PlanCard(
+                                    plan = plan,
+                                    onEdit = { onEdit(plan.plan.id) },
+                                    onDelete = { onDelete(plan.plan.id) },
+                                    onSetActive = { onSetActive(plan.plan.id) },
+                                    onStart = { onStart(plan) },
+                                )
+                            }
                         }
                     }
                 }
+            } else {
+                ProgramsContent(
+                    // Activating a program lands the user back on My Plans.
+                    onUse = {
+                        onUseProgram(it)
+                        scope.launch { pagerState.animateScrollToPage(0) }
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                )
             }
-        } else {
-            ProgramsContent(onUse = onUseProgram, modifier = contentModifier)
         }
     }
 }

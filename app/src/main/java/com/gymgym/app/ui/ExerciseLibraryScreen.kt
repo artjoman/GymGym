@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.FiberManualRecord
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -122,6 +123,30 @@ fun ExerciseLibraryScreen(
     }
 }
 
+/**
+ * The row's action affordance: a play triangle + "Test" for AI-counted moves, or a
+ * red record dot + "Rec" for manual ones — same size, weight and label styling.
+ */
+@Composable
+private fun TestAction(isAiCounted: Boolean) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            imageVector = if (isAiCounted) Icons.Rounded.PlayArrow else Icons.Rounded.FiberManualRecord,
+            contentDescription = null,
+            tint = if (isAiCounted) MaterialTheme.colorScheme.primary else RecordRed,
+        )
+        Text(
+            stringResource(if (isAiCounted) R.string.library_test else R.string.library_manual_test),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Bold,
+        )
+    }
+}
+
+/** Same red used for the in-workout record button. */
+private val RecordRed = androidx.compose.ui.graphics.Color(0xFFFF5A5A)
+
 @Composable
 private fun LibrarySectionLabel(text: String) {
     Text(
@@ -172,21 +197,7 @@ private fun CatalogRow(exercise: CatalogExercise, onTest: () -> Unit) {
                     )
                 }
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Rounded.PlayArrow,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-                Text(
-                    stringResource(
-                        if (exercise.isAiCounted) R.string.library_test else R.string.library_manual_test,
-                    ),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
+            TestAction(isAiCounted = exercise.isAiCounted)
         }
     }
 }
@@ -221,19 +232,7 @@ private fun CustomRow(name: String, onTest: () -> Unit, onDelete: () -> Unit) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Rounded.PlayArrow,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-                Text(
-                    stringResource(R.string.library_manual_test),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
+            TestAction(isAiCounted = false)
             IconButton(onClick = { confirmDelete = true }) {
                 Icon(
                     Icons.Rounded.Delete,

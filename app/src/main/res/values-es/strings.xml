@@ -266,7 +266,7 @@
     <string name="library_manual_badge">Manual</string>
     <string name="library_ai_badge">IA</string>
     <string name="library_test">Probar</string>
-    <string name="library_manual_test">🔴 Rec</string>
+    <string name="library_manual_test">Rec</string>
     <string name="library_ai_count">Conteo con IA</string>
     <string name="library_custom_section">Personalizados</string>
     <string name="library_add_custom">Añadir ejercicio personalizado</string>
@@ -370,7 +370,7 @@
     <string name="cycle_status_completed">Completado</string>
     <string name="cycle_status_pending">Pendiente</string>
     <string name="stats_cycles_tab">Ciclos</string>
-    <string name="mission_title">Próxima misión</string>
+    <string name="mission_title">¡Vamos!</string>
     <string name="mission_planned">Programado: %1$s</string>
     <string name="mission_swap">Cambiar</string>
     <string name="mission_skip">Saltar</string>

@@ -194,10 +194,11 @@ private fun AppRoot(
         }
     }
 
+    // Auto-detect is launched from the Exercise library, so it returns there too.
     fun startAuto() = requireCameraThen {
         adManager.onWorkoutOpen(activity) {
             viewModel.startAuto()
-            navController.navigate(Routes.CAMERA)
+            navController.navigate("${Routes.CAMERA}?fromLibrary=true")
         }
     }
 
