@@ -38,6 +38,8 @@ fun StatisticsScreen(
     customNames: Map<String, String> = emptyMap(),
     cycles: List<CycleSummary> = emptyList(),
     initialTab: Int = 0,
+    /** Expand the most recent completed cycle (when opened from the Last cycle card). */
+    expandLastCycle: Boolean = false,
 ) {
     // Three tabs (Stats → Workouts → Cycles), switchable by tap or horizontal swipe.
     val pagerState = rememberPagerState(initialPage = initialTab.coerceIn(0, 2), pageCount = { 3 })
@@ -77,7 +79,7 @@ fun StatisticsScreen(
             when (page) {
                 0 -> StatsContent(sessions, bodyMeasurements, Modifier.fillMaxSize())
                 1 -> HistoryContent(sessions, completedWorkouts, onOpenSession, Modifier.fillMaxSize(), customNames)
-                else -> CyclesContent(cycles, Modifier.fillMaxSize(), customNames)
+                else -> CyclesContent(cycles, Modifier.fillMaxSize(), customNames, expandLastCycle)
             }
         }
     }

@@ -3,6 +3,24 @@
 User-facing release notes for GymGym, newest first. Updated on every version
 bump with the changes made since the previous release (see AGENTS.md).
 
+## 2.0.5 (versionCode 14)
+
+- Fixed: **completed cycles never appeared** anywhere. When a cycle finished, its
+  pass was cleared and the same cycle became active again, hiding the finished
+  one. Finished passes are now reconstructed properly, so they show as **Last
+  cycle** on Home and in **Statistics → Cycles**.
+- Exercise library: **Test** (AI) and the new **🔴 Rec** button (was "Manual
+  Test") now return you to the **Exercise library** via *Change exercise* instead
+  of Home. A library recording shows only *Change exercise* — no Skip/Stop —
+  while a custom exercise inside a workout keeps *Skip exercise* / *Stop exercise*.
+- Home **Last cycle** and **Current mission** are cleaner: coloured progress bars
+  with percentages and just the workout name (and weekday) underneath — no
+  exercise lists, no Statistics button. Current mission also names the upcoming
+  workout. Tapping Last cycle opens Statistics → Cycles with that cycle expanded;
+  tapping Current mission opens the start form with the next workout **expanded**
+  showing each exercise's sets and reps.
+- **Statistics → Cycles** records are collapsed by default and expand on tap.
+
 ## 2.0.4 (versionCode 13)
 
 - Updated the creator footer to "Built by people who train and work hard. By

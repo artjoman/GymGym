@@ -43,6 +43,9 @@ fun NextMissionScreen(
     onSwap: (Long) -> Unit,
     onSkip: (Long) -> Unit,
     onBack: () -> Unit,
+    /** The upcoming workout's exercises, shown expanded before Start. */
+    nextWorkout: com.gymgym.app.cycle.CycleWorkoutDetail? = null,
+    customNames: Map<String, String> = emptyMap(),
 ) {
     var showSwap by remember { mutableStateOf(false) }
     val mission = dashboard.nextMission
@@ -83,6 +86,20 @@ fun NextMissionScreen(
                 mission.plannedDate?.let {
                     Text(
                         stringResource(R.string.mission_planned, formatMissionTime(it)),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
+                // Expanded: what you're about to do, in the shared exercise format.
+                nextWorkout?.exercises?.forEach { ex ->
+                    Text(
+                        exerciseLineText(
+                            name = exerciseRefName(ex.exerciseRef, customNames),
+                            targetReps = ex.targetReps,
+                            targetSets = ex.targetSets,
+                            completedReps = ex.completedReps,
+                        ),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 4.dp),

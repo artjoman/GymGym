@@ -269,7 +269,7 @@
     <string name="library_manual_badge">Manuāli</string>
     <string name="library_ai_badge">MI</string>
     <string name="library_test">Testēt</string>
-    <string name="library_manual_test">Manuāls tests</string>
+    <string name="library_manual_test">🔴 Rec</string>
     <string name="library_ai_count">MI skaitīšana</string>
     <string name="library_custom_section">Pielāgotie</string>
     <string name="library_add_custom">Pievienot pielāgotu vingrinājumu</string>

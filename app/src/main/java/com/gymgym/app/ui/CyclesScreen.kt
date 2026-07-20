@@ -1,5 +1,6 @@
 package com.gymgym.app.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -69,7 +72,18 @@ fun CyclesContent(
     cycles: List<CycleSummary>,
     modifier: Modifier = Modifier,
     customNames: Map<String, String> = emptyMap(),
+    expandLastCycle: Boolean = false,
 ) {
+    // Records are collapsed by default; arriving from the Last cycle card expands
+    // that record (the most recent completed one).
+    val lastCompletedKey = remember(cycles) {
+        cycles.firstOrNull { it.status == CycleStatus.COMPLETED }?.key()
+    }
+    val expanded = remember(cycles, expandLastCycle) {
+        mutableStateMapOf<String, Boolean>().apply {
+            if (expandLastCycle && lastCompletedKey != null) put(lastCompletedKey, true)
+        }
+    }
     Column(modifier = modifier.fillMaxWidth()) {
         if (cycles.isEmpty()) {
             Text(
@@ -82,17 +96,31 @@ fun CyclesContent(
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(cycles, key = { "${it.cycleId}-${it.status}" }) { cycle ->
-                    CycleRecordCard(cycle, customNames)
+                items(cycles, key = { it.key() }) { cycle ->
+                    val k = cycle.key()
+                    CycleRecordCard(
+                        summary = cycle,
+                        customNames = customNames,
+                        expanded = expanded[k] == true,
+                        onToggle = { expanded[k] = expanded[k] != true },
+                    )
                 }
             }
         }
     }
 }
 
+/** Stable key: the same cycle can appear once per completed pass. */
+private fun CycleSummary.key(): String = "$cycleId-$status-${startedAt ?: 0L}"
+
 @Composable
-private fun CycleRecordCard(summary: CycleSummary, customNames: Map<String, String>) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+private fun CycleRecordCard(
+    summary: CycleSummary,
+    customNames: Map<String, String>,
+    expanded: Boolean,
+    onToggle: () -> Unit,
+) {
+    Card(modifier = Modifier.fillMaxWidth().clickable(onClick = onToggle)) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.Top) {
                 Text(
@@ -118,6 +146,10 @@ private fun CycleRecordCard(summary: CycleSummary, customNames: Map<String, Stri
                 },
                 modifier = Modifier.padding(top = 2.dp),
             )
+            if (!expanded) {
+                // Collapsed: header only (tap to expand).
+                return@Column
+            }
             for (w in summary.workouts) {
                 Spacer(Modifier.height(10.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {

@@ -64,6 +64,8 @@ fun CameraScreen(
     viewModel: MainViewModel,
     onExit: () -> Unit,
     onFinished: () -> Unit,
+    /** True when launched from the Exercise library (test/rec), not a workout. */
+    fromLibrary: Boolean = false,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -393,8 +395,12 @@ fun CameraScreen(
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            if (manual) {
-                // Manual move: FINISH lives on the card; just skip or stop here.
+            if (manual && fromLibrary) {
+                // Library rec/test of a single manual move: no plan to skip or stop —
+                // just go back to the library to pick another exercise.
+                GymButton(stringResource(R.string.camera_change_exercise), onExit, style = GymButtonStyle.Secondary)
+            } else if (manual) {
+                // Manual move inside a workout: FINISH lives on the card; skip or stop here.
                 GymButton(stringResource(R.string.camera_skip_exercise), { viewModel.skipToNextExercise() }, style = GymButtonStyle.Secondary)
                 GymButton(stringResource(R.string.camera_stop_exercise), onExit, style = GymButtonStyle.Secondary)
             } else if (timed && progress != null) {

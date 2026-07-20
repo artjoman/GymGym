@@ -184,12 +184,13 @@ private fun AppRoot(
         viewModel.rescheduleReminders()
     }
 
-    // Library "Test": AI-counted moves run their counter, everything else runs a
-    // one-set manual session — resolved inside the ViewModel from the ref.
+    // Library "Test"/"Rec": AI-counted moves run their counter, everything else
+    // runs a one-set manual session — resolved inside the ViewModel from the ref.
+    // fromLibrary=true so the run screen shows "Change exercise" and returns here.
     fun startTest(ref: String) = requireCameraThen {
         adManager.onWorkoutOpen(activity) {
             viewModel.startExerciseTest(ref)
-            navController.navigate(Routes.CAMERA)
+            navController.navigate("${Routes.CAMERA}?fromLibrary=true")
         }
     }
 
@@ -241,14 +242,12 @@ private fun AppRoot(
         composable(Routes.HOME) {
             val profile by viewModel.profile.collectAsState()
             val homeCycles by viewModel.homeCycles.collectAsState()
-            val customExercises by viewModel.customExercises.collectAsState()
-            val customNames = customExercises.associate { ExerciseRef.forCustom(it.id) to it.name }
             ExerciseSelectScreen(
                 greeting = profile.displayName,
                 homeCycles = homeCycles,
-                customNames = customNames,
                 onOpenMission = { navController.navigate(Routes.MISSION) },
-                onOpenLastCycle = { navController.navigate("${Routes.STATISTICS}?tab=2") },
+                // Expand the last cycle's record when arriving from that card.
+                onOpenLastCycle = { navController.navigate("${Routes.STATISTICS}?tab=2&expandFirst=true") },
                 onOpenLibrary = { navController.navigate(Routes.LIBRARY) },
                 onOpenPlans = { navController.navigate(Routes.PLANS) },
                 onOpenStatistics = { navController.navigate(Routes.STATISTICS) },
@@ -257,25 +256,31 @@ private fun AppRoot(
                 onOpenExpert = { navController.navigate(Routes.EXPERT) },
             )
         }
-        composable(Routes.CAMERA) {
+        composable(
+            "${Routes.CAMERA}?fromLibrary={fromLibrary}",
+            arguments = listOf(
+                navArgument("fromLibrary") { type = NavType.BoolType; defaultValue = false },
+            ),
+        ) { entry ->
+            val fromLibrary = entry.arguments?.getBoolean("fromLibrary") ?: false
             val exercise by viewModel.selectedExercise.collectAsState()
             val autoDetecting by viewModel.autoDetecting.collectAsState()
             val manualActive by viewModel.manualActive.collectAsState()
             val planProgress by viewModel.planProgress.collectAsState()
+            // A library test returns to the Exercise library; a workout run always
+            // ends on Home (the central dashboard) — same as Skip.
+            val exitRoute = if (fromLibrary) Routes.LIBRARY else Routes.HOME
             if (exercise != null || autoDetecting || manualActive != null || planProgress != null) {
                 CameraScreen(
                     exercise = exercise,
                     viewModel = viewModel,
-                    // The workout flow always ends on Home (the central dashboard):
-                    // pop past any intermediate screen (e.g. Next Mission) so a
-                    // finished/stopped workout lands there with refreshed cycle,
-                    // Current mission and Last workout state — same as Skip.
+                    fromLibrary = fromLibrary,
                     onExit = {
                         viewModel.stopSession()
-                        navController.popBackStack(Routes.HOME, inclusive = false)
+                        navController.popBackStack(exitRoute, inclusive = false)
                     },
                     onFinished = {
-                        navController.popBackStack(Routes.HOME, inclusive = false)
+                        navController.popBackStack(exitRoute, inclusive = false)
                     },
                 )
             }
@@ -293,8 +298,13 @@ private fun AppRoot(
         }
         composable(Routes.MISSION) {
             val dashboard by viewModel.dashboard.collectAsState()
+            val homeCycles by viewModel.homeCycles.collectAsState()
+            val customExercises by viewModel.customExercises.collectAsState()
+            val customNames = customExercises.associate { ExerciseRef.forCustom(it.id) to it.name }
             NextMissionScreen(
                 dashboard = dashboard,
+                nextWorkout = homeCycles.currentCycle?.detail,
+                customNames = customNames,
                 onStart = { id ->
                     startWorkoutById(id)
                 },
@@ -350,10 +360,14 @@ private fun AppRoot(
             }
         }
         composable(
-            "${Routes.STATISTICS}?tab={tab}",
-            arguments = listOf(navArgument("tab") { type = NavType.IntType; defaultValue = 0 }),
+            "${Routes.STATISTICS}?tab={tab}&expandFirst={expandFirst}",
+            arguments = listOf(
+                navArgument("tab") { type = NavType.IntType; defaultValue = 0 },
+                navArgument("expandFirst") { type = NavType.BoolType; defaultValue = false },
+            ),
         ) { entry ->
             val initialTab = entry.arguments?.getInt("tab") ?: 0
+            val expandFirst = entry.arguments?.getBoolean("expandFirst") ?: false
             val sessions by viewModel.history.collectAsState()
             val completedWorkouts by viewModel.completedWorkouts.collectAsState()
             val bodyMeasurements by viewModel.bodyMeasurements.collectAsState()
@@ -369,6 +383,7 @@ private fun AppRoot(
                 customNames = customNames,
                 cycles = cycles,
                 initialTab = initialTab,
+                expandLastCycle = expandFirst,
             )
         }
         composable(

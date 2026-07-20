@@ -94,7 +94,7 @@ object CycleSummaries {
     ): HomeCycles {
         val weekly = profile.trainingMode == TrainingMode.WEEKLY_SCHEDULE
         val current = currentCycleSummary(activePlan, progress, completed, weekly)
-        val last = lastCycleSummary(plans, completed, weekly, excludeCycleId = current?.cycleId)
+        val last = completedPasses(plans, current?.cycleId, progress, completed, weekly).firstOrNull()
         return HomeCycles(hasActivePlan = activePlan != null, lastCycle = last, currentCycle = current)
     }
 
@@ -111,16 +111,62 @@ object CycleSummaries {
     ): List<CycleSummary> {
         val weekly = profile.trainingMode == TrainingMode.WEEKLY_SCHEDULE
         val active = currentCycleSummary(activePlan, progress, completed, weekly)
-        val completedCycles = completed
-            .filter { it.workout.cycleId != null && it.workout.cycleId != active?.cycleId }
-            .sortedByDescending { it.workout.startedAt }
-            .map { it.workout.cycleId!! }
-            .distinct()
-            .mapNotNull { cycleId ->
-                val (plan, cyc) = findCycle(plans, cycleId) ?: return@mapNotNull null
-                summarize(plan, cyc, completed.forCycle(cycleId), weekly, progress = null)
+        return listOfNotNull(active) + completedPasses(plans, active?.cycleId, progress, completed, weekly)
+    }
+
+    /**
+     * Every finished cycle *pass*, most recent first.
+     *
+     * A pass is not persisted (the per-workout progress is cleared when a pass
+     * completes and the same cycle becomes active again), so passes are
+     * reconstructed from the completed_workout rows: within one cycle, a repeated
+     * workout starts a new pass. The final pass of the currently-active cycle is
+     * still in progress when that cycle has any progress recorded, so it's
+     * excluded; every earlier pass is a completed cycle. Workouts of the cycle
+     * with no row in a pass were skipped (0%).
+     */
+    private fun completedPasses(
+        plans: List<PlanWithCycles>,
+        activeCycleId: Long?,
+        progress: Map<Long, CycleEngine.ProgressEntry>,
+        completed: List<CompletedWorkoutWithExercises>,
+        weekly: Boolean,
+    ): List<CycleSummary> {
+        val byCycle = completed.filter { it.workout.cycleId != null }.groupBy { it.workout.cycleId!! }
+        val out = mutableListOf<CycleSummary>()
+        for ((cycleId, rows) in byCycle) {
+            val (plan, cyc) = findCycle(plans, cycleId) ?: continue
+            val passes = splitPasses(rows)
+            // The last pass of the active cycle is the one still being worked on.
+            val lastIsInProgress = cycleId == activeCycleId &&
+                cyc.workouts.any { it.workout.id in progress }
+            val finished = if (lastIsInProgress) passes.dropLast(1) else passes
+            finished.forEach { pass ->
+                out += summarize(plan, cyc, pass, weekly, progress = null, status = CycleStatus.COMPLETED)
             }
-        return listOfNotNull(active) + completedCycles
+        }
+        return out.sortedByDescending { it.completedAt ?: it.startedAt ?: 0L }
+    }
+
+    /** Split one cycle's completed workouts into passes; a repeated workout starts a new pass. */
+    private fun splitPasses(
+        rows: List<CompletedWorkoutWithExercises>,
+    ): List<List<CompletedWorkoutWithExercises>> {
+        val passes = mutableListOf<List<CompletedWorkoutWithExercises>>()
+        var current = mutableListOf<CompletedWorkoutWithExercises>()
+        val seen = mutableSetOf<Long>()
+        for (row in rows.sortedBy { it.workout.startedAt }) {
+            val id = row.workout.workoutId
+            if (id != null && id in seen) {
+                passes += current
+                current = mutableListOf()
+                seen.clear()
+            }
+            current += row
+            if (id != null) seen += id
+        }
+        if (current.isNotEmpty()) passes += current
+        return passes
     }
 
     // --- internals ---
@@ -138,30 +184,19 @@ object CycleSummaries {
         val effectiveProgress = if (allProcessed) emptyMap() else progress
         val nextPair = sequence.firstOrNull { it.second.workout.id !in effectiveProgress } ?: sequence.first()
         val cyc = nextPair.first
+        // Only this pass's rows count — earlier passes of the same cycle must not
+        // make already-reset workouts look done again.
+        val passRows = if (effectiveProgress.isEmpty()) {
+            emptyList()
+        } else {
+            splitPasses(completed.forCycle(cyc.cycle.id)).lastOrNull().orEmpty()
+        }
         val summary = summarize(
-            activePlan, cyc, completed.forCycle(cyc.cycle.id), weekly, effectiveProgress,
+            activePlan, cyc, passRows, weekly, effectiveProgress,
             status = CycleStatus.ACTIVE,
         )
         // Featured detail = the upcoming workout, planned only (not executed yet).
         return summary.copy(detail = workoutDetail(nextPair.second, completedRow = null))
-    }
-
-    private fun lastCycleSummary(
-        plans: List<PlanWithCycles>,
-        completed: List<CompletedWorkoutWithExercises>,
-        weekly: Boolean,
-        excludeCycleId: Long?,
-    ): CycleSummary? {
-        val latest = completed
-            .filter { it.workout.cycleId != null && it.workout.cycleId != excludeCycleId }
-            .maxByOrNull { it.workout.startedAt } ?: return null
-        val cycleId = latest.workout.cycleId ?: return null
-        val (plan, cyc) = findCycle(plans, cycleId) ?: return null
-        val summary = summarize(plan, cyc, completed.forCycle(cycleId), weekly, progress = null)
-        // Featured detail = the most recently executed workout, with its results.
-        val featured = cyc.orderedWorkouts.firstOrNull { it.workout.id == latest.workout.workoutId }
-        val detail = featured?.let { workoutDetail(it, completedRow = latest) }
-        return summary.copy(detail = detail)
     }
 
     /** Build the featured workout's exercise breakdown (planned only when [completedRow] is null). */

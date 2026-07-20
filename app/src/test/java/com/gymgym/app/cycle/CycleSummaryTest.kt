@@ -117,6 +117,51 @@ class CycleSummaryTest {
     }
 
     @Test
+    fun finishedPassAppearsAsCompletedCycleEvenWhenCycleGoesActiveAgain() {
+        // A full pass (all three workouts) then progress cleared — the same cycle is
+        // active again for a fresh pass, but the finished pass must still show up.
+        val done = listOf(
+            completed(1, 10, 30, 100),
+            completed(2, 11, 45, 200),
+            completed(3, 12, 24, 300),
+        )
+        val home = CycleSummaries.compute(
+            plans = listOf(plan),
+            activePlan = plan,
+            progress = emptyMap(), // pass rolled over
+            completed = done,
+            profile = Profile(),
+        )
+        assertEquals(7L, home.lastCycle?.cycleId)
+        assertEquals(CycleStatus.COMPLETED, home.lastCycle?.status)
+        // 99 done of 99 planned (30 + 45 + 24).
+        assertEquals(100, home.lastCycle?.percent)
+        // The fresh active pass shows nothing done yet.
+        assertEquals(0, home.currentCycle?.percent)
+    }
+
+    @Test
+    fun inProgressPassIsExcludedFromCompleted() {
+        // Pass 1 complete, then Workout 1 started again (repeat = new pass in progress).
+        val done = listOf(
+            completed(1, 10, 30, 100),
+            completed(2, 11, 45, 200),
+            completed(3, 12, 24, 300),
+            completed(4, 10, 30, 400), // repeat → pass 2
+        )
+        val records = CycleSummaries.cycleRecords(
+            plans = listOf(plan),
+            activePlan = plan,
+            progress = mapOf(10L to CycleEngine.ProgressEntry("DONE", 100)),
+            completed = done,
+            profile = Profile(),
+        )
+        // Active cycle first, then exactly one finished pass (pass 2 is in progress).
+        assertEquals(CycleStatus.ACTIVE, records.first().status)
+        assertEquals(1, records.count { it.status == CycleStatus.COMPLETED })
+    }
+
+    @Test
     fun noCompletedCyclesIsNull() {
         val home = CycleSummaries.compute(emptyList(), null, emptyMap(), emptyList(), Profile())
         assertNull(home.lastCycle)

@@ -266,7 +266,7 @@
     <string name="library_manual_badge">Manual</string>
     <string name="library_ai_badge">IA</string>
     <string name="library_test">Probar</string>
-    <string name="library_manual_test">Prueba manual</string>
+    <string name="library_manual_test">🔴 Rec</string>
     <string name="library_ai_count">Conteo con IA</string>
     <string name="library_custom_section">Personalizados</string>
     <string name="library_add_custom">Añadir ejercicio personalizado</string>

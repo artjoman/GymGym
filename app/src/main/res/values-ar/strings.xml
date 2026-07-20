@@ -278,7 +278,7 @@
     <string name="library_manual_badge">يدوي</string>
     <string name="library_ai_badge">AI</string>
     <string name="library_test">اختبار</string>
-    <string name="library_manual_test">اختبار يدوي</string>
+    <string name="library_manual_test">🔴 Rec</string>
     <string name="library_ai_count">عدّ بالذكاء الاصطناعي</string>
     <string name="library_custom_section">مخصص</string>
     <string name="library_add_custom">إضافة تمرين مخصص</string>

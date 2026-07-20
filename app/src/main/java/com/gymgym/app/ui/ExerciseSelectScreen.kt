@@ -1,8 +1,12 @@
 package com.gymgym.app.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,7 +33,6 @@ import androidx.compose.ui.unit.sp
 fun ExerciseSelectScreen(
     greeting: String?,
     homeCycles: com.gymgym.app.cycle.HomeCycles,
-    customNames: Map<String, String>,
     onOpenMission: () -> Unit,
     onOpenLastCycle: () -> Unit,
     onOpenLibrary: () -> Unit,
@@ -69,12 +72,8 @@ fun ExerciseSelectScreen(
             SectionLabel(stringResource(R.string.home_last_cycle), top = 20.dp)
             val lastCycle = homeCycles.lastCycle
             if (lastCycle != null) {
-                CycleCard(
-                    summary = lastCycle,
-                    onClick = onOpenLastCycle,
-                    customNames = customNames,
-                    onStatistics = onOpenLastCycle,
-                )
+                // Tapping the card opens Statistics → Cycles with this cycle expanded.
+                CycleCard(summary = lastCycle, onClick = onOpenLastCycle)
             } else {
                 EmptyCycleCard(stringResource(R.string.home_no_cycles))
             }
@@ -83,12 +82,9 @@ fun ExerciseSelectScreen(
             SectionLabel(stringResource(R.string.home_current_mission), top = 20.dp)
             val currentCycle = homeCycles.currentCycle
             if (currentCycle != null) {
-                CycleCard(
-                    summary = currentCycle,
-                    onClick = onOpenMission,
-                    customNames = customNames,
-                    onStatistics = onOpenLastCycle,
-                )
+                // Tapping opens the workout execution (start) form, where the next
+                // workout is expanded with its exercise details.
+                CycleCard(summary = currentCycle, onClick = onOpenMission, showNextWorkout = true)
             } else {
                 EmptyCycleCard(stringResource(R.string.home_no_plan))
             }
@@ -149,13 +145,12 @@ private fun SectionLabel(text: String, top: androidx.compose.ui.unit.Dp) {
  * upper-right, and each workout in execution order below. Used for both LAST
  * CYCLE and CURRENT MISSION so they share layout and information hierarchy.
  */
-@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 internal fun CycleCard(
     summary: com.gymgym.app.cycle.CycleSummary,
     onClick: (() -> Unit)? = null,
-    customNames: Map<String, String> = emptyMap(),
-    onStatistics: (() -> Unit)? = null,
+    /** Current mission also names the upcoming workout (collapsed — no sets/reps). */
+    showNextWorkout: Boolean = false,
 ) {
     val cardModifier = Modifier.fillMaxWidth()
         .let { if (onClick != null) it.clickable(onClick = onClick) else it }
@@ -176,69 +171,76 @@ internal fun CycleCard(
                 )
             }
             if (summary.workouts.isNotEmpty()) {
-                Spacer(Modifier.height(8.dp))
-                androidx.compose.foundation.layout.FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(14.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
-                    for (w in summary.workouts) {
-                        Text(
-                            cycleWorkoutText(w),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (w.status == com.gymgym.app.cycle.CycleLineStatus.SKIPPED) {
-                                MaterialTheme.colorScheme.error
-                            } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            },
-                        )
-                    }
-                }
-            }
-            // Featured workout's exercises (planned for Current mission, results for
-            // Last cycle) in the same format as History / Workout Details.
-            summary.detail?.let { detail ->
                 Spacer(Modifier.height(10.dp))
-                Text(
-                    detail.workoutName,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Spacer(Modifier.height(2.dp))
-                for (ex in detail.exercises) {
-                    Text(
-                        exerciseLineText(
-                            name = exerciseRefName(ex.exerciseRef, customNames),
-                            targetReps = ex.targetReps,
-                            targetSets = ex.targetSets,
-                            completedReps = ex.completedReps,
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 2.dp),
-                    )
-                }
+                CycleBars(summary.workouts)
             }
-            if (onStatistics != null) {
-                androidx.compose.material3.TextButton(
-                    onClick = onStatistics,
-                    modifier = Modifier.padding(top = 4.dp),
-                ) {
-                    Text(stringResource(R.string.statistics_title))
+            if (showNextWorkout) {
+                summary.detail?.let { detail ->
+                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        detail.workoutName,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                    )
                 }
             }
         }
     }
 }
 
+/**
+ * Cycle progress as coloured bars — one per workout in order, percentage inside a
+ * done bar — with just the workout name (and weekday, when scheduled) underneath.
+ */
 @Composable
-internal fun cycleWorkoutText(w: com.gymgym.app.cycle.CycleWorkoutLine): String {
-    val base = when (w.status) {
-        com.gymgym.app.cycle.CycleLineStatus.DONE -> "${w.name} — ${w.percent}%"
-        com.gymgym.app.cycle.CycleLineStatus.SKIPPED ->
-            "${w.name} — ${stringResource(R.string.cycle_skipped)}"
-        com.gymgym.app.cycle.CycleLineStatus.PENDING -> w.name
+internal fun CycleBars(workouts: List<com.gymgym.app.cycle.CycleWorkoutLine>) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            workouts.forEach { w ->
+                val color = when (w.status) {
+                    com.gymgym.app.cycle.CycleLineStatus.DONE -> MaterialTheme.colorScheme.primary
+                    com.gymgym.app.cycle.CycleLineStatus.SKIPPED ->
+                        MaterialTheme.colorScheme.error.copy(alpha = 0.6f)
+                    com.gymgym.app.cycle.CycleLineStatus.PENDING ->
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(20.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(color),
+                    contentAlignment = androidx.compose.ui.Alignment.Center,
+                ) {
+                    if (w.status == com.gymgym.app.cycle.CycleLineStatus.DONE) {
+                        Text(
+                            "${w.percent}%",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                        )
+                    }
+                }
+            }
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            workouts.forEach { w ->
+                val wd = w.weekday?.let { " · ${weekdayShort(it)}" }.orEmpty()
+                Text(
+                    w.name + wd,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1,
+                )
+            }
+        }
     }
-    return w.weekday?.let { "$base · ${weekdayShort(it)}" } ?: base
 }
 
 @Composable
