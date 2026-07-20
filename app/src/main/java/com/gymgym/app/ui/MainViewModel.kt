@@ -318,6 +318,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var runPlanId: Long? = null
     private var runCycleId: Long? = null
     private var runWorkoutId: Long? = null
+    // Snapshotted onto each completed_workout so history survives plan edits.
+    private var runPlanName = ""
+    private var runCycleName = ""
     private var runStartedAt = 0L
     private val runResults = mutableListOf<CompletedWorkoutRepository.ExerciseResult>()
     private var restJob: Job? = null
@@ -581,6 +584,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         runPlanId = planId
         runCycleId = workout.workout.cycleId
         runWorkoutId = workout.workout.id
+        runPlanName = planLabel
+        runCycleName = plans.value
+            .firstOrNull { it.plan.id == planId }
+            ?.cycles?.firstOrNull { it.cycle.id == workout.workout.cycleId }
+            ?.cycle?.name
+            .orEmpty()
         runStartedAt = System.currentTimeMillis()
         runPausedTotalMs = 0L
         runResults.clear()
@@ -783,6 +792,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val planId = runPlanId
         val cycleId = runCycleId
         val workoutId = runWorkoutId
+        val snapshotPlanName = runPlanName
+        val snapshotCycleName = runCycleName
         val startedAt = runStartedAt
         // Total workout duration = wall-clock from run start to finish, minus pauses
         // (so rests are included, pauses excluded).
@@ -802,6 +813,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 startedAt = startedAt,
                 durationMs = duration,
                 exercises = results,
+                planName = snapshotPlanName,
+                cycleName = snapshotCycleName,
             )
             if (workoutId != null) markProgress(workoutId, done = true, percent = avg)
         }

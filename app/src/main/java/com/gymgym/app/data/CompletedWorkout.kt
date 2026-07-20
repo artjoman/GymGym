@@ -30,6 +30,13 @@ data class CompletedWorkout(
     val startedAt: Long,
     val durationMs: Long,
     val avgPercent: Int,
+    /**
+     * Plan and cycle names captured at the time of the run. Editing a plan
+     * replaces its cycle/workout rows (new ids), and deleting one cascades them
+     * away — so history must not depend on those rows still existing.
+     */
+    @ColumnInfo(defaultValue = "") val planName: String = "",
+    @ColumnInfo(defaultValue = "") val cycleName: String = "",
 )
 
 @Entity(
@@ -127,6 +134,8 @@ class CompletedWorkoutRepository(private val dao: CompletedWorkoutDao) {
         startedAt: Long,
         durationMs: Long,
         exercises: List<ExerciseResult>,
+        planName: String = "",
+        cycleName: String = "",
     ) {
         // Workout % = average of its exercises' completion percentages.
         val avg = averagePercent(
@@ -141,6 +150,8 @@ class CompletedWorkoutRepository(private val dao: CompletedWorkoutDao) {
                 startedAt = startedAt,
                 durationMs = durationMs,
                 avgPercent = avg,
+                planName = planName,
+                cycleName = cycleName,
             ),
         )
         dao.insertExercises(

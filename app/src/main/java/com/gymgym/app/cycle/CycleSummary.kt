@@ -136,17 +136,69 @@ object CycleSummaries {
         val byCycle = completed.filter { it.workout.cycleId != null }.groupBy { it.workout.cycleId!! }
         val out = mutableListOf<CycleSummary>()
         for ((cycleId, rows) in byCycle) {
-            val (plan, cyc) = findCycle(plans, cycleId) ?: continue
+            val found = findCycle(plans, cycleId)
             val passes = splitPasses(rows)
             // The last pass of the active cycle is the one still being worked on.
             val lastIsInProgress = cycleId == activeCycleId &&
-                cyc.workouts.any { it.workout.id in progress }
+                found?.second?.workouts?.any { it.workout.id in progress } == true
             val finished = if (lastIsInProgress) passes.dropLast(1) else passes
             finished.forEach { pass ->
-                out += summarize(plan, cyc, pass, weekly, progress = null, status = CycleStatus.COMPLETED)
+                out += if (found != null) {
+                    val (plan, cyc) = found
+                    summarize(plan, cyc, pass, weekly, progress = null, status = CycleStatus.COMPLETED)
+                } else {
+                    // The plan/cycle was edited or deleted (its rows were replaced with
+                    // new ids). Rebuild the record from the run's own snapshot so the
+                    // history is never lost — only the skipped workouts, which left no
+                    // rows behind, can't be recovered.
+                    summarizeFromRows(cycleId, pass)
+                }
             }
         }
         return out.sortedByDescending { it.completedAt ?: it.startedAt ?: 0L }
+    }
+
+    /** Rebuild a completed cycle purely from its recorded workouts (plan is gone). */
+    private fun summarizeFromRows(
+        cycleId: Long,
+        pass: List<CompletedWorkoutWithExercises>,
+    ): CycleSummary {
+        val lines = pass.sortedBy { it.workout.startedAt }.map { row ->
+            val exercises = row.orderedExercises.map { e ->
+                CycleExerciseLine(
+                    exerciseRef = e.exerciseRef,
+                    targetReps = e.targetReps,
+                    targetSets = e.targetSets,
+                    completedReps = e.reps,
+                )
+            }
+            CycleWorkoutLine(
+                workoutId = row.workout.workoutId ?: 0L,
+                name = row.workout.name,
+                percent = CompletedWorkoutRepository.averagePercent(
+                    exercises.map {
+                        CompletedWorkoutRepository.exercisePercent(
+                            it.completedReps ?: 0,
+                            it.targetReps * it.targetSets,
+                        )
+                    },
+                ),
+                status = CycleLineStatus.DONE,
+                weekday = null,
+                exercises = exercises,
+            )
+        }
+        return CycleSummary(
+            planId = pass.firstOrNull()?.workout?.planId,
+            cycleId = cycleId,
+            planName = pass.firstNotNullOfOrNull { it.workout.planName.takeIf(String::isNotBlank) }.orEmpty(),
+            cycleName = pass.firstNotNullOfOrNull { it.workout.cycleName.takeIf(String::isNotBlank) }.orEmpty(),
+            percent = CompletedWorkoutRepository.averagePercent(lines.map { it.percent }),
+            status = CycleStatus.COMPLETED,
+            startedAt = pass.minOfOrNull { it.workout.startedAt },
+            completedAt = pass.maxOfOrNull { it.workout.startedAt + it.workout.durationMs },
+            workouts = lines,
+        )
     }
 
     /** Split one cycle's completed workouts into passes; a repeated workout starts a new pass. */

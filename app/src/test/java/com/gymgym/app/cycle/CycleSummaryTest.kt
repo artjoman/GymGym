@@ -164,6 +164,47 @@ class CycleSummaryTest {
     }
 
     @Test
+    fun completedCycleSurvivesPlanEditOrDeletion() {
+        // Editing a plan replaces its cycle/workout rows with new ids (and deleting
+        // one cascades them away), so the old cycle definition is gone. History must
+        // still render from the snapshot recorded on each run.
+        val done = listOf(
+            snapshotted(1, 10, 30, 30, 100),
+            snapshotted(2, 11, 45, 45, 200),
+        )
+        val records = CycleSummaries.cycleRecords(
+            plans = emptyList(), // plan no longer exists
+            activePlan = null,
+            progress = emptyMap(),
+            completed = done,
+            profile = Profile(),
+        )
+        assertEquals(1, records.size)
+        val cycle = records.first()
+        assertEquals("Full Body Cycle", cycle.cycleName)
+        assertEquals("Custom Plan", cycle.planName)
+        assertEquals(100, cycle.percent)
+        assertEquals(2, cycle.workouts.size)
+    }
+
+    /** A completed workout carrying the plan/cycle name snapshot. */
+    private fun snapshotted(id: Long, workoutId: Long, reps: Int, planned: Int, startedAt: Long) =
+        CompletedWorkoutWithExercises(
+            CompletedWorkout(
+                id = id, planId = 1, cycleId = 7, workoutId = workoutId, name = "W$workoutId",
+                startedAt = startedAt, durationMs = 0, avgPercent = 0,
+                planName = "Custom Plan", cycleName = "Full Body Cycle",
+            ),
+            listOf(
+                CompletedExercise(
+                    id = id, completedWorkoutId = id, exerciseRef = "squat",
+                    reps = reps, goodReps = reps, targetReps = planned, targetSets = 1,
+                    durationMs = 0, position = 0,
+                ),
+            ),
+        )
+
+    @Test
     fun noCompletedCyclesIsNull() {
         val home = CycleSummaries.compute(emptyList(), null, emptyMap(), emptyList(), Profile())
         assertNull(home.lastCycle)
