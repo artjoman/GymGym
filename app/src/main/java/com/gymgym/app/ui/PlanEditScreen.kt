@@ -48,6 +48,7 @@ import com.gymgym.app.exercise.ExerciseRef
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import java.text.DateFormat
 import java.text.DateFormatSymbols
 import java.util.Calendar
@@ -84,6 +85,8 @@ fun PlanEditScreen(
     customExercises: List<CustomExercise>,
     onSave: (id: Long, draft: DraftPlan) -> Unit,
     onCancel: () -> Unit,
+    /** Weekday assignment is only offered when the profile uses Weekly Schedule. */
+    weeklyEnabled: Boolean = false,
 ) {
     val context = LocalContext.current
     var planName by remember { mutableStateOf(existing?.plan?.name ?: "") }
@@ -122,19 +125,31 @@ fun PlanEditScreen(
     }
 
     when {
-        openWorkout != null -> WorkoutEditor(
-            workout = openWorkout!!,
-            customExercises = customExercises,
-            onSaveAll = saveAll,
-            saveEnabled = saveEnabled,
-            onBack = { openWorkout = null },
-        )
+        openWorkout != null -> {
+            val wo = openWorkout!!
+            // Days taken by the *other* workouts in the same cycle.
+            val usedDays = cycles.firstOrNull { cy -> cy.workouts.any { it === wo } }
+                ?.workouts.orEmpty()
+                .filter { it !== wo }
+                .mapNotNull { it.weekday }
+                .toSet()
+            WorkoutEditor(
+                workout = wo,
+                customExercises = customExercises,
+                onSaveAll = saveAll,
+                saveEnabled = saveEnabled,
+                onBack = { openWorkout = null },
+                weeklyEnabled = weeklyEnabled,
+                usedWeekdays = usedDays,
+            )
+        }
         openCycle != null -> CycleEditor(
             cycle = openCycle!!,
             onOpenWorkout = { openWorkout = it },
             onSaveAll = saveAll,
             saveEnabled = saveEnabled,
             onBack = { openCycle = null },
+            weeklyEnabled = weeklyEnabled,
         )
         else -> PlanEditor(
             isNew = existing == null,
@@ -286,6 +301,7 @@ private fun CycleEditor(
     onSaveAll: () -> Unit,
     saveEnabled: Boolean,
     onBack: () -> Unit,
+    weeklyEnabled: Boolean = false,
 ) {
     val context = LocalContext.current
     Column(
@@ -323,6 +339,10 @@ private fun CycleEditor(
                 ),
                 onOpen = { onOpenWorkout(workout) },
                 onRemove = { cycle.workouts.removeAt(index) },
+                // In Weekly Schedule mode, surface the assigned day on the card.
+                trailing = workout.weekday
+                    ?.takeIf { weeklyEnabled }
+                    ?.let { weekdayShort(it) },
             )
         }
 
@@ -356,6 +376,8 @@ private fun WorkoutEditor(
     onSaveAll: () -> Unit,
     saveEnabled: Boolean,
     onBack: () -> Unit,
+    weeklyEnabled: Boolean = false,
+    usedWeekdays: Set<Int> = emptySet(),
 ) {
     var showPicker by remember { mutableStateOf(false) }
 
@@ -377,9 +399,15 @@ private fun WorkoutEditor(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        // Weekday assignment (used when the profile's Weekly Schedule is on).
-        Text(stringResource(R.string.plan_weekday), style = MaterialTheme.typography.titleMedium)
-        WeekdayRow(selected = workout.weekday, onSelect = { workout.weekday = it })
+        // Weekday assignment — only offered when the profile uses Weekly Schedule.
+        if (weeklyEnabled) {
+            Text(stringResource(R.string.plan_weekday), style = MaterialTheme.typography.titleMedium)
+            WeekdayRow(
+                selected = workout.weekday,
+                onSelect = { workout.weekday = it },
+                usedDays = usedWeekdays,
+            )
+        }
 
         if (workout.exercises.isEmpty()) {
             Text(
@@ -429,21 +457,33 @@ private fun WorkoutEditor(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun WeekdayRow(selected: Int?, onSelect: (Int?) -> Unit) {
+private fun WeekdayRow(
+    selected: Int?,
+    onSelect: (Int?) -> Unit,
+    /** Days already taken by another workout in this cycle — outlined, still pickable. */
+    usedDays: Set<Int> = emptySet(),
+) {
     val symbols = remember { DateFormatSymbols.getInstance().shortWeekdays }
     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        FilterChip(
-            selected = selected == null,
-            onClick = { onSelect(null) },
-            label = { Text(stringResource(R.string.plan_weekday_none)) },
-        )
         for (day in 1..7) {
             // Our encoding: 1=Mon..7=Sun. Map to Calendar day for the localized label.
             val calDay = if (day == 7) Calendar.SUNDAY else day + 1
+            val taken = day in usedDays
             FilterChip(
                 selected = selected == day,
-                onClick = { onSelect(day) },
+                // Tapping the selected day clears it (there's no "Any" chip).
+                onClick = { onSelect(if (selected == day) null else day) },
                 label = { Text(symbols[calDay]) },
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = selected == day,
+                    borderColor = if (taken) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.outline
+                    },
+                    borderWidth = if (taken) 2.dp else 1.dp,
+                ),
             )
         }
     }
@@ -463,6 +503,8 @@ private fun NodeCard(
     subtitle: String,
     onOpen: () -> Unit,
     onRemove: () -> Unit,
+    /** Shown on the right (e.g. the workout's weekday in Weekly Schedule mode). */
+    trailing: String? = null,
 ) {
     var confirmDelete by remember { mutableStateOf(false) }
     if (confirmDelete) {
@@ -484,6 +526,15 @@ private fun NodeCard(
                     subtitle,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            if (trailing != null) {
+                Text(
+                    trailing,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(end = 4.dp),
                 )
             }
             TextButton(onClick = { confirmDelete = true }) { Text("✕") }

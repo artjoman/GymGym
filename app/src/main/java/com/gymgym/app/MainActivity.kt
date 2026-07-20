@@ -42,6 +42,7 @@ import com.gymgym.app.ui.ExerciseSelectScreen
 import com.gymgym.app.ui.ExpertSupportScreen
 import com.gymgym.app.ui.NextMissionScreen
 import com.gymgym.app.notify.Reminders
+import com.gymgym.app.profile.TrainingMode
 import com.gymgym.app.ui.MainViewModel
 import com.gymgym.app.ui.PlanEditScreen
 import com.gymgym.app.ui.PlanListScreen
@@ -346,6 +347,7 @@ private fun AppRoot(
             val planId = entry.arguments?.getLong("planId") ?: 0L
             val plans by viewModel.plans.collectAsState()
             val customExercises by viewModel.customExercises.collectAsState()
+            val editProfile by viewModel.profile.collectAsState()
             val existing = plans.find { it.plan.id == planId }
             // For an edit, wait until the plan has loaded before seeding the form.
             if (planId == 0L || existing != null) {
@@ -357,6 +359,7 @@ private fun AppRoot(
                         navController.popBackStack()
                     },
                     onCancel = { navController.popBackStack() },
+                    weeklyEnabled = editProfile.trainingMode == TrainingMode.WEEKLY_SCHEDULE,
                 )
             }
         }
