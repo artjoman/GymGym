@@ -3,6 +3,7 @@ package com.gymgym.app.ui
 import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,6 +33,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -83,7 +85,7 @@ private class CyRow(name: String, val workouts: SnapshotStateList<WoRow>) {
 fun PlanEditScreen(
     existing: PlanWithCycles?,
     customExercises: List<CustomExercise>,
-    onSave: (id: Long, draft: DraftPlan) -> Unit,
+    onSave: (id: Long, draft: DraftPlan, onSaved: (Long) -> Unit) -> Unit,
     onCancel: () -> Unit,
     /** Weekday assignment is only offered when the profile uses Weekly Schedule. */
     weeklyEnabled: Boolean = false,
@@ -120,8 +122,15 @@ fun PlanEditScreen(
     var openWorkout by remember { mutableStateOf<WoRow?>(null) }
 
     val saveEnabled = planName.isNotBlank() && cycles.isNotEmpty()
-    val saveAll: () -> Unit = {
-        onSave(existing?.plan?.id ?: 0L, buildDraft(planName.trim(), endDate, cycles))
+    // The whole tree is edited in memory; every Save button commits all of it and
+    // then steps back one level. The generated id is kept so saving again updates
+    // the same plan rather than inserting a duplicate.
+    var planId by remember { mutableStateOf(existing?.plan?.id ?: 0L) }
+    val saveThen: (() -> Unit) -> Unit = { then ->
+        onSave(planId, buildDraft(planName.trim(), endDate, cycles)) { newId ->
+            planId = newId
+            then()
+        }
     }
 
     when {
@@ -136,7 +145,8 @@ fun PlanEditScreen(
             WorkoutEditor(
                 workout = wo,
                 customExercises = customExercises,
-                onSaveAll = saveAll,
+                // Save workout → back to Edit cycle.
+                onSaveAll = { saveThen { openWorkout = null } },
                 saveEnabled = saveEnabled,
                 onBack = { openWorkout = null },
                 weeklyEnabled = weeklyEnabled,
@@ -146,7 +156,8 @@ fun PlanEditScreen(
         openCycle != null -> CycleEditor(
             cycle = openCycle!!,
             onOpenWorkout = { openWorkout = it },
-            onSaveAll = saveAll,
+            // Save cycle → back to Edit plan.
+            onSaveAll = { saveThen { openCycle = null } },
             saveEnabled = saveEnabled,
             onBack = { openCycle = null },
             weeklyEnabled = weeklyEnabled,
@@ -159,9 +170,8 @@ fun PlanEditScreen(
             onEndDate = { endDate = it },
             cycles = cycles,
             onOpenCycle = { openCycle = it },
-            onSave = {
-                onSave(existing?.plan?.id ?: 0L, buildDraft(planName.trim(), endDate, cycles))
-            },
+            // Save plan → back to the Workout plans list.
+            onSave = { saveThen { onCancel() } },
             onCancel = onCancel,
         )
     }
@@ -201,6 +211,7 @@ private fun PlanEditor(
             onValueChange = onName,
             label = { Text(stringResource(R.string.plan_name_label)) },
             singleLine = true,
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -319,6 +330,7 @@ private fun CycleEditor(
             onValueChange = { cycle.name = it },
             label = { Text(stringResource(R.string.plan_cycle_name)) },
             singleLine = true,
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -333,10 +345,18 @@ private fun CycleEditor(
         cycle.workouts.forEachIndexed { index, workout ->
             NodeCard(
                 title = workout.name.ifBlank { stringResource(R.string.plan_untitled_workout) },
-                subtitle = context.resources.getQuantityString(
-                    R.plurals.plan_exercises,
-                    workout.exercises.size, workout.exercises.size,
-                ),
+                // List the actual exercises (name + reps×sets), as in the cycle card.
+                subtitle = if (workout.exercises.isEmpty()) {
+                    stringResource(R.string.plan_no_exercises)
+                } else {
+                    workout.exercises.joinToString("\n") { ex ->
+                        if (ex.timed) {
+                            context.getString(R.string.plan_summary_seconds, ex.label, ex.seconds, ex.sets)
+                        } else {
+                            context.getString(R.string.plan_summary_reps, ex.label, ex.reps, ex.sets)
+                        }
+                    }
+                },
                 onOpen = { onOpenWorkout(workout) },
                 onRemove = { cycle.workouts.removeAt(index) },
                 // In Weekly Schedule mode, surface the assigned day on the card.
@@ -361,7 +381,7 @@ private fun CycleEditor(
             Text(stringResource(R.string.plan_add_workout))
         }
         GymButton(
-            text = stringResource(R.string.plan_save),
+            text = stringResource(R.string.plan_save_cycle),
             onClick = onSaveAll,
             enabled = saveEnabled,
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
@@ -396,6 +416,7 @@ private fun WorkoutEditor(
             onValueChange = { workout.name = it },
             label = { Text(stringResource(R.string.plan_workout_name)) },
             singleLine = true,
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -434,7 +455,7 @@ private fun WorkoutEditor(
             Text(stringResource(R.string.plan_add_exercise))
         }
         GymButton(
-            text = stringResource(R.string.plan_save),
+            text = stringResource(R.string.plan_save_workout),
             onClick = onSaveAll,
             enabled = saveEnabled,
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),

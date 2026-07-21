@@ -163,7 +163,8 @@ internal fun CycleRecordCard(
                 Spacer(Modifier.height(10.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        w.name,
+                        // Weekly Schedule surfaces the assigned day after the name.
+                        w.name + w.weekday?.let { " · ${weekdayShort(it)}" }.orEmpty(),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = if (highlighted) FontWeight.Bold else FontWeight.SemiBold,
                         color = if (highlighted) {

@@ -85,7 +85,7 @@
     <string name="settings_combo_callout">Annonce de combo en fin de série</string>
     <string name="settings_spoken_rep_count">Comptage vocal des répétitions</string>
     <string name="settings_form_check">Contrôle de la technique</string>
-    <string name="settings_form_feedback">Retour sur la technique</string>
+    <string name="settings_form_feedback">Assistant de qualité d\'exercice</string>
     <string name="settings_strict_counting">Comptage strict (répétitions correctes uniquement)</string>
     <string name="settings_sensitivity">Sensibilité</string>
     <string name="settings_form_desc">Signale par un indice les répétitions trop courtes, instables ou avec rebond. Le comptage strict fait qu\'une mauvaise répétition ne compte pas pour la série ; la sensibilité règle le niveau d\'exigence.</string>
@@ -366,7 +366,7 @@
     <string name="home_last_cycle">Dernier cycle</string>
     <string name="home_current_mission">Mission actuelle</string>
     <string name="home_no_cycles">Aucun cycle terminé pour l\'instant.</string>
-    <string name="home_no_plan">Choisissez un programme ou créez un plan d\'entraînement.</string>
+    <string name="home_no_plan">Choisissez un programme ou créez votre propre plan d\'entraînement.</string>
     <string name="cycle_skipped">Ignoré</string>
     <string name="cycle_status_active">Actif</string>
     <string name="cycle_status_completed">Terminé</string>
@@ -420,7 +420,9 @@
     <string name="stats_body_trends">Tendances des mensurations</string>
     <!-- Feedback fixes (2.0.2) -->
     <string name="camera_skip_rest">Passer le repos</string>
-    <string name="plan_save">Enregistrer le programme</string>
+    <string name="plan_save">Enregistrer le plan</string>
+    <string name="plan_save_cycle">Enregistrer le cycle</string>
+    <string name="plan_save_workout">Enregistrer la séance</string>
     <string name="statistics_title">Statistiques</string>
     <string name="stats_data_title">Données</string>
     <string name="cd_mic_muted">Micro coupé, appuyez pour réactiver</string>

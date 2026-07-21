@@ -190,11 +190,29 @@ internal fun CycleCard(
 
 /**
  * Cycle progress as coloured bars — one per workout in order, percentage inside a
- * done bar — with just the workout name (and weekday, when scheduled) underneath.
+ * done bar — with the assigned weekday above (Weekly Schedule only) and the
+ * workout name underneath.
  */
 @Composable
 internal fun CycleBars(workouts: List<com.gymgym.app.cycle.CycleWorkoutLine>) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        // Weekdays sit above the bars, in the same style as the names below.
+        if (workouts.any { it.weekday != null }) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                workouts.forEach { w ->
+                    Text(
+                        w.weekday?.let { weekdayShort(it) }.orEmpty(),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.weight(1f),
+                        maxLines = 1,
+                    )
+                }
+            }
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -230,9 +248,8 @@ internal fun CycleBars(workouts: List<com.gymgym.app.cycle.CycleWorkoutLine>) {
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             workouts.forEach { w ->
-                val wd = w.weekday?.let { " · ${weekdayShort(it)}" }.orEmpty()
                 Text(
-                    w.name + wd,
+                    w.name,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f),

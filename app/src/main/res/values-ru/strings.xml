@@ -85,7 +85,7 @@
     <string name="settings_combo_callout">Комбо-возглас в конце подхода</string>
     <string name="settings_spoken_rep_count">Озвучивание счёта повторений</string>
     <string name="settings_form_check">Контроль техники</string>
-    <string name="settings_form_feedback">Подсказки по технике</string>
+    <string name="settings_form_feedback">Помощник по качеству упражнений</string>
     <string name="settings_strict_counting">Строгий счёт (только правильные)</string>
     <string name="settings_sensitivity">Чувствительность</string>
     <string name="settings_form_desc">Отмечает подсказкой неглубокие, неустойчивые или рывковые повторения. При строгом счёте плохое повторение не засчитывается в подход; чувствительность задаёт строгость.</string>
@@ -372,7 +372,7 @@
     <string name="home_last_cycle">Последний цикл</string>
     <string name="home_current_mission">Текущая миссия</string>
     <string name="home_no_cycles">Пока нет завершённых циклов.</string>
-    <string name="home_no_plan">Выберите программу или создайте план тренировок.</string>
+    <string name="home_no_plan">Выберите программу или создайте свой план тренировок.</string>
     <string name="cycle_skipped">Пропущено</string>
     <string name="cycle_status_active">Активный</string>
     <string name="cycle_status_completed">Завершён</string>
@@ -427,6 +427,8 @@
     <!-- Feedback fixes (2.0.2) -->
     <string name="camera_skip_rest">Пропустить отдых</string>
     <string name="plan_save">Сохранить план</string>
+    <string name="plan_save_cycle">Сохранить цикл</string>
+    <string name="plan_save_workout">Сохранить тренировку</string>
     <string name="statistics_title">Статистика</string>
     <string name="stats_data_title">Данные</string>
     <string name="cd_mic_muted">Микрофон выключен, нажмите, чтобы включить</string>

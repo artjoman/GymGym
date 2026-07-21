@@ -85,7 +85,7 @@
     <string name="settings_combo_callout">Anuncio de combo al terminar la serie</string>
     <string name="settings_spoken_rep_count">Conteo de repeticiones por voz</string>
     <string name="settings_form_check">Control de técnica</string>
-    <string name="settings_form_feedback">Avisos de técnica</string>
+    <string name="settings_form_feedback">Asistente de calidad del ejercicio</string>
     <string name="settings_strict_counting">Conteo estricto (solo repeticiones correctas)</string>
     <string name="settings_sensitivity">Sensibilidad</string>
     <string name="settings_form_desc">Señala las repeticiones poco profundas, inestables o con rebote mediante un aviso. El conteo estricto hace que una repetición incorrecta no cuente para la serie; la sensibilidad define cuán estricto es.</string>
@@ -366,7 +366,7 @@
     <string name="home_last_cycle">Último ciclo</string>
     <string name="home_current_mission">Misión actual</string>
     <string name="home_no_cycles">Aún no hay ciclos completados.</string>
-    <string name="home_no_plan">Elige un programa o crea un plan de entrenamiento.</string>
+    <string name="home_no_plan">Elige un programa o crea tu propio plan de entrenamiento.</string>
     <string name="cycle_skipped">Omitido</string>
     <string name="cycle_status_active">Activo</string>
     <string name="cycle_status_completed">Completado</string>
@@ -421,6 +421,8 @@
     <!-- Feedback fixes (2.0.2) -->
     <string name="camera_skip_rest">Saltar descanso</string>
     <string name="plan_save">Guardar plan</string>
+    <string name="plan_save_cycle">Guardar ciclo</string>
+    <string name="plan_save_workout">Guardar entrenamiento</string>
     <string name="statistics_title">Estadísticas</string>
     <string name="stats_data_title">Datos</string>
     <string name="cd_mic_muted">Micrófono silenciado, toca para activar</string>

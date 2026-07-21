@@ -327,7 +327,6 @@ private fun AppRoot(
                 onNew = { navController.navigate("${Routes.PLAN_EDIT}/0") },
                 onDelete = viewModel::deletePlan,
                 onSetActive = viewModel::setActivePlan,
-                onStart = ::startPlan,
                 onUseProgram = { program ->
                     // Activating a preset program creates/assigns it as the active plan.
                     viewModel.useProgram(program)
@@ -354,10 +353,9 @@ private fun AppRoot(
                 PlanEditScreen(
                     existing = existing,
                     customExercises = customExercises,
-                    onSave = { id, draft ->
-                        viewModel.savePlan(id, draft)
-                        navController.popBackStack()
-                    },
+                    // Persist only — the editor decides where to go next (Save
+                    // workout → cycle, Save cycle → plan, Save plan → the list).
+                    onSave = { id, draft, onSaved -> viewModel.savePlan(id, draft, onSaved) },
                     onCancel = { navController.popBackStack() },
                     weeklyEnabled = editProfile.trainingMode == TrainingMode.WEEKLY_SCHEDULE,
                 )
@@ -377,6 +375,7 @@ private fun AppRoot(
             val bodyMeasurements by viewModel.bodyMeasurements.collectAsState()
             val customExercises by viewModel.customExercises.collectAsState()
             val cycles by viewModel.cycleSummaries.collectAsState()
+            val statWeekdays by viewModel.workoutWeekdays.collectAsState()
             val customNames = customExercises.associate { ExerciseRef.forCustom(it.id) to it.name }
             StatisticsScreen(
                 sessions = sessions,
@@ -388,6 +387,7 @@ private fun AppRoot(
                 cycles = cycles,
                 initialTab = initialTab,
                 expandLastCycle = expandFirst,
+                workoutWeekdays = statWeekdays,
             )
         }
         composable(

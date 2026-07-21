@@ -85,7 +85,7 @@
     <string name="settings_combo_callout">هتاف الكومبو عند انتهاء المجموعة</string>
     <string name="settings_spoken_rep_count">نطق عدّ التكرارات</string>
     <string name="settings_form_check">فحص الأداء</string>
-    <string name="settings_form_feedback">ملاحظات الأداء</string>
+    <string name="settings_form_feedback">مساعد جودة التمرين</string>
     <string name="settings_strict_counting">عدّ صارم (الصحيحة فقط)</string>
     <string name="settings_sensitivity">الحساسية</string>
     <string name="settings_form_desc">يضع علامة على التكرارات السطحية أو غير الثابتة أو المندفعة عبر تنبيه. العدّ الصارم يجعل التكرار السيئ لا يُحتسب ضمن المجموعة؛ والحساسية تحدد مدى الصرامة.</string>
@@ -378,7 +378,7 @@
     <string name="home_last_cycle">آخر دورة</string>
     <string name="home_current_mission">المهمة الحالية</string>
     <string name="home_no_cycles">لا توجد دورات مكتملة بعد.</string>
-    <string name="home_no_plan">اختر برنامجًا أو أنشئ خطة تمرين.</string>
+    <string name="home_no_plan">اختر برنامجًا أو أنشئ خطة تمرين خاصة بك.</string>
     <string name="cycle_skipped">تم التخطي</string>
     <string name="cycle_status_active">نشط</string>
     <string name="cycle_status_completed">مكتمل</string>
@@ -433,6 +433,8 @@
     <!-- Feedback fixes (2.0.2) -->
     <string name="camera_skip_rest">تخطي الراحة</string>
     <string name="plan_save">حفظ الخطة</string>
+    <string name="plan_save_cycle">حفظ الدورة</string>
+    <string name="plan_save_workout">حفظ التمرين</string>
     <string name="statistics_title">الإحصائيات</string>
     <string name="stats_data_title">البيانات</string>
     <string name="cd_mic_muted">الميكروفون صامت، انقر لإلغاء الكتم</string>

@@ -2,6 +2,7 @@ package com.gymgym.app.data
 
 import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 /** Editable snapshots of the plan tree, before it has a database identity. */
 data class DraftPlan(
@@ -101,6 +102,9 @@ class PlanRepository(private val dao: PlanDao) {
     }
 
     suspend fun activePlanOnce(): PlanWithCycles? = dao.getActiveOnce()
+
+    /** Snapshot of all plans — used to decide whether a new plan is the user's first. */
+    suspend fun plansOnce(): List<PlanWithCycles> = plans.first()
 
     suspend fun deletePlan(id: Long) = dao.deletePlan(id)
 

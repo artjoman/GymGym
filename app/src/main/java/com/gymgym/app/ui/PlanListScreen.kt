@@ -35,7 +35,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gymgym.app.R
 import com.gymgym.app.data.PlanWithCycles
-import com.gymgym.app.exercise.ExerciseRef
 import com.gymgym.app.program.Program
 
 @Composable
@@ -45,7 +44,6 @@ fun PlanListScreen(
     onNew: () -> Unit,
     onDelete: (Long) -> Unit,
     onSetActive: (Long) -> Unit,
-    onStart: (PlanWithCycles) -> Unit,
     onUseProgram: (Program) -> Unit,
     onBack: () -> Unit,
 ) {
@@ -105,7 +103,6 @@ fun PlanListScreen(
                                     onEdit = { onEdit(plan.plan.id) },
                                     onDelete = { onDelete(plan.plan.id) },
                                     onSetActive = { onSetActive(plan.plan.id) },
-                                    onStart = { onStart(plan) },
                                 )
                             }
                         }
@@ -131,11 +128,7 @@ private fun PlanCard(
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     onSetActive: () -> Unit,
-    onStart: () -> Unit,
 ) {
-    val runnable = plan.cycles.any { c ->
-        c.workouts.any { w -> w.exercises.any { ExerciseRef.counter(it.exerciseRef) != null } }
-    }
     var confirmDelete by remember { mutableStateOf(false) }
     if (confirmDelete) {
         ConfirmDialog(
@@ -174,13 +167,7 @@ private fun PlanCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 4.dp),
             )
-            if (runnable) {
-                GymButton(
-                    text = stringResource(R.string.action_start),
-                    onClick = onStart,
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                )
-            }
+            // Workouts are started from Current mission, not from this list.
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),

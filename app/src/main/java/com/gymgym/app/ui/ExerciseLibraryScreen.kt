@@ -2,11 +2,13 @@ package com.gymgym.app.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -30,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -130,10 +133,12 @@ fun ExerciseLibraryScreen(
 @Composable
 private fun TestAction(isAiCounted: Boolean) {
     Row(verticalAlignment = Alignment.CenterVertically) {
+        // Both actions share the accent tint and icon size so Test and Rec line up.
         Icon(
             imageVector = if (isAiCounted) Icons.Rounded.PlayArrow else Icons.Rounded.FiberManualRecord,
             contentDescription = null,
-            tint = if (isAiCounted) MaterialTheme.colorScheme.primary else RecordRed,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(24.dp),
         )
         Text(
             stringResource(if (isAiCounted) R.string.library_test else R.string.library_manual_test),
@@ -143,9 +148,6 @@ private fun TestAction(isAiCounted: Boolean) {
         )
     }
 }
-
-/** Same red used for the in-workout record button. */
-private val RecordRed = androidx.compose.ui.graphics.Color(0xFFFF5A5A)
 
 @Composable
 private fun LibrarySectionLabel(text: String) {
@@ -255,6 +257,7 @@ private fun AddCustomDialog(onAdd: (String) -> Unit, onDismiss: () -> Unit) {
                 value = name,
                 onValueChange = { name = it },
                 singleLine = true,
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                 label = { Text(stringResource(R.string.library_custom_hint)) },
             )
         },

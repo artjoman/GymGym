@@ -85,7 +85,7 @@
     <string name="settings_combo_callout">Kombo paziņojums pēc piegājiena</string>
     <string name="settings_spoken_rep_count">Atkārtojumu skaitīšana balsī</string>
     <string name="settings_form_check">Tehnikas pārbaude</string>
-    <string name="settings_form_feedback">Tehnikas atgriezeniskā saite</string>
+    <string name="settings_form_feedback">Vingrinājumu kvalitātes asistents</string>
     <string name="settings_strict_counting">Stingra skaitīšana (tikai labie)</string>
     <string name="settings_sensitivity">Jutība</string>
     <string name="settings_form_desc">Ar norādi atzīmē seklus, nestabilus vai atsitienā veiktus atkārtojumus. Stingra skaitīšana liek sliktam atkārtojumam neieskaitīties piegājienā; jutība nosaka, cik stingri.</string>
@@ -369,7 +369,7 @@
     <string name="home_last_cycle">Pēdējais cikls</string>
     <string name="home_current_mission">Pašreizējā misija</string>
     <string name="home_no_cycles">Vēl nav pabeigtu ciklu.</string>
-    <string name="home_no_plan">Izvēlieties programmu vai izveidojiet treniņu plānu.</string>
+    <string name="home_no_plan">Izvēlieties programmu vai izveidojiet savu treniņu plānu.</string>
     <string name="cycle_skipped">Izlaists</string>
     <string name="cycle_status_active">Aktīvs</string>
     <string name="cycle_status_completed">Pabeigts</string>
@@ -424,6 +424,8 @@
     <!-- Feedback fixes (2.0.2) -->
     <string name="camera_skip_rest">Izlaist atpūtu</string>
     <string name="plan_save">Saglabāt plānu</string>
+    <string name="plan_save_cycle">Saglabāt ciklu</string>
+    <string name="plan_save_workout">Saglabāt treniņu</string>
     <string name="statistics_title">Statistika</string>
     <string name="stats_data_title">Dati</string>
     <string name="cd_mic_muted">Mikrofons izslēgts, pieskarieties, lai ieslēgtu</string>

@@ -186,6 +186,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         HomeCycles(hasActivePlan = false, lastCycle = null, currentCycle = null),
     )
 
+    /**
+     * workoutId → assigned weekday, for labelling history rows. Empty unless the
+     * profile uses Weekly Schedule, so switching to Smart cycle hides the days
+     * (the stored weekdays are untouched and come back on switching return).
+     */
+    val workoutWeekdays: StateFlow<Map<Long, Int>> = combine(
+        planRepository.plans,
+        profileRepository.profile,
+    ) { plans, profile ->
+        if (profile.trainingMode != TrainingMode.WEEKLY_SCHEDULE) {
+            emptyMap()
+        } else {
+            plans.flatMap { it.cycles }
+                .flatMap { it.workouts }
+                .mapNotNull { w -> w.workout.weekday?.let { w.workout.id to it } }
+                .toMap()
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
+
     /** Active cycle (latest) + completed cycles — for the Statistics → Cycles tab. */
     val cycleSummaries: StateFlow<List<CycleSummary>> = combine(
         planRepository.plans,
@@ -1098,8 +1117,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // --- Plan CRUD ---
 
-    fun savePlan(id: Long, draft: DraftPlan) =
-        viewModelScope.launch { planRepository.savePlan(id, draft) }
+    /**
+     * Persist a plan draft. [onSaved] receives the row id — the editor keeps it so
+     * a second save updates the same plan instead of inserting a duplicate.
+     */
+    fun savePlan(id: Long, draft: DraftPlan, onSaved: (Long) -> Unit = {}) =
+        viewModelScope.launch {
+            val isNew = id == 0L
+            val hadNoPlans = planRepository.plansOnce().isEmpty()
+            val savedId = planRepository.savePlan(id, draft)
+            // The user's very first plan becomes active automatically; later ones
+            // are activated explicitly from the plan list.
+            if (isNew && hadNoPlans) planRepository.setActivePlan(savedId)
+            onSaved(savedId)
+        }
 
     fun deletePlan(id: Long) =
         viewModelScope.launch { planRepository.deletePlan(id) }
@@ -1130,8 +1161,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 )
             },
         )
+        val hadNoPlans = planRepository.plansOnce().isEmpty()
         val id = planRepository.savePlan(0L, draft)
-        planRepository.setActivePlan(id)
+        // Only the first plan auto-activates; later programs are added inactive.
+        if (hadNoPlans) planRepository.setActivePlan(id)
     }
 
     // --- Settings & profile ---

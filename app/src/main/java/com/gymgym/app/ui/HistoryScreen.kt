@@ -41,6 +41,7 @@ fun HistoryContent(
     onOpenSession: (Long) -> Unit,
     modifier: Modifier = Modifier,
     customNames: Map<String, String> = emptyMap(),
+    workoutWeekdays: Map<Long, Int> = emptyMap(),
 ) {
     var filter by remember { mutableStateOf(WorkoutFilter()) }
     val filtered = sessions.applyFilter(filter)
@@ -73,6 +74,7 @@ fun HistoryContent(
                             expanded = expanded[cw.workout.id] == true,
                             onToggle = { expanded[cw.workout.id] = expanded[cw.workout.id] != true },
                             customNames = customNames,
+                            workoutWeekdays = workoutWeekdays,
                         )
                     }
                 }
@@ -104,6 +106,7 @@ private fun CompletedWorkoutRow(
     expanded: Boolean,
     onToggle: () -> Unit,
     customNames: Map<String, String> = emptyMap(),
+    workoutWeekdays: Map<Long, Int> = emptyMap(),
 ) {
     val context = LocalContext.current
     val w = item.workout
@@ -115,7 +118,9 @@ private fun CompletedWorkoutRow(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(w.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                    // Weekly Schedule surfaces the assigned day after the workout name.
+                    val wd = w.workoutId?.let { workoutWeekdays[it] }?.let { " \u00b7 ${weekdayShort(it)}" }.orEmpty()
+                    Text(w.name + wd, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                     Text(
                         stringResource(
                             R.string.history_meta,
