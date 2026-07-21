@@ -33,6 +33,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.gymgym.app.achievement.AchievementDef
+import com.gymgym.app.ui.AchievementOverlay
 import com.gymgym.app.ui.AppBackground
 import com.gymgym.app.ui.CameraScreen
 import com.gymgym.app.data.PlanWithCycles
@@ -232,6 +234,21 @@ private fun AppRoot(
     }
 
     val settings by viewModel.soundSettings.collectAsState()
+    // Unlock celebration, hosted above the NavHost so it fires wherever the user
+    // is — an achievement can land outside a workout (e.g. logging a measurement).
+    var celebrating by remember { mutableStateOf<AchievementDef?>(null) }
+    LaunchedEffect(Unit) {
+        viewModel.newAchievement.collect { def ->
+            if (viewModel.soundSettings.value.achievementCelebration) celebrating = def
+        }
+    }
+    LaunchedEffect(celebrating) {
+        if (celebrating != null) {
+            kotlinx.coroutines.delay(2_600)
+            celebrating = null
+        }
+    }
+
     AppBackground(
         style = settings.backgroundStyle,
         customPath = settings.customBackgroundPath,
@@ -404,8 +421,10 @@ private fun AppRoot(
         composable(Routes.PROFILE) {
             val profile by viewModel.profile.collectAsState()
             val bodyMeasurements by viewModel.bodyMeasurements.collectAsState()
+            val achievements by viewModel.achievements.collectAsState()
             val ctx = LocalContext.current
             ProfileScreen(
+                achievements = achievements,
                 profile = profile,
                 bodyMeasurements = bodyMeasurements,
                 onDisplayName = viewModel::setDisplayName,
@@ -457,6 +476,7 @@ private fun AppRoot(
                 onTrackingLostBell = viewModel::setTrackingLostBell,
                 onTrackingRegainedChime = viewModel::setTrackingRegainedChime,
                 onSetCelebration = viewModel::setSetCelebration,
+                onAchievementCelebration = viewModel::setAchievementCelebration,
                 onVoiceControl = viewModel::setVoiceControl,
                 onFormFeedback = viewModel::setFormFeedback,
                 onStrictForm = viewModel::setStrictForm,
@@ -468,5 +488,6 @@ private fun AppRoot(
             )
         }
     }
+    celebrating?.let { AchievementOverlay(achievement = it) }
     }
 }

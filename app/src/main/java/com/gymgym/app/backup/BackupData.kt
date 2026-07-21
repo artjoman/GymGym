@@ -8,14 +8,50 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class BackupData(
-    val version: Int = 4,
+    val version: Int = 5,
     val exportedAt: Long,
     val sessions: List<BackupSession> = emptyList(),
     val plans: List<BackupPlan> = emptyList(),
     val customExercises: List<BackupCustomExercise> = emptyList(),
     val bodyMeasurements: List<BackupBodyMeasurement> = emptyList(),
+    /** v5: workout history, which drives Statistics and every achievement. */
+    val completedWorkouts: List<BackupCompletedWorkout> = emptyList(),
+    /** v5: earned dates only — progress is always recomputed from history. */
+    val achievements: List<BackupAchievement> = emptyList(),
     val settings: BackupSettings = BackupSettings(),
     val profile: BackupProfile = BackupProfile(),
+)
+
+/**
+ * A finished run. Plan/cycle are stored by *name* only: ids are re-generated on
+ * import (and change whenever a plan is edited), so names are all that survives.
+ */
+@Serializable
+data class BackupCompletedWorkout(
+    val name: String,
+    val planName: String = "",
+    val cycleName: String = "",
+    val startedAt: Long,
+    val durationMs: Long,
+    val avgPercent: Int,
+    val exercises: List<BackupCompletedExercise> = emptyList(),
+)
+
+@Serializable
+data class BackupCompletedExercise(
+    val exerciseRef: String,
+    val reps: Int,
+    val goodReps: Int = 0,
+    val targetReps: Int = 0,
+    val targetSets: Int = 0,
+    val durationMs: Long = 0,
+    val position: Int = 0,
+)
+
+@Serializable
+data class BackupAchievement(
+    val id: String,
+    val unlockedAt: Long,
 )
 
 @Serializable

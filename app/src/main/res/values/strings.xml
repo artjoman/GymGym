@@ -485,4 +485,53 @@
         <item>PERFECT!</item>
         <item>BOOM!</item>
     </string-array>
+
+    <!-- Achievements -->
+    <string name="achievements_title">Achievements</string>
+    <string name="achievements_empty">No achievements yet. Finish a workout to get started.</string>
+    <string name="achievements_progress">%1$d/%2$d</string>
+    <string name="achievements_earned">Earned %1$s</string>
+    <string name="achievement_unlocked">ACHIEVEMENT!</string>
+    <string name="settings_achievements">Achievements</string>
+    <string name="settings_achievement_celebration">Celebrate achievements</string>
+    <string name="ach_first_workout">First Rep</string>
+    <string name="ach_first_workout_desc">Complete your first workout</string>
+    <string name="ach_workouts_10">Getting Serious</string>
+    <string name="ach_workouts_10_desc">Complete 10 workouts</string>
+    <string name="ach_workouts_100">Centurion</string>
+    <string name="ach_workouts_100_desc">Complete 100 workouts</string>
+    <string name="ach_workouts_1000">Iron Legend</string>
+    <string name="ach_workouts_1000_desc">Complete 1000 workouts</string>
+    <string name="ach_streak_3">On a Roll</string>
+    <string name="ach_streak_3_desc">Train 3 days in a row</string>
+    <string name="ach_streak_7">Full Week</string>
+    <string name="ach_streak_7_desc">Train 7 days in a row</string>
+    <string name="ach_streak_30">Unbreakable</string>
+    <string name="ach_streak_30_desc">Train 30 days in a row</string>
+    <string name="ach_reps_1000">Thousand Reps</string>
+    <string name="ach_reps_1000_desc">Complete 1,000 reps</string>
+    <string name="ach_reps_10000">Rep Machine</string>
+    <string name="ach_reps_10000_desc">Complete 10,000 reps</string>
+    <string name="ach_legday_3">Leg Day Streak</string>
+    <string name="ach_legday_3_desc">Train legs 3 days in a row</string>
+    <string name="ach_legday_25">Never Skip Leg Day</string>
+    <string name="ach_legday_25_desc">Complete 25 leg workouts</string>
+    <string name="ach_full_body">Full Body</string>
+    <string name="ach_full_body_desc">Train every muscle group at least once</string>
+    <string name="ach_perfect_1">Flawless</string>
+    <string name="ach_perfect_1_desc">Finish a workout at 100%</string>
+    <string name="ach_perfect_10">Perfectionist</string>
+    <string name="ach_perfect_10_desc">Finish 10 workouts at 100%</string>
+    <string name="ach_goodreps_500">Textbook Form</string>
+    <string name="ach_goodreps_500_desc">Complete 500 good-form reps</string>
+    <string name="ach_cycle_1">Cycle Complete</string>
+    <string name="ach_cycle_1_desc">Finish a full training cycle</string>
+    <string name="ach_cycle_10">Cycle Master</string>
+    <string name="ach_cycle_10_desc">Finish 10 training cycles</string>
+    <string name="ach_early_bird">Early Bird</string>
+    <string name="ach_early_bird_desc">Start 10 workouts before 7am</string>
+    <string name="ach_night_owl">Night Owl</string>
+    <string name="ach_night_owl_desc">Start 10 workouts after 9pm</string>
+    <string name="ach_measure_7">Progress Tracker</string>
+    <string name="ach_measure_7_desc">Log body measurements 7 days in a row</string>
 </resources>

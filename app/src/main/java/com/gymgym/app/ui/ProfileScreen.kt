@@ -49,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import com.gymgym.app.R
 import com.gymgym.app.data.BodyMeasurement
 import com.gymgym.app.data.BodyMetric
+import com.gymgym.app.achievement.AchievementState
 import com.gymgym.app.profile.LengthUnit
 import com.gymgym.app.profile.Profile
 import com.gymgym.app.profile.ProfileRepository
@@ -73,6 +74,7 @@ fun ProfileScreen(
     onExport: (Uri) -> Unit,
     onImport: (Uri) -> Unit,
     onBack: () -> Unit,
+    achievements: List<AchievementState> = emptyList(),
 ) {
     val exportLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/json"),
@@ -84,7 +86,7 @@ fun ProfileScreen(
     ) { uri -> if (uri != null) pendingImport = uri }
 
     // Two tabs, switchable by tap or horizontal swipe (as in Statistics).
-    val pagerState = rememberPagerState(initialPage = 0, pageCount = { 2 })
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { 3 })
     val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier
@@ -102,6 +104,7 @@ fun ProfileScreen(
         }
         val tabLabels = listOf(
             stringResource(R.string.profile_title),
+            stringResource(R.string.achievements_title),
             stringResource(R.string.recordings_title),
         )
         TabRow(selectedTabIndex = pagerState.currentPage, modifier = Modifier.padding(top = 8.dp)) {
@@ -118,6 +121,10 @@ fun ProfileScreen(
             modifier = Modifier.weight(1f).padding(top = 12.dp),
         ) { page ->
         if (page == 1) {
+            AchievementsContent(achievements, modifier = Modifier.fillMaxSize())
+            return@HorizontalPager
+        }
+        if (page == 2) {
             RecordingsContent(modifier = Modifier.fillMaxSize())
             return@HorizontalPager
         }

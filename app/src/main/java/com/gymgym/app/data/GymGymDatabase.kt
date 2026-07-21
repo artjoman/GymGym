@@ -18,8 +18,9 @@ import androidx.room.RoomDatabase
         CompletedWorkout::class,
         CompletedExercise::class,
         WorkoutProgress::class,
+        AchievementUnlock::class,
     ],
-    version = 10,
+    version = 11,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -30,6 +31,7 @@ import androidx.room.RoomDatabase
         AutoMigration(from = 7, to = 8), // adds workout_progress table
         AutoMigration(from = 8, to = 9), // adds completed_exercise.targetReps/targetSets
         AutoMigration(from = 9, to = 10), // adds completed_workout.planName/cycleName
+        AutoMigration(from = 10, to = 11), // adds achievement_unlock table
     ],
 )
 abstract class GymGymDatabase : RoomDatabase() {
@@ -39,6 +41,7 @@ abstract class GymGymDatabase : RoomDatabase() {
     abstract fun bodyMeasurementDao(): BodyMeasurementDao
     abstract fun completedWorkoutDao(): CompletedWorkoutDao
     abstract fun workoutProgressDao(): WorkoutProgressDao
+    abstract fun achievementUnlockDao(): AchievementUnlockDao
 
     companion object {
         @Volatile private var instance: GymGymDatabase? = null

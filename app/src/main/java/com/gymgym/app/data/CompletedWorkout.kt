@@ -79,6 +79,10 @@ interface CompletedWorkoutDao {
     @Query("SELECT * FROM completed_workout ORDER BY startedAt DESC")
     fun allWithExercises(): Flow<List<CompletedWorkoutWithExercises>>
 
+    @Transaction
+    @Query("SELECT * FROM completed_workout ORDER BY startedAt DESC")
+    suspend fun allWithExercisesOnce(): List<CompletedWorkoutWithExercises>
+
     @Insert
     suspend fun insertWorkout(workout: CompletedWorkout): Long
 
@@ -92,6 +96,24 @@ interface CompletedWorkoutDao {
 class CompletedWorkoutRepository(private val dao: CompletedWorkoutDao) {
 
     val all: Flow<List<CompletedWorkoutWithExercises>> = dao.allWithExercises()
+
+    suspend fun allOnce(): List<CompletedWorkoutWithExercises> = dao.allWithExercisesOnce()
+
+    /**
+     * Backup restore. Row ids are not preserved — the parent is re-inserted first
+     * and its exercises re-parented to the new id. `avgPercent` comes from the
+     * backup as-is so a restored history reads exactly as it did before.
+     */
+    @Transaction
+    suspend fun replaceAll(items: List<CompletedWorkoutWithExercises>) {
+        dao.deleteAll()
+        items.forEach { item ->
+            val id = dao.insertWorkout(item.workout.copy(id = 0))
+            dao.insertExercises(
+                item.orderedExercises.map { it.copy(id = 0, completedWorkoutId = id) },
+            )
+        }
+    }
 
     companion object {
         /**

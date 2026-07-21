@@ -38,6 +38,8 @@ data class SoundSettings(
     val voiceControl: Boolean = false,
     /** Mute the mic during a workout: stop listening for voice commands. Persists. */
     val micMuted: Boolean = false,
+    /** Show the arcade overlay when an achievement is earned. */
+    val achievementCelebration: Boolean = true,
     val cameraFacing: CameraFacing = CameraFacing.BACK,
     val accentTheme: AccentTheme = AccentTheme.AMBER,
     val backgroundStyle: BackgroundStyle = BackgroundStyle.GYM_AMBER,
@@ -77,6 +79,7 @@ class SettingsRepository(context: Context) {
             setCelebration = prefs[SET_CELEBRATION] ?: true,
             voiceControl = prefs[VOICE_CONTROL] ?: false,
             micMuted = prefs[MIC_MUTED] ?: false,
+            achievementCelebration = prefs[ACHIEVEMENT_CELEBRATION] ?: true,
             cameraFacing = prefs[CAMERA_FACING]
                 ?.let { stored -> CameraFacing.entries.find { it.name == stored } }
                 ?: CameraFacing.BACK,
@@ -116,6 +119,9 @@ class SettingsRepository(context: Context) {
 
     suspend fun setMicMuted(value: Boolean) =
         dataStore.edit { it[MIC_MUTED] = value }
+
+    suspend fun setAchievementCelebration(value: Boolean) =
+        dataStore.edit { it[ACHIEVEMENT_CELEBRATION] = value }
 
     suspend fun setCameraFacing(facing: CameraFacing) =
         dataStore.edit { it[CAMERA_FACING] = facing.name }
@@ -179,6 +185,7 @@ class SettingsRepository(context: Context) {
         val SET_CELEBRATION = booleanPreferencesKey("set_celebration")
         val VOICE_CONTROL = booleanPreferencesKey("voice_control")
         val MIC_MUTED = booleanPreferencesKey("mic_muted")
+        val ACHIEVEMENT_CELEBRATION = booleanPreferencesKey("achievement_celebration")
         val CAMERA_FACING = stringPreferencesKey("camera_facing")
         val ACCENT_THEME = stringPreferencesKey("accent_theme")
         val BACKGROUND_STYLE = stringPreferencesKey("background_style")

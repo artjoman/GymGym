@@ -3,6 +3,22 @@
 User-facing release notes for GymGym, newest first. Updated on every version
 bump with the changes made since the previous release (see AGENTS.md).
 
+## 2.1.0 (versionCode 18)
+
+- **Achievements.** 20 badges earned from what you already train — workout
+  totals, day streaks, rep milestones, leg-day consistency, full-body coverage,
+  100% workouts, completed cycles, and early-morning / late-night sessions.
+  Find them under **Profile → Achievements**, with the earned date on the ones
+  you have and a progress count on the ones you don't.
+- Earning one pops an **arcade celebration** wherever you are in the app — after
+  a workout, or the moment a measurement streak lands. Turn it off under
+  **Settings → Achievements** if you'd rather it stayed quiet.
+- Badges you already earned before this update are credited on first launch,
+  without a wall of pop-ups.
+- **Backup now includes your workout history** (and your achievement dates), so
+  moving to a new device keeps Statistics and your badges intact. Older backup
+  files still import.
+
 ## 2.0.8 (versionCode 17)
 
 - New **app icon** — the GymGym mascot.

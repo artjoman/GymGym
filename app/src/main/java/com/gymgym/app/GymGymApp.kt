@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.gymgym.app.ads.AdManager
 import com.gymgym.app.ads.provideAdManager
+import com.gymgym.app.data.AchievementUnlockRepository
 import com.gymgym.app.data.BodyMeasurementRepository
 import com.gymgym.app.data.CompletedWorkoutRepository
 import com.gymgym.app.data.CustomExerciseRepository
@@ -42,6 +43,10 @@ class AppContainer(app: Application) {
 
     val workoutProgressRepository: WorkoutProgressRepository by lazy {
         WorkoutProgressRepository(database.workoutProgressDao())
+    }
+
+    val achievementUnlockRepository: AchievementUnlockRepository by lazy {
+        AchievementUnlockRepository(database.achievementUnlockDao())
     }
 
     // Real ads on the free flavor; a no-op on paid (see provideAdManager).

@@ -79,6 +79,7 @@ fun SettingsScreen(
     onTrackingLostBell: (Boolean) -> Unit,
     onTrackingRegainedChime: (Boolean) -> Unit,
     onSetCelebration: (Boolean) -> Unit,
+    onAchievementCelebration: (Boolean) -> Unit,
     onVoiceControl: (Boolean) -> Unit,
     onFormFeedback: (Boolean) -> Unit,
     onStrictForm: (Boolean) -> Unit,
@@ -178,6 +179,15 @@ fun SettingsScreen(
                 Text(stringResource(mode.labelRes()))
             }
         }
+        HorizontalDivider()
+
+        Text(stringResource(R.string.settings_achievements), style = MaterialTheme.typography.titleMedium)
+        SwitchRow(
+            label = stringResource(R.string.settings_achievement_celebration),
+            checked = settings.achievementCelebration,
+            enabled = true,
+            onChange = onAchievementCelebration,
+        )
         HorizontalDivider()
 
         Text(stringResource(R.string.settings_form_check), style = MaterialTheme.typography.titleMedium)

@@ -11,6 +11,10 @@ import com.gymgym.app.GymGymApp
 import com.gymgym.app.backup.BackupBodyMeasurement
 import com.gymgym.app.backup.BackupCustomExercise
 import com.gymgym.app.backup.BackupCycle
+import com.gymgym.app.backup.BackupAchievement
+import com.gymgym.app.backup.BackupCompletedExercise
+import com.gymgym.app.backup.BackupCompletedWorkout
+import com.gymgym.app.data.CompletedExercise
 import com.gymgym.app.backup.BackupData
 import com.gymgym.app.backup.BackupPlan
 import com.gymgym.app.backup.BackupWorkout
@@ -27,6 +31,9 @@ import com.gymgym.app.counter.RepCounter
 import com.gymgym.app.counter.RepFault
 import com.gymgym.app.counter.RepQuality
 import com.gymgym.app.counter.SquatCounter
+import com.gymgym.app.achievement.AchievementDef
+import com.gymgym.app.achievement.AchievementState
+import com.gymgym.app.achievement.Achievements
 import com.gymgym.app.cycle.CycleEngine
 import com.gymgym.app.cycle.CycleSummaries
 import com.gymgym.app.cycle.CycleSummary
@@ -34,6 +41,7 @@ import com.gymgym.app.cycle.DashboardState
 import com.gymgym.app.cycle.HomeCycles
 import com.gymgym.app.data.BodyMeasurement
 import com.gymgym.app.data.BodyMetric
+import com.gymgym.app.data.CompletedWorkout
 import com.gymgym.app.data.CompletedWorkoutRepository
 import com.gymgym.app.data.CompletedWorkoutWithExercises
 import com.gymgym.app.data.CustomExercise
@@ -68,7 +76,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.StateFlow
@@ -118,6 +129,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         (application as GymGymApp).container.completedWorkoutRepository
     private val workoutProgressRepository =
         (application as GymGymApp).container.workoutProgressRepository
+    private val achievementUnlockRepository =
+        (application as GymGymApp).container.achievementUnlockRepository
 
     // Created at ViewModel construction (app launch) so the TTS engine is warm
     // and ready by the time the user reaches a countdown.
@@ -218,6 +231,52 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
         CycleSummaries.cycleRecords(plans, active, progMap, completed, profile)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    /**
+     * Achievement progress, recomputed whenever any source of truth changes —
+     * completed workouts, body measurements or cycle passes. Driving it off the
+     * data flows means every trigger is covered (finishing a workout, logging a
+     * measurement, completing a cycle) without hooking each call site.
+     */
+    val achievements: StateFlow<List<AchievementState>> = combine(
+        completedWorkoutRepository.all,
+        bodyMeasurementRepository.all,
+        cycleSummaries,
+        achievementUnlockRepository.all,
+    ) { completed, measurements, cycles, unlocks ->
+        Achievements.evaluate(
+            completed = completed,
+            measurements = measurements,
+            completedCycles = cycles.size,
+            unlocks = unlocks.associate { it.id to it.unlockedAt },
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    /** Emitted when an achievement is earned *while the app is running*, for the overlay. */
+    private val _newAchievement = MutableSharedFlow<AchievementDef>(extraBufferCapacity = 8)
+    val newAchievement: SharedFlow<AchievementDef> = _newAchievement.asSharedFlow()
+
+    init {
+        // Persist unlocks as they happen. The first pass after install/upgrade
+        // backfills whatever existing history already satisfies and stays silent —
+        // otherwise a long-time user would be buried in overlays on launch.
+        viewModelScope.launch {
+            // The combined flow's first emission already holds the whole history,
+            // so it is the backfill pass — and it is silent whether or not it
+            // earned anything. Flipping the flag only when something was earned
+            // would swallow a fresh install's genuine first unlock.
+            var backfill = true
+            achievements.collect { states ->
+                val silent = backfill
+                backfill = false
+                val newlyEarned = states.filter { it.earned && it.unlockedAt == null }
+                if (newlyEarned.isEmpty()) return@collect
+                val now = System.currentTimeMillis()
+                newlyEarned.forEach { achievementUnlockRepository.unlock(it.def.id, now) }
+                if (!silent) newlyEarned.forEach { _newAchievement.tryEmit(it.def) }
+            }
+        }
+    }
 
     val customExercises: StateFlow<List<CustomExercise>> = customExerciseRepository.all
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -1211,6 +1270,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setMicMuted(value: Boolean) =
         viewModelScope.launch { settingsRepository.setMicMuted(value) }
 
+    fun setAchievementCelebration(value: Boolean) =
+        viewModelScope.launch { settingsRepository.setAchievementCelebration(value) }
+
     fun setCameraFacing(facing: CameraFacing) =
         viewModelScope.launch { settingsRepository.setCameraFacing(facing) }
 
@@ -1356,6 +1418,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 bodyMeasurements = bodyMeasurementRepository.allOnce().map {
                     BackupBodyMeasurement(it.type, it.value, it.unit, it.loggedAt)
                 },
+                completedWorkouts = completedWorkoutRepository.allOnce().map { cw ->
+                    BackupCompletedWorkout(
+                        name = cw.workout.name,
+                        planName = cw.workout.planName,
+                        cycleName = cw.workout.cycleName,
+                        startedAt = cw.workout.startedAt,
+                        durationMs = cw.workout.durationMs,
+                        avgPercent = cw.workout.avgPercent,
+                        exercises = cw.orderedExercises.map {
+                            BackupCompletedExercise(
+                                it.exerciseRef, it.reps, it.goodReps,
+                                it.targetReps, it.targetSets, it.durationMs, it.position,
+                            )
+                        },
+                    )
+                },
+                achievements = achievementUnlockRepository.allOnce().map {
+                    BackupAchievement(it.id, it.unlockedAt)
+                },
                 settings = soundSettings.value.let { s ->
                     BackupSettings(
                         s.soundsEnabled, s.countdownVoice, s.repAnnouncement.name,
@@ -1444,6 +1525,41 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     BodyMeasurement(type = it.type, value = it.value, unit = it.unit, loggedAt = it.loggedAt)
                 },
             )
+            // v4 backups carry no history — the lists default to empty and the
+            // existing history is then cleared, matching every other restore here.
+            completedWorkoutRepository.replaceAll(
+                data.completedWorkouts.map { cw ->
+                    CompletedWorkoutWithExercises(
+                        workout = CompletedWorkout(
+                            // Plans were just re-inserted with fresh ids, so the old
+                            // ids are meaningless; the name snapshots carry history.
+                            planId = null,
+                            cycleId = null,
+                            workoutId = null,
+                            name = cw.name,
+                            startedAt = cw.startedAt,
+                            durationMs = cw.durationMs,
+                            avgPercent = cw.avgPercent,
+                            planName = cw.planName,
+                            cycleName = cw.cycleName,
+                        ),
+                        exercises = cw.exercises.map {
+                            CompletedExercise(
+                                completedWorkoutId = 0,
+                                exerciseRef = it.exerciseRef,
+                                reps = it.reps,
+                                goodReps = it.goodReps.coerceIn(0, it.reps),
+                                targetReps = it.targetReps,
+                                targetSets = it.targetSets,
+                                durationMs = it.durationMs,
+                                position = it.position,
+                            )
+                        },
+                    )
+                },
+            )
+            achievementUnlockRepository.clear()
+            data.achievements.forEach { achievementUnlockRepository.unlock(it.id, it.unlockedAt) }
             with(data.settings) {
                 settingsRepository.setSoundsEnabled(soundsEnabled)
                 settingsRepository.setCountdownVoice(countdownVoice)
