@@ -15,3 +15,7 @@
 keystore.properties
 *.jks
 *.keystore
+
+# Scratch from the asset scripts
+__pycache__/
+docs/design/_badge.bmp

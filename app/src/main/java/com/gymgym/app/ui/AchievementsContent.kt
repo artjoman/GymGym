@@ -1,8 +1,8 @@
 package com.gymgym.app.ui
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,9 +33,8 @@ import com.gymgym.app.achievement.AchievementState
 /**
  * Profile → Achievements: every badge, earned first, with progress on the rest.
  *
- * Badge art is a placeholder for now — the mascot inside an accent ring, greyed
- * out while locked. Per-achievement artwork lands in a follow-up pass (see
- * `.claude/agents/asset-designer.md`); only [AchievementBadge] changes then.
+ * Each badge is its own hand-prompted medal (see `.claude/agents/asset-designer.md`),
+ * drained of colour while locked so the earned ones carry the eye.
  */
 @Composable
 fun AchievementsContent(
@@ -75,7 +74,7 @@ private fun AchievementCell(state: AchievementState) {
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        AchievementBadge(earned = state.earned)
+        AchievementBadge(badgeRes = state.def.badgeRes, earned = state.earned)
         Text(
             stringResource(state.def.nameRes),
             style = MaterialTheme.typography.labelMedium,
@@ -102,26 +101,28 @@ private fun AchievementCell(state: AchievementState) {
     }
 }
 
-/** Placeholder badge: the mascot in an accent ring, desaturated while locked. */
+/**
+ * One medal. The art is drawn full-bleed with the coin's rim on the frame edge,
+ * so clipping to a circle both rounds it off and discards the corners — no
+ * transparency needed in the source PNG.
+ */
 @Composable
-fun AchievementBadge(earned: Boolean, size: androidx.compose.ui.unit.Dp = 72.dp) {
-    val ring = if (earned) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        MaterialTheme.colorScheme.outline
-    }
+fun AchievementBadge(
+    @DrawableRes badgeRes: Int,
+    earned: Boolean,
+    size: androidx.compose.ui.unit.Dp = 72.dp,
+) {
     Box(
         modifier = Modifier
             .size(size)
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .border(3.dp, ring, CircleShape),
+            .background(MaterialTheme.colorScheme.surfaceVariant),
         contentAlignment = Alignment.Center,
     ) {
         Image(
-            painter = painterResource(R.mipmap.ic_launcher_foreground),
+            painter = painterResource(badgeRes),
             contentDescription = null,
-            modifier = Modifier.size(size).alpha(if (earned) 1f else 0.35f),
+            modifier = Modifier.size(size).alpha(if (earned) 1f else 0.4f),
             // Locked badges are drained of colour so earned ones stand out.
             colorFilter = if (earned) {
                 null

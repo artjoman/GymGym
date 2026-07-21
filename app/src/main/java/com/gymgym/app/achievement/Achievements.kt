@@ -1,5 +1,6 @@
 package com.gymgym.app.achievement
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.gymgym.app.R
 import com.gymgym.app.data.BodyMeasurement
@@ -15,6 +16,7 @@ data class AchievementDef(
     val id: String,
     @StringRes val nameRes: Int,
     @StringRes val descRes: Int,
+    @DrawableRes val badgeRes: Int,
     val target: Int,
 )
 
@@ -48,26 +50,26 @@ object Achievements {
     // --- Catalogue -----------------------------------------------------------
 
     val ALL: List<AchievementDef> = listOf(
-        AchievementDef("first_workout", R.string.ach_first_workout, R.string.ach_first_workout_desc, 1),
-        AchievementDef("workouts_10", R.string.ach_workouts_10, R.string.ach_workouts_10_desc, 10),
-        AchievementDef("workouts_100", R.string.ach_workouts_100, R.string.ach_workouts_100_desc, 100),
-        AchievementDef("workouts_1000", R.string.ach_workouts_1000, R.string.ach_workouts_1000_desc, 1000),
-        AchievementDef("streak_3", R.string.ach_streak_3, R.string.ach_streak_3_desc, 3),
-        AchievementDef("streak_7", R.string.ach_streak_7, R.string.ach_streak_7_desc, 7),
-        AchievementDef("streak_30", R.string.ach_streak_30, R.string.ach_streak_30_desc, 30),
-        AchievementDef("reps_1000", R.string.ach_reps_1000, R.string.ach_reps_1000_desc, 1000),
-        AchievementDef("reps_10000", R.string.ach_reps_10000, R.string.ach_reps_10000_desc, 10_000),
-        AchievementDef("legday_3", R.string.ach_legday_3, R.string.ach_legday_3_desc, 3),
-        AchievementDef("legday_25", R.string.ach_legday_25, R.string.ach_legday_25_desc, 25),
-        AchievementDef("full_body", R.string.ach_full_body, R.string.ach_full_body_desc, Category.entries.size),
-        AchievementDef("perfect_1", R.string.ach_perfect_1, R.string.ach_perfect_1_desc, 1),
-        AchievementDef("perfect_10", R.string.ach_perfect_10, R.string.ach_perfect_10_desc, 10),
-        AchievementDef("goodreps_500", R.string.ach_goodreps_500, R.string.ach_goodreps_500_desc, 500),
-        AchievementDef("cycle_1", R.string.ach_cycle_1, R.string.ach_cycle_1_desc, 1),
-        AchievementDef("cycle_10", R.string.ach_cycle_10, R.string.ach_cycle_10_desc, 10),
-        AchievementDef("early_bird", R.string.ach_early_bird, R.string.ach_early_bird_desc, 10),
-        AchievementDef("night_owl", R.string.ach_night_owl, R.string.ach_night_owl_desc, 10),
-        AchievementDef("measure_streak_7", R.string.ach_measure_7, R.string.ach_measure_7_desc, 7),
+        AchievementDef("first_workout", R.string.ach_first_workout, R.string.ach_first_workout_desc, R.drawable.badge_first_workout, 1),
+        AchievementDef("workouts_10", R.string.ach_workouts_10, R.string.ach_workouts_10_desc, R.drawable.badge_workouts_10, 10),
+        AchievementDef("workouts_100", R.string.ach_workouts_100, R.string.ach_workouts_100_desc, R.drawable.badge_workouts_100, 100),
+        AchievementDef("workouts_1000", R.string.ach_workouts_1000, R.string.ach_workouts_1000_desc, R.drawable.badge_workouts_1000, 1000),
+        AchievementDef("streak_3", R.string.ach_streak_3, R.string.ach_streak_3_desc, R.drawable.badge_streak_3, 3),
+        AchievementDef("streak_7", R.string.ach_streak_7, R.string.ach_streak_7_desc, R.drawable.badge_streak_7, 7),
+        AchievementDef("streak_30", R.string.ach_streak_30, R.string.ach_streak_30_desc, R.drawable.badge_streak_30, 30),
+        AchievementDef("reps_1000", R.string.ach_reps_1000, R.string.ach_reps_1000_desc, R.drawable.badge_reps_1000, 1000),
+        AchievementDef("reps_10000", R.string.ach_reps_10000, R.string.ach_reps_10000_desc, R.drawable.badge_reps_10000, 10_000),
+        AchievementDef("legday_3", R.string.ach_legday_3, R.string.ach_legday_3_desc, R.drawable.badge_legday_3, 3),
+        AchievementDef("legday_25", R.string.ach_legday_25, R.string.ach_legday_25_desc, R.drawable.badge_legday_25, 25),
+        AchievementDef("full_body", R.string.ach_full_body, R.string.ach_full_body_desc, R.drawable.badge_full_body, Category.entries.size),
+        AchievementDef("perfect_1", R.string.ach_perfect_1, R.string.ach_perfect_1_desc, R.drawable.badge_perfect_1, 1),
+        AchievementDef("perfect_10", R.string.ach_perfect_10, R.string.ach_perfect_10_desc, R.drawable.badge_perfect_10, 10),
+        AchievementDef("goodreps_500", R.string.ach_goodreps_500, R.string.ach_goodreps_500_desc, R.drawable.badge_goodreps_500, 500),
+        AchievementDef("cycle_1", R.string.ach_cycle_1, R.string.ach_cycle_1_desc, R.drawable.badge_cycle_1, 1),
+        AchievementDef("cycle_10", R.string.ach_cycle_10, R.string.ach_cycle_10_desc, R.drawable.badge_cycle_10, 10),
+        AchievementDef("early_bird", R.string.ach_early_bird, R.string.ach_early_bird_desc, R.drawable.badge_early_bird, 10),
+        AchievementDef("night_owl", R.string.ach_night_owl, R.string.ach_night_owl_desc, R.drawable.badge_night_owl, 10),
+        AchievementDef("measure_streak_7", R.string.ach_measure_7, R.string.ach_measure_7_desc, R.drawable.badge_measure_7, 7),
     )
 
     // --- Evaluation ----------------------------------------------------------

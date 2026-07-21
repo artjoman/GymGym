@@ -10,6 +10,10 @@ bump with the changes made since the previous release (see AGENTS.md).
   100% workouts, completed cycles, and early-morning / late-night sessions.
   Find them under **Profile → Achievements**, with the earned date on the ones
   you have and a progress count on the ones you don't.
+- Every badge is its own hand-drawn medal starring the GymGym mascot, played for
+  laughs — jelly legs the day after leg day, juggling a week's worth of
+  dumbbells, a crown and a throne of weight plates. Locked ones sit in
+  greyscale until you earn them.
 - Earning one pops an **arcade celebration** wherever you are in the app — after
   a workout, or the moment a measurement streak lands. Turn it off under
   **Settings → Achievements** if you'd rather it stayed quiet.

@@ -76,7 +76,7 @@ fun AchievementOverlay(
                     alpha = (t * 3f).coerceAtMost(1f)
                 },
         ) {
-            AchievementBadge(earned = true, size = 120.dp)
+            AchievementBadge(badgeRes = achievement.badgeRes, earned = true, size = 120.dp)
             OutlinedArcadeText(stringResource(R.string.achievement_unlocked), 30.sp)
             OutlinedArcadeText(stringResource(achievement.nameRes), 22.sp)
             Text(

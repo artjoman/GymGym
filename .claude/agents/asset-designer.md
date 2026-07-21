@@ -31,11 +31,24 @@ simple geometric icons).
 Nano Banana is a **still-image** model. Motion is frame-by-frame sequences
 played as an Android animation — never assume a video/motion model.
 
-**There is no in-repo API for Nano Banana.** Generation happens outside the
-repo. Your job is to author the exact prompt, the reference anchoring, and the
-post-processing pipeline so results drop straight in — then do the cropping,
-resizing and wiring once the image comes back. Say so plainly rather than
-silently substituting hand-drawn art.
+**You can call Nano Banana directly — do it.** The Gemini image API is reachable
+from this machine with the `GEMINI_API_KEY` in the user's `~/.zshrc`. Never claim
+generation is impossible and never quietly substitute hand-drawn art.
+
+```
+model:  gemini-3-pro-image          endpoint: v1beta/models/{model}:generateContent
+auth:   header  x-goog-api-key: $GEMINI_API_KEY
+body:   contents[0].parts = [{text: prompt}, {inline_data: {mime_type, data: <base64 ref image>}}]
+        generationConfig.responseModalities = ["IMAGE"]
+        generationConfig.imageConfig = {aspectRatio: "1:1"|"16:9", imageSize: "1K"|"2K"|"4K"}
+```
+
+Two environment quirks that will waste a cycle if you forget them:
+- The key is exported from `~/.zshrc`, which only runs for **interactive** shells
+  — invoke via `zsh -lic`, not `zsh -lc`, or the call 403s as an unregistered
+  caller. Never echo the key.
+- This Python has no CA certificates, so `urllib` fails TLS verification. Let
+  **curl** do the HTTPS and keep Python for building/parsing the JSON.
 
 ### High-definition rules
 
@@ -231,6 +244,29 @@ busy background, background pattern, extra characters, extra limbs, deformed
 hands, cropped head, cropped feet, misspelled text, gibberish text, watermark,
 signature, UI mockup, phone frame, border, rounded corners
 ```
+
+### Achievement badges
+
+The 20 medals in `res/drawable-nodpi/badge_<id>.png` (ids from
+`achievement/Achievements.kt`). Rules that make the set cohere:
+
+- **One shared medal frame, verbatim in every prompt** — full-bleed circle whose
+  rim touches all four edges, then black rim ring → thin yellow gap → thin black
+  ring → flat `#FFBE0A` face. Only the gag inside the face changes.
+- **Full-bleed, not transparent.** The app clips the bitmap to a circle
+  (`AchievementBadge`), so the corners are discarded and the source needs no
+  alpha — which is what makes an opaque generative model usable here. Do not ask
+  for a coin floating on a background; it will show a ring after clipping.
+- **Caricature is the brief**: exaggerated expressions and proportions, comic
+  sweat and motion lines. Reppo need not wink — the gag sets the expression.
+- **No text in the art.** Names are localized and drawn by the app beneath the
+  badge; generated lettering is unreliable and cannot be translated.
+- **Post-process** with `fit_badges.py`: detect the coin's bounding box, crop to
+  it (the model leaves a margin, which would survive as a pale rim), area-average
+  down to 512px, and emit a **median-cut indexed PNG**. Flat vector art with a
+  64-colour palette is visually identical to truecolour at roughly a fifth of the
+  size — 263 KB → 56 KB per badge.
+- Masters stay in `docs/design/masters/badges/`.
 
 ### Callout / shoutout assets
 
