@@ -3,6 +3,23 @@
 User-facing release notes for GymGym, newest first. Updated on every version
 bump with the changes made since the previous release (see AGENTS.md).
 
+## 2.0.7 (versionCode 16)
+
+- Weekdays are shown wherever a workout appears when **Weekly schedule** is on —
+  above the progress bars on Home, and after the workout name in the cycle card,
+  the execution screen, Statistics → Cycles and Statistics → Workouts. Switching
+  to Smart cycle hides them; switching back restores them.
+- Editing a cycle now lists each workout's actual exercises (name, reps × sets)
+  instead of just a count.
+- Clearer saving: **Save workout** returns to the cycle, **Save cycle** to the
+  plan, and **Save plan** to your plans list.
+- Only your **first** workout plan is activated automatically; later plans are
+  added without taking over. The per-plan Start button is gone — start workouts
+  from Current mission.
+- Names (display name, custom exercise, plan, cycle, workout) now auto-capitalize.
+- "Form feedback" is now **Exercise quality assistant**.
+- The 🔴 Rec button in the Exercise library matches the Test button's styling.
+
 ## 2.0.6 (versionCode 15)
 
 - Completed cycles are now kept forever: editing or deleting a workout plan no
