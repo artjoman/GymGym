@@ -3,6 +3,19 @@
 User-facing release notes for GymGym, newest first. Updated on every version
 bump with the changes made since the previous release (see AGENTS.md).
 
+## 2.0.8 (versionCode 17)
+
+- New **app icon** — the GymGym mascot.
+- The app now opens in the **yellow** colour scheme by default, matching the icon.
+  (If you've already picked a scheme, yours is kept.)
+- **Current mission** is rebuilt for long cycles: the cycle is a compact bar strip
+  with the weekday above each bar, and you swipe between workouts instead of
+  scrolling one huge card.
+- New workout actions on that screen: **Start** and **Skip** for the current
+  workout, and **Make next** to bring any future or skipped workout forward —
+  the rest keep their order and each takes on its new slot's weekday.
+- **Skip** now asks for confirmation before skipping.
+
 ## 2.0.7 (versionCode 16)
 
 - Weekdays are shown wherever a workout appears when **Weekly schedule** is on —
