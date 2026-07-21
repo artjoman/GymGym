@@ -39,8 +39,8 @@ data class SoundSettings(
     /** Mute the mic during a workout: stop listening for voice commands. Persists. */
     val micMuted: Boolean = false,
     val cameraFacing: CameraFacing = CameraFacing.BACK,
-    val accentTheme: AccentTheme = AccentTheme.EMERALD,
-    val backgroundStyle: BackgroundStyle = BackgroundStyle.GYM_EMERALD,
+    val accentTheme: AccentTheme = AccentTheme.AMBER,
+    val backgroundStyle: BackgroundStyle = BackgroundStyle.GYM_AMBER,
     val customBackgroundPath: String? = null,
     /** Show live form feedback (shallow / too-fast cues) during a workout. */
     val formFeedback: Boolean = true,
@@ -82,10 +82,10 @@ class SettingsRepository(context: Context) {
                 ?: CameraFacing.BACK,
             accentTheme = prefs[ACCENT_THEME]
                 ?.let { stored -> AccentTheme.entries.find { it.name == stored } }
-                ?: AccentTheme.EMERALD,
+                ?: AccentTheme.AMBER,
             backgroundStyle = prefs[BACKGROUND_STYLE]
                 ?.let { stored -> BackgroundStyle.entries.find { it.name == stored } }
-                ?: BackgroundStyle.GYM_EMERALD,
+                ?: BackgroundStyle.GYM_AMBER,
             customBackgroundPath = prefs[CUSTOM_BG_PATH],
             formFeedback = prefs[FORM_FEEDBACK] ?: true,
             strictForm = prefs[STRICT_FORM] ?: false,

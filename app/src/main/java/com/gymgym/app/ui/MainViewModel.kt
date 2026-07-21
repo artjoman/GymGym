@@ -1441,13 +1441,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     CameraFacing.entries.find { it.name == cameraFacing } ?: CameraFacing.BACK,
                 )
                 settingsRepository.setAccentTheme(
-                    AccentTheme.entries.find { it.name == accentTheme } ?: AccentTheme.EMERALD,
+                    AccentTheme.entries.find { it.name == accentTheme } ?: AccentTheme.AMBER,
                 )
                 // CUSTOM can't restore (the image file isn't in the backup) → fall back.
                 val bg = BackgroundStyle.entries.find { it.name == backgroundStyle }
-                    ?: BackgroundStyle.GYM_EMERALD
+                    ?: BackgroundStyle.GYM_AMBER
                 settingsRepository.setBackgroundStyle(
-                    if (bg == BackgroundStyle.CUSTOM) BackgroundStyle.GYM_EMERALD else bg,
+                    if (bg == BackgroundStyle.CUSTOM) BackgroundStyle.GYM_AMBER else bg,
                 )
                 settingsRepository.setFormFeedback(formFeedback)
                 settingsRepository.setStrictForm(strictForm)

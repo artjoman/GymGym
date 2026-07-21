@@ -10,17 +10,16 @@ import androidx.compose.ui.graphics.luminance
 import com.gymgym.app.settings.AccentTheme
 
 // Default brand accent + a premium near-black surface set. The app commits to a
-// dark theme; only the accent changes with the selected color scheme.
-val BrandGreen = Color(0xFF7FE0A0)
-val BrandGreenDeep = Color(0xFF1B6B3A)
-val NeonCyan = Color(0xFF35E0FF)
-val NeonMagenta = Color(0xFFFF3DAE)
+// dark theme; only the accent changes with the selected color scheme. Amber is
+// the brand default, matching the launcher icon.
+val BrandAmber = Color(0xFFFFC24B)
+val BrandAmberDeep = Color(0xFF9A6A12)
 
 /** Accent trio exposed to components (buttons, wordmark) that draw gradients. */
 data class Brand(val accent: Color, val accentDeep: Color, val onAccent: Color)
 
 val LocalBrand = staticCompositionLocalOf {
-    Brand(BrandGreen, BrandGreenDeep, Color(0xFF06210F))
+    Brand(BrandAmber, BrandAmberDeep, Color(0xFF08130C))
 }
 
 /** Legible foreground for text/icons sitting on the accent fill. */
@@ -46,7 +45,7 @@ private fun schemeFor(accent: Color, deep: Color) = darkColorScheme(
 
 @Composable
 fun GymGymTheme(
-    accent: AccentTheme = AccentTheme.EMERALD,
+    accent: AccentTheme = AccentTheme.AMBER,
     content: @Composable () -> Unit,
 ) {
     val accentColor = Color(accent.accent)
