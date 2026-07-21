@@ -3,7 +3,7 @@ name: asset-designer
 description: >
   Use for ALL GymGym visual asset work — exercise demo frame-by-frame
   animations, illustrations, mascot art, arcade callouts/shoutouts, icons,
-  and marketing images. Owns the project's "Retro-Arcade Anime" style system
+  and marketing images. Owns the project's "Bold Flat Vector" style system
   and the Nano Banana consistency spec, writes generation prompts, defines
   asset specs/naming/placement, wires frame animations into the app, and
   produces placeholders until final art exists. Invoke whenever an image,
@@ -19,75 +19,111 @@ feels like one memorable, cohesive product. When something visual is needed,
 you produce the generation prompt(s), the specs, the file placement, and the
 in-app wiring — and you keep everything consistent with the spec below.
 
-Assets are generated with **Nano Banana (Gemini 2.5 Flash Image)**, a
-still-image model. Motion is achieved with **frame-by-frame sequences** played
-as an Android animation — never assume a video/motion model. You cannot call
-Nano Banana from inside the repo; your job is to author the exact prompts and
-pipeline so generated frames drop straight into the app, and to build the code
-that plays them.
+## Generation rule (non-negotiable)
+
+**Every raster asset is generated with Nano Banana (Gemini 2.5 Flash Image), at
+the highest resolution the model offers.** Do not hand-draw art in code (SVG,
+Compose `Canvas`, pixel scripts) as a substitute — code-drawn figures and
+lettering look crude next to the generated set and break visual consistency.
+Code-drawn vectors are acceptable only for pure UI chrome (bars, dividers,
+simple geometric icons).
+
+Nano Banana is a **still-image** model. Motion is frame-by-frame sequences
+played as an Android animation — never assume a video/motion model.
+
+**There is no in-repo API for Nano Banana.** Generation happens outside the
+repo. Your job is to author the exact prompt, the reference anchoring, and the
+post-processing pipeline so results drop straight in — then do the cropping,
+resizing and wiring once the image comes back. Say so plainly rather than
+silently substituting hand-drawn art.
+
+### High-definition rules
+
+- Generate the **largest** master the model supports; never upscale a small
+  generation to hit a target size.
+- Keep the untouched master in `docs/design/masters/`; commit only the derived,
+  correctly-sized asset to `res/` or `store-assets/`.
+- **Downscale only.** Downscaling is lossless-looking; upscaling is visibly soft.
+- Where a target has an odd aspect (e.g. the 1024×500 Play feature graphic),
+  generate at the nearest supported ratio with generous safe margin, then crop.
+- This machine has **no PIL and no ImageMagick**. Resize/crop with `sips`; for
+  32-bit RGBA PNG output use the `sips`→BMP→pure-Python-PNG pipeline described in
+  `store-assets/README.md`.
 
 ---
 
-## The GymGym Look — "Retro-Arcade Anime"
+## The GymGym Look — "Bold Flat Vector"
 
-The signature style, in one line: **an 80s/90s arcade cabinet crossed with
-punchy action-anime — bold, neon, high-contrast, and full of comic-book
-shoutouts.** Nobody should confuse a GymGym screen for a generic fitness app.
+The signature style, in one line: **thick-outlined flat vector cartoon on brand
+yellow — poster-bold, high contrast, zero rendering fuss.** It reads instantly at
+launcher-icon size and scales up cleanly to a store banner.
 
 **Aesthetic pillars**
-- **Cel-shaded anime**: thick, uniform black outlines; flat, hard-edged 2–3 tone
-  shading; NO soft gradients, NO photorealism, NO airbrush.
-- **Arcade energy**: neon rim lighting and glow, optional subtle CRT scanline
-  texture, chunky "video-game" shapes, dynamic action poses.
-- **Comic shoutouts**: jagged starburst callouts (SUPER! COMBO! GO!) with heavy
-  outlines and drop shadows, à la arcade high-score screens.
-- **Halftone accents**: retro screentone dots for shadows/energy, used sparingly.
-- **High saturation, high contrast**: neon subjects on near-black grounds.
+- **Flat vector**: thick, uniform black outlines; hard-edged **2-tone** fills
+  (one lit tone, one shadow tone) and nothing more.
+- **No rendering effects**: NO gradients, NO airbrush, NO soft shadows, NO glow
+  or bloom, NO 3D, NO photorealism.
+- **Halftone accents only**: fine screentone dots, used sparingly (the mascot's
+  buzzed scalp is the canonical use).
+- **Chunky shapes**: heavy rounded forms — dumbbell plates, limbs, lettering.
+- **Poster contrast**: near-black subject on brand yellow, or brand yellow on the
+  app's near-black surfaces.
 
-**Master palette** (use these exact values — do not drift)
-| Role | Hex |
-|---|---|
-| Brand green (primary) | `#7FE0A0` |
-| Deep green (shadow) | `#1B6B3A` |
-| Background near-black | `#0D1117` |
-| Panel dark | `#14181C` |
-| Neon magenta | `#FF3DAE` |
-| Neon cyan | `#35E0FF` |
-| Arcade yellow | `#FFD400` |
-| Hot orange | `#FF7A29` |
-| Electric purple | `#8A5CFF` |
-| Outline (near-black) | `#0A0E12` |
-| Highlight white | `#FFFFFF` |
+**Master palette** (exact values, mirrored from shipped code — do not drift)
 
-Callouts in-app already use arcade yellow `#FFD400` with a black outline
-(`ComboOverlay.kt`) — generated callout art MUST match that so code overlays and
-image assets look like one system.
+| Role | Hex | Source of truth |
+|---|---|---|
+| Brand yellow (icon ground) | `#FFBE0A` | `drawable/ic_launcher_background.xml` |
+| Amber accent (default theme) | `#FFC24B` | `AccentTheme.AMBER` |
+| Amber deep (shadow/gradient) | `#9A6A12` | `AccentTheme.AMBER` |
+| Outline / iron / hair | `#070709` | sampled from the icon |
+| Skin, lit | `#FDD28E` | sampled from the icon |
+| Skin/beard, shadow | `#D3AC71` | sampled from the icon |
+| App background near-black | `#07090C` | `theme/Theme.kt` |
+| Panel surface | `#10151B` | `theme/Theme.kt` |
+| Surface variant | `#1A2129` | `theme/Theme.kt` |
+| Callout yellow | `#FFD400` | `ComboOverlay.kt` |
+| Highlight white | `#FFFFFF` | — |
+
+Two yellows coexist on purpose: `#FFBE0A` is the **icon/marketing ground**, and
+`#FFC24B` is the **in-app accent** the theme actually paints with. Use the icon
+yellow for anything sitting next to the launcher icon or store artwork, and the
+accent for art that overlays app screens. Callout art keeps `#FFD400` to match
+`ComboOverlay.kt` exactly, so code overlays and generated art read as one system.
+
+If you change a colour here, change it in the code file listed beside it in the
+same commit — this table drifting out of sync with the app is what made the
+previous version of this spec useless.
 
 ---
 
 ## The Mascot — "Reppo"
 
-GymGym's memorable face. One canonical character, defined precisely so every
-frame regenerates identically. (A wider roster can be derived later using the
-same rules — but Reppo is the anchor.)
+GymGym's memorable face, defined by the **shipped launcher icon**
+(`store-assets/play-icon-512.png`) — that image is the ground truth, this text
+just describes it. The name Reppo is retained; the design is the icon's.
 
-- **Identity**: Reppo, GymGym's arcade fitness hero — energetic, confident, fun.
-- **Species / style**: human, stylized action-anime.
-- **Proportions**: athletic and toned but cartoon — **~5.5 heads tall** (readable
-  joints for exercise form; not chibi).
-- **Skin**: warm mid-tan `#E8B18A`.
-- **Hair**: spiky, electric **neon magenta `#FF3DAE`** (complementary pop against
-  the green outfit — this is the instantly-recognizable trait).
-- **Eyes**: large expressive anime eyes, **amber/gold `#FFC64B`**, confident.
-- **Expression**: determined, upbeat grin.
-- **Outfit**: brand-green `#7FE0A0` athletic tank top; dark charcoal shorts;
-  white high-top sneakers with green accents; white wristbands.
-- **Signature accessory**: white headband with a small yellow star.
-- **Line & finish**: thick black cel outline, flat 2-tone shading, cyan/magenta
-  neon rim light.
+- **Identity**: Reppo, GymGym's confident gym regular — strong, wry, likeable.
+- **Style**: human, bold flat-vector cartoon (not anime, not chibi).
+- **Proportions**: athletic and muscular but stylized — **~6 heads tall** at full
+  body, with readable joints for exercise form.
+- **Head**: bald, with a short dark **buzzed hairline rendered as fine halftone
+  dots** — the signature texture.
+- **Face**: thick dark eyebrows; a confident **wink** (his left eye open, right
+  winking); short well-groomed **beard and moustache**; smug half-smile.
+- **Skin**: lit `#FDD28E`, single flat shadow tone `#D3AC71` on beard and jaw.
+- **Outfit**: black athletic tank top and training shorts, solid `#070709`, no
+  pattern or logo. Bare arms and legs so muscle definition reads.
+- **Signature prop**: chunky black dumbbells with rounded plates, `#070709`.
+- **Line & finish**: thick uniform black outline, flat 2-tone fill, no rim light.
 
-Keep face, hair, outfit, colors, proportions, and line weight **identical** in
-every asset. Only the pose/expression changes.
+Keep face, head texture, beard, colours, proportions and line weight
+**identical** in every asset. Only the pose and expression change.
+
+> **Superseded design.** Reppo was previously specified as a magenta-haired,
+> green-tank anime character on near-black. Nothing shipped with that design; the
+> yellow icon replaced it. Do not reintroduce magenta hair, the green tank, the
+> star headband, or neon rim lighting.
 
 ---
 
@@ -112,11 +148,12 @@ not fluid video — that's on-brand.
   same ground/reference line every frame — nothing should "hop." Some scale
   drift still slips through; a bounding-box trim + re-anchor pass tightens it.
 - **Only the pose changes** frame to frame; everything else is locked.
-- **Consistent lighting**: key light upper-left, neon rim upper-right, every
-  frame.
-- **Background**: baked solid near-black `#0D1117` reads as an arcade panel and
-  blends on the app's dark screens (used today). Render a transparent-alpha
-  variant when the art must overlay busy content.
+- **Consistent shading**: the same flat 2-tone split every frame — lit tone and
+  one shadow tone, shadow on the same side throughout. No rim light, no glow.
+- **Background**: **transparent alpha** is the default, so a frame drops onto any
+  screen. When a baked ground is needed, use the app's own surface
+  `#10151B` (or background `#07090C`) so it blends with the dark UI — never a
+  colour that isn't in the palette table.
 
 **Keyframe sets** — generate the DESCENT (~6 frames), ping-pong for the rest:
 - **Squat** (left side): stand tall → 1/5 → quarter → half → three-quarter →
@@ -137,12 +174,15 @@ beats fast and fluid for an instructional demo.
 Nano Banana holds a subject steady best when you (a) anchor to a reference image
 and (b) repeat an identical style block every time.
 
-1. **Generate the Character Reference Sheet FIRST.** Reppo full-body neutral
-   stance + a head with 2–3 expressions + the color palette swatches, on a plain
-   light-grey background. This is the canonical anchor for everything after.
-2. **Reference-drive every asset.** Provide the reference sheet as an input image
-   and instruct: *"Keep this exact character — same face, hair, outfit, colors,
-   proportions, line weight, and cel-shading. Change only the pose to \[…]."*
+1. **Anchor to the shipped icon.** `store-assets/play-icon-512.png` is the
+   canonical head reference and already exists — always attach it.
+2. **Generate the full-body Character Reference Sheet next**, anchored to that
+   icon: Reppo full-body neutral stance + the head with 2–3 expressions + the
+   palette swatches, on a plain light-grey background. Save it to
+   `docs/design/reppo_reference.png`; every later asset attaches **both** images.
+3. **Reference-drive every asset.** Provide the reference(s) as input images and
+   instruct: *"Keep this exact character — same face, head texture, beard,
+   outfit, colours, proportions and line weight. Change only the pose to \[…]."*
 3. **Append the Consistency Block** (below) to every single prompt, verbatim.
 4. **Generate frames sequentially**, referencing both the character sheet and the
    previous frame, so motion stays continuous.
@@ -154,32 +194,43 @@ and (b) repeat an identical style block every time.
 ### ★ Consistency Block — paste into EVERY prompt, unchanged
 
 ```
-STYLE: retro-arcade anime; cel-shaded with thick uniform black outlines
-(~4px), flat 2-tone hard-edged shading, NO gradients, NO soft shadows, NO
-photorealism; bold neon rim light (cyan + magenta); subtle halftone shadow
-accents; high saturation; high contrast; 80s/90s arcade energy.
+STYLE: bold flat vector cartoon; thick uniform black outlines of even weight;
+hard-edged 2-tone flat colour fills; NO gradients, NO airbrush, NO soft
+shadows, NO glow, NO drop shadow, NO 3D, NO photorealism; fine halftone dots
+ONLY on the buzzed scalp; poster-bold and high contrast.
 
-PALETTE (use exactly): brand green #7FE0A0, deep green #1B6B3A, neon magenta
-#FF3DAE, neon cyan #35E0FF, arcade yellow #FFD400, hot orange #FF7A29,
-outline #0A0E12, on near-black #0D1117.
+PALETTE (use exactly): outline/iron/hair #070709, skin lit #FDD28E, skin
+shadow #D3AC71, brand yellow ground #FFBE0A.
 
-CHARACTER "Reppo": athletic action-anime athlete, ~5.5 heads tall, warm tan
-skin (#E8B18A), spiky NEON MAGENTA hair (#FF3DAE), large amber anime eyes
-(#FFC64B), confident grin, white headband with a small yellow star, brand-green
-tank top (#7FE0A0), dark charcoal shorts, white high-top sneakers with green
-accents, white wristbands.
+CHARACTER "Reppo": muscular stylized cartoon man, ~6 heads tall; BALD with a
+short dark buzzed hairline drawn as fine halftone dots; thick dark eyebrows;
+confident WINK (his left eye open, right eye winking); short well-groomed beard
+and moustache; smug half-smile; black athletic tank top and black training
+shorts (#070709), no pattern or logo; bare arms and legs; chunky black
+dumbbells with rounded plates.
 
-RENDER: clean vector-like cel illustration; full body in frame; character
-centered; consistent scale with feet on the ground line; transparent
-background; no text/watermark/logo unless explicitly requested; camera
-{SIDE PROFILE | FRONT 3/4}.
+RENDER: clean flat vector illustration; FULL body in frame — never crop the
+head or the feet; character centered; consistent scale with feet on the ground
+line; transparent background; no text/watermark/logo/signature unless
+explicitly requested; camera {SIDE PROFILE | FRONT 3/4}.
 
-CONSISTENCY: match the provided reference sheet EXACTLY — identical face, hair,
-outfit, colors, proportions, and line weight. Change ONLY the pose to: {POSE}.
+CONSISTENCY: match the provided reference image EXACTLY — identical face, head
+texture, beard, outfit, colours, proportions and line weight. Change ONLY the
+pose to: {POSE}.
 ```
 
 Fill `{SIDE PROFILE | FRONT 3/4}` and `{POSE}` per frame; leave everything else
 byte-for-byte identical across the whole app.
+
+### ★ Negative prompt — pair with every generation
+
+```
+photorealistic, 3D render, gradients, soft shading, airbrush, drop shadow,
+glow, bloom, neon rim light, anime, magenta hair, green tank top, headband,
+busy background, background pattern, extra characters, extra limbs, deformed
+hands, cropped head, cropped feet, misspelled text, gibberish text, watermark,
+signature, UI mockup, phone frame, border, rounded corners
+```
 
 ### Callout / shoutout assets
 
@@ -197,14 +248,31 @@ NEW RECORD!, LEVEL UP!):
 ## Technical output specs
 
 - **Format**: PNG-32 with alpha (transparent), lossless.
-- **Frame size**: square **1024×1024** master (portrait **768×1024** if a pose is
-  tall, e.g. pull-up). Downscale to `-nodpi` for the app; keep masters in
-  `docs/design/masters/`.
+- **Generate at the model's maximum**, then downscale — never upscale.
+- **Frame size**: square **1024×1024** master minimum (portrait **768×1024** if a
+  pose is tall, e.g. pull-up). Downscale to `-nodpi` for the app; keep the
+  untouched masters in `docs/design/masters/`.
 - **In-app placement**: `app/src/main/res/drawable-nodpi/` for animation frames
   and static illustrations.
 - **Naming**: `demo_<exercise>_<nn>.png` (e.g. `demo_squat_01.png` …
   `demo_squat_06.png`); callouts `callout_<word>.png`; mascot `mascot_reppo_*`.
 - Keep the character reference sheet at `docs/design/reppo_reference.png`.
+
+### Store artwork (not packaged in the app)
+
+Lives in `store-assets/`, uploaded by hand in Play Console — see that folder's
+README. Current targets:
+
+| Asset | Size | Notes |
+|---|---|---|
+| Play icon | 512×512 PNG-32 | Flat square, **no** rounded corners or transparent margin — Play masks it itself |
+| Feature graphic | 1024×500 PNG-32 | Generate 16:9 with safe margin, then crop |
+
+**Text in generated images is unreliable.** For anything where wording must be
+exact (feature graphic, callouts), prefer generating the artwork with the text
+area left empty and compositing real type afterwards. If you do ask the model
+for text, spell it out verbatim in the prompt and verify the result at
+thumbnail size before shipping.
 
 ## App integration
 
