@@ -376,6 +376,8 @@
     <string name="mission_planned">Prévu : %1$s</string>
     <string name="mission_swap">Échanger</string>
     <string name="mission_skip">Passer</string>
+    <string name="mission_make_next">Faire suivant</string>
+    <string name="mission_skip_title">Ignorer la séance ?</string>
     <string name="mission_swap_pick">Choisir une séance</string>
     <string name="mission_swap_current">Actuelle</string>
     <string name="mission_swap_completed">Terminé %1$d%%</string>

@@ -382,6 +382,8 @@
     <string name="mission_planned">Запланировано: %1$s</string>
     <string name="mission_swap">Заменить</string>
     <string name="mission_skip">Пропустить</string>
+    <string name="mission_make_next">Сделать следующей</string>
+    <string name="mission_skip_title">Пропустить тренировку?</string>
     <string name="mission_swap_pick">Выберите тренировку</string>
     <string name="mission_swap_current">Текущая</string>
     <string name="mission_swap_completed">Завершено %1$d%%</string>

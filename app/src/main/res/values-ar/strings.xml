@@ -388,6 +388,8 @@
     <string name="mission_planned">مقرر: %1$s</string>
     <string name="mission_swap">تبديل</string>
     <string name="mission_skip">تخطي</string>
+    <string name="mission_make_next">اجعله التالي</string>
+    <string name="mission_skip_title">تخطي التمرين؟</string>
     <string name="mission_swap_pick">اختر تدريبًا</string>
     <string name="mission_swap_current">الحالي</string>
     <string name="mission_swap_completed">مكتمل %1$d%%</string>

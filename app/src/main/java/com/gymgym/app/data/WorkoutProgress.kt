@@ -35,6 +35,9 @@ interface WorkoutProgressDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(progress: WorkoutProgress)
 
+    @Query("DELETE FROM workout_progress WHERE workoutId = :workoutId")
+    suspend fun clearFor(workoutId: Long)
+
     @Query("DELETE FROM workout_progress")
     suspend fun clear()
 }
@@ -50,6 +53,9 @@ class WorkoutProgressRepository(private val dao: WorkoutProgressDao) {
 
     suspend fun markSkipped(workoutId: Long) =
         dao.upsert(WorkoutProgress(workoutId, "SKIPPED", 0, System.currentTimeMillis()))
+
+    /** Un-process a workout (e.g. promoting a skipped one back to current). */
+    suspend fun clearFor(workoutId: Long) = dao.clearFor(workoutId)
 
     suspend fun clear() = dao.clear()
 }

@@ -106,9 +106,72 @@ class PlanRepository(private val dao: PlanDao) {
     /** Snapshot of all plans — used to decide whether a new plan is the user's first. */
     suspend fun plansOnce(): List<PlanWithCycles> = plans.first()
 
+    /**
+     * Move [workoutId] to the front of its cycle's *unfinished* workouts.
+     *
+     * Slots (position, and the weekday attached to that position) stay put;
+     * already-executed workouts keep their slot. The unfinished workouts are
+     * redistributed over the remaining slots with the selected one first and the
+     * others in their existing relative order, so nothing is added, removed or
+     * duplicated — each simply inherits the weekday of its new slot.
+     */
+    @Transaction
+    suspend fun makeWorkoutNext(workoutId: Long, doneWorkoutIds: Set<Long>, weekly: Boolean) {
+        val plan = dao.getActiveOnce() ?: return
+        val cycle = plan.cycles.firstOrNull { c -> c.workouts.any { it.workout.id == workoutId } } ?: return
+        val ordered = executionOrder(cycle.workouts.map { it.workout }, weekly)
+        val byId = ordered.associateBy { it.id }
+        makeNextAssignment(ordered, doneWorkoutIds, workoutId, weekly).forEach { updated ->
+            val original = byId[updated.id] ?: return@forEach
+            if (original.position != updated.position || original.weekday != updated.weekday) {
+                dao.updateWorkout(updated)
+            }
+        }
+    }
+
     suspend fun deletePlan(id: Long) = dao.deletePlan(id)
 
     suspend fun allOnce(): List<PlanWithCycles> = dao.getAllOnce()
 
     suspend fun deleteAll() = dao.deleteAllPlans()
+}
+
+/** How the engine reads a cycle: by weekday then position in Weekly Schedule. */
+internal fun executionOrder(workouts: List<WorkoutEntity>, weekly: Boolean): List<WorkoutEntity> =
+    if (weekly) {
+        workouts.sortedWith(compareBy({ it.weekday ?: 99 }, { it.position }))
+    } else {
+        workouts.sortedBy { it.position }
+    }
+
+/**
+ * Slot reassignment behind "Make next" (pure, so the rules are testable).
+ *
+ * Slots — a position and, in Weekly Schedule, the weekday attached to it — stay
+ * fixed, and executed workouts keep their slot. The unfinished workouts are laid
+ * back over the remaining slots with [selectedId] first and the others in their
+ * existing relative order, each inheriting its new slot's weekday. Nothing is
+ * added, removed or duplicated.
+ *
+ * @param ordered the cycle's workouts in execution order.
+ * @return every unfinished workout with its new position/weekday.
+ */
+internal fun makeNextAssignment(
+    ordered: List<WorkoutEntity>,
+    doneIds: Set<Long>,
+    selectedId: Long,
+    weekly: Boolean,
+): List<WorkoutEntity> {
+    if (ordered.none { it.id == selectedId }) return emptyList()
+    val unfinishedSlots = ordered.indices.filter { ordered[it].id !in doneIds }
+    val unfinished = unfinishedSlots.map { ordered[it] }
+    val selected = unfinished.firstOrNull { it.id == selectedId } ?: return emptyList()
+    val reordered = listOf(selected) + unfinished.filter { it.id != selected.id }
+    return reordered.mapIndexed { i, workout ->
+        val slot = ordered[unfinishedSlots[i]]
+        workout.copy(
+            position = slot.position,
+            weekday = if (weekly) slot.weekday else workout.weekday,
+        )
+    }
 }

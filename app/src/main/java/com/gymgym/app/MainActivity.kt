@@ -307,10 +307,10 @@ private fun AppRoot(
                 dashboard = dashboard,
                 currentCycle = homeCycles.currentCycle,
                 customNames = customNames,
-                onStart = { id ->
-                    startWorkoutById(id)
-                },
-                onSwap = { id -> startWorkoutById(id) },
+                onStart = { id -> startWorkoutById(id) },
+                // Promote a future/skipped workout; stay here so the user sees it
+                // become current (the primary button flips to START).
+                onMakeNext = { id -> viewModel.makeWorkoutNext(id) },
                 onSkip = { id ->
                     viewModel.skipMission(id)
                     navController.popBackStack()

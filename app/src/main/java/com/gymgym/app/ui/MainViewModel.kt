@@ -867,6 +867,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * Promote a future or skipped workout to be the cycle's current one. A skipped
+     * workout is un-skipped so it becomes runnable again.
+     */
+    fun makeWorkoutNext(workoutId: Long) = viewModelScope.launch {
+        val done = workoutProgressRepository.allOnce()
+            .filter { it.status == "DONE" }
+            .map { it.workoutId }
+            .toSet()
+        planRepository.makeWorkoutNext(
+            workoutId = workoutId,
+            doneWorkoutIds = done,
+            weekly = profile.value.trainingMode == TrainingMode.WEEKLY_SCHEDULE,
+        )
+        // Clearing any SKIPPED entry makes it the first unfinished workout.
+        workoutProgressRepository.clearFor(workoutId)
+    }
+
     /** Skip the next-mission workout (Skip option). */
     fun skipMission(workoutId: Long) =
         viewModelScope.launch { markProgress(workoutId, done = false, percent = 0) }

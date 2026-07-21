@@ -373,6 +373,8 @@
     <string name="mission_planned">计划：%1$s</string>
     <string name="mission_swap">更换</string>
     <string name="mission_skip">跳过</string>
+    <string name="mission_make_next">设为下一个</string>
+    <string name="mission_skip_title">跳过该训练？</string>
     <string name="mission_swap_pick">选择训练</string>
     <string name="mission_swap_current">当前</string>
     <string name="mission_swap_completed">已完成 %1$d%%</string>

@@ -347,6 +347,8 @@
     <string name="mission_planned">Planned: %1$s</string>
     <string name="mission_swap">Swap</string>
     <string name="mission_skip">Skip</string>
+    <string name="mission_make_next">Make next</string>
+    <string name="mission_skip_title">Skip workout?</string>
     <string name="mission_swap_pick">Choose a workout</string>
     <string name="mission_swap_current">Current</string>
     <string name="mission_swap_completed">Completed %1$d%%</string>

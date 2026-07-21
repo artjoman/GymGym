@@ -42,6 +42,14 @@ interface PlanDao {
     @Insert
     suspend fun insertWorkout(workout: WorkoutEntity): Long
 
+    /**
+     * Update a workout in place. Used for reordering within a cycle — unlike
+     * savePlan() this keeps workout ids stable, so completed-workout history and
+     * pass progress stay attached.
+     */
+    @Update
+    suspend fun updateWorkout(workout: WorkoutEntity)
+
     @Insert
     suspend fun insertExercises(items: List<WorkoutExerciseEntity>)
 
