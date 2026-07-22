@@ -65,17 +65,38 @@ class PoseAnalyzer(
 
     private fun Pose.toSnapshot(imageWidth: Int, imageHeight: Int): PoseSnapshot {
         val points = mutableMapOf<Landmark, Point2D>()
+        val scores = mutableMapOf<Landmark, Float>()
+        val marginX = imageWidth * OUT_OF_FRAME_MARGIN
+        val marginY = imageHeight * OUT_OF_FRAME_MARGIN
         for ((mlkitLandmark, ourLandmark) in landmarkMap) {
             val lm = getPoseLandmark(mlkitLandmark) ?: continue
             if (lm.inFrameLikelihood < MIN_LIKELIHOOD) continue
-            points[ourLandmark] = Point2D(lm.position.x, lm.position.y)
+            val p = lm.position
+            // ML Kit emits all 33 landmarks on every frame, *extrapolating* the ones
+            // it cannot actually see — including coordinates well outside the image.
+            // Those arrive looking like real joints and poison any angle computed
+            // from them, which is exactly why a partly-out-of-frame body counts so
+            // badly. A joint outside the frame is not a measurement; drop it.
+            if (p.x < -marginX || p.y < -marginY ||
+                p.x > imageWidth + marginX || p.y > imageHeight + marginY
+            ) {
+                continue
+            }
+            points[ourLandmark] = Point2D(p.x, p.y)
+            scores[ourLandmark] = lm.inFrameLikelihood
         }
-        return PoseSnapshot(points, imageWidth, imageHeight)
+        return PoseSnapshot(points, imageWidth, imageHeight, scores)
     }
 
     fun close() = detector.close()
 
     private companion object {
+        // Deliberately left at 0.5: raising it makes landmarks drop out more often,
+        // and a missing hip silently degrades the counters to a worse cue. The
+        // bounds check below is the targeted fix for bad framing.
         const val MIN_LIKELIHOOD = 0.5f
+
+        /** Slack around the image rect, so a joint pressed against the edge survives. */
+        const val OUT_OF_FRAME_MARGIN = 0.02f
     }
 }

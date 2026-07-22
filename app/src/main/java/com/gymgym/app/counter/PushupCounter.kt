@@ -28,13 +28,24 @@ class PushupCounter(private val tuning: FormTuning = FormTuning()) : RepCounter 
     private val stateMachine = RepStateMachine(downEnterThreshold = 105f, upEnterThreshold = 150f)
 
     private var smoothedFlexion = Float.NaN
-    // Shoulder Y at the extended/top position, in image pixels (y grows downward,
-    // so the top of a pushup is the *smallest* y). Anchors the torso-drop cue.
-    private var topShoulderY = Float.NaN
+
+    /**
+     * Recent (timestamp, shoulder-Y) samples, newest last. The torso baseline is
+     * the highest shoulder position (smallest y) still inside [BASELINE_WINDOW_MS].
+     *
+     * This replaces an all-time anchor that could only ratchet upward. That anchor
+     * deadlocked the counter: one extrapolated frame from a partly-out-of-frame
+     * body would re-anchor it far too high, pinning the torso cue at maximum depth
+     * forever — and its correction was gated behind "flexion looks extended", which
+     * the pinned cue guaranteed would never happen. A bounded window plus a
+     * percentile (see [baselineTop]) means no single sample can define the
+     * baseline, and anything that slips through ages out. See PushupFramingTest.
+     */
+    private val recentShoulders = ArrayDeque<Pair<Long, Float>>()
 
     override fun process(pose: PoseSnapshot, nowMs: Long): RepQuality? {
         val elbow = averageElbowAngle(pose)
-        val torso = torsoFlexion(pose)
+        val torso = torsoFlexion(pose, nowMs)
 
         val fused = when {
             elbow != null && torso != null -> minOf(elbow, torso)
@@ -57,16 +68,28 @@ class PushupCounter(private val tuning: FormTuning = FormTuning()) : RepCounter 
     override fun reset() {
         stateMachine.reset()
         smoothedFlexion = Float.NaN
-        topShoulderY = Float.NaN
+        recentShoulders.clear()
     }
 
-    /** Mean of the two shoulder-elbow-wrist angles, or the single visible one. */
+    /**
+     * The best available elbow angle. With both arms visible, prefer the one the
+     * detector is actually confident about rather than averaging: from a side view
+     * the far arm is occluded and ML Kit infers it, so averaging drags a good
+     * reading toward a guessed one. Falls back to the mean when there is nothing
+     * to choose between them (synthetic poses carry no scores).
+     */
     private fun averageElbowAngle(pose: PoseSnapshot): Float? {
         val left = armAngle(pose, Landmark.LEFT_SHOULDER, Landmark.LEFT_ELBOW, Landmark.LEFT_WRIST)
         val right = armAngle(pose, Landmark.RIGHT_SHOULDER, Landmark.RIGHT_ELBOW, Landmark.RIGHT_WRIST)
+        if (left == null || right == null) return left ?: right
+
+        val leftScore = pose.confidence(Landmark.LEFT_SHOULDER, Landmark.LEFT_ELBOW, Landmark.LEFT_WRIST)
+        val rightScore = pose.confidence(Landmark.RIGHT_SHOULDER, Landmark.RIGHT_ELBOW, Landmark.RIGHT_WRIST)
+        if (leftScore == null || rightScore == null) return (left + right) / 2f
         return when {
-            left != null && right != null -> (left + right) / 2f
-            else -> left ?: right
+            leftScore - rightScore > ARM_SCORE_MARGIN -> left
+            rightScore - leftScore > ARM_SCORE_MARGIN -> right
+            else -> (left + right) / 2f
         }
     }
 
@@ -81,7 +104,7 @@ class PushupCounter(private val tuning: FormTuning = FormTuning()) : RepCounter 
      * Elbow-angle-equivalent value derived from how far the shoulders have dropped
      * below their extended position. Returns null until a torso baseline exists.
      */
-    private fun torsoFlexion(pose: PoseSnapshot): Float? {
+    private fun torsoFlexion(pose: PoseSnapshot, nowMs: Long): Float? {
         val ls = pose[Landmark.LEFT_SHOULDER]
         val rs = pose[Landmark.RIGHT_SHOULDER]
         val lh = pose[Landmark.LEFT_HIP]
@@ -93,25 +116,28 @@ class PushupCounter(private val tuning: FormTuning = FormTuning()) : RepCounter 
         val torsoLen = hypot(shoulder.x - hip.x, shoulder.y - hip.y)
         if (torsoLen <= 1f) return null
 
-        if (topShoulderY.isNaN()) topShoulderY = shoulder.y
-        updateTop(shoulder.y)
+        recentShoulders.addLast(nowMs to shoulder.y)
+        while (recentShoulders.size > 1 && nowMs - recentShoulders.first().first > BASELINE_WINDOW_MS) {
+            recentShoulders.removeFirst()
+        }
 
-        val drop = (shoulder.y - topShoulderY).coerceAtLeast(0f)
+        val drop = (shoulder.y - baselineTop()).coerceAtLeast(0f)
         val fraction = (drop / (FULL_DROP_FRACTION * torsoLen)).coerceIn(0f, 1f)
         return 180f - fraction * 100f // fraction 0 -> 180 (extended), 1 -> 80 (deep)
     }
 
     /**
-     * Keep the "top" anchored to extended positions: snap up instantly whenever the
-     * shoulders rise higher, and ease down slowly only while extended so the
-     * baseline follows a drifting camera without chasing the descent of a rep.
+     * The "top" of recent motion: a low percentile of the windowed shoulder heights
+     * rather than the outright minimum.
+     *
+     * Using the minimum let a single extrapolated frame define the baseline. A
+     * percentile cannot be moved by one bad sample among many, so the cue degrades
+     * gracefully instead of jamming — and unlike a velocity filter it needs no
+     * guess about how fast a real body may move between two frames.
      */
-    private fun updateTop(shoulderY: Float) {
-        if (shoulderY < topShoulderY) {
-            topShoulderY = shoulderY
-        } else if (!smoothedFlexion.isNaN() && smoothedFlexion >= TOP_ANCHOR_FLEXION) {
-            topShoulderY += (shoulderY - topShoulderY) * TOP_DRIFT
-        }
+    private fun baselineTop(): Float {
+        val sorted = recentShoulders.map { it.second }.sorted()
+        return sorted[((sorted.size - 1) * BASELINE_PERCENTILE).toInt()]
     }
 
     private fun mid(a: Point2D, b: Point2D) = Point2D((a.x + b.x) / 2f, (a.y + b.y) / 2f)
@@ -119,8 +145,9 @@ class PushupCounter(private val tuning: FormTuning = FormTuning()) : RepCounter 
     private companion object {
         const val SMOOTHING = 0.5f            // EMA weight on the newest reading
         const val FULL_DROP_FRACTION = 0.5f   // shoulder drop (× torso length) counted as full depth
-        const val TOP_ANCHOR_FLEXION = 150f   // only re-anchor the top when arms are ~extended
-        const val TOP_DRIFT = 0.05f           // slow follow of the top baseline
+        const val BASELINE_WINDOW_MS = 8_000L // how long a "top" sample anchors the torso cue
+        const val BASELINE_PERCENTILE = 0.1f  // low percentile of the window = the "top"
+        const val ARM_SCORE_MARGIN = 0.15f    // confidence gap needed to trust one arm over both
         const val GOOD_DEPTH_MAX = 95f        // fused flexion must reach ≤ this for good depth
         const val MIN_DURATION_MS = 800L      // faster than this reads as a bounced rep
         const val WOBBLE_MAX = 0.20f          // side view: hips sag/pike less horizontally

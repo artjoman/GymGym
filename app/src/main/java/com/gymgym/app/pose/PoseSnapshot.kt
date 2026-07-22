@@ -10,8 +10,22 @@ data class PoseSnapshot(
     val landmarks: Map<Landmark, Point2D>,
     val imageWidth: Int,
     val imageHeight: Int,
+    /**
+     * Per-landmark detector confidence, where the source provides it. Lets a
+     * counter prefer the limb it can actually see over one ML Kit inferred —
+     * in a side view the far arm is occluded and guessed, and averaging it in
+     * drags the angle toward nonsense. Empty for synthetic/test poses.
+     */
+    val scores: Map<Landmark, Float> = emptyMap(),
 ) {
     operator fun get(landmark: Landmark): Point2D? = landmarks[landmark]
+
+    /** Mean confidence over [marks], or null if any is missing or unscored. */
+    fun confidence(vararg marks: Landmark): Float? {
+        var sum = 0f
+        for (m in marks) sum += scores[m] ?: return null
+        return sum / marks.size
+    }
 }
 
 enum class Landmark {

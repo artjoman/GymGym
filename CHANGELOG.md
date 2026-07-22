@@ -14,6 +14,12 @@ bump with the changes made since the previous release (see AGENTS.md).
   laughs — jelly legs the day after leg day, juggling a week's worth of
   dumbbells, a crown and a throne of weight plates. Locked ones sit in
   greyscale until you earn them.
+- **Push-up counting fixed.** Counting could stop dead partway through a set —
+  most often when you didn't fit fully in the camera frame. A single misread
+  frame was enough to jam it for the rest of the exercise, and nothing short of
+  restarting recovered. Push-ups now also ignore joints the detector places
+  outside the frame instead of measuring against them, and read the arm the
+  camera can actually see rather than averaging in the hidden one.
 - Earning one pops an **arcade celebration** wherever you are in the app — after
   a workout, or the moment a measurement streak lands. Turn it off under
   **Settings → Achievements** if you'd rather it stayed quiet.
